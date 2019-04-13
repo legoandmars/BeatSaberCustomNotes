@@ -106,11 +106,15 @@ namespace CustomNotes
 
         public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)
         {
-            Console.WriteLine("Custom Notes - Loading Scene");
-            var spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault<BeatmapObjectSpawnController>();
-            if (spawnController)
+            if (scene.name == "GameCore")
             {
-                spawnController.noteDidStartJumpEvent += new Action<BeatmapObjectSpawnController, NoteController>(this.injectNotes);
+                Console.WriteLine("Custom Notes - Loading Scene");
+                var spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault<BeatmapObjectSpawnController>();
+                if (spawnController)
+                {
+                    spawnController.noteDidStartJumpEvent -= injectNotes;
+                    spawnController.noteDidStartJumpEvent += injectNotes;
+                }
             }
         }
 
