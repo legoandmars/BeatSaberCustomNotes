@@ -30,9 +30,9 @@ namespace CustomNotes
         }
         private AssetBundle assetBundle;
         private GameObject cubeMesh;
+        private GameObject cubeMeshRed;
         private List<string> customNotePaths;
         private string selectedNote;
-        //private Material cubeMaterial; 
         public void OnApplicationStart()
         {
             Console.WriteLine("Starting CustomNotes!");
@@ -45,12 +45,40 @@ namespace CustomNotes
             loadCustomNotes();
         }
 
+        private bool IsValidPath(string path, bool allowRelativePaths = false)
+        {
+            bool isValid = true;
+
+            try
+            {
+                string fullPath = Path.GetFullPath(path);
+
+                if (allowRelativePaths)
+                {
+                    isValid = Path.IsPathRooted(path);
+                }
+                else
+                {
+                    string root = Path.GetPathRoot(path);
+                    isValid = string.IsNullOrEmpty(root.Trim(new char[] { '\\', '/' })) == false;
+                }
+            }
+            catch (Exception ex)
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
         public void loadCustomNotes()
         {
+            System.IO.Directory.CreateDirectory(Path.Combine(Application.dataPath, "../CustomNotes/"));
             customNotePaths = (Directory.GetFiles(Path.Combine(Application.dataPath, "../CustomNotes/"),
                 "*.note", SearchOption.AllDirectories).ToList());
             Console.WriteLine("Found " + customNotePaths.Count + " note(s)");
             customNotePaths.Insert(0, "DefaultNotes");
+            customNotePaths.Insert(0, "CustomNotes.minecraft.note");
             LoadNoteAsset(customNotePaths[0]);
         }
 
@@ -127,12 +155,65 @@ namespace CustomNotes
         {
             try
             {
+                if (noteContoller.gameObject.GetComponentInChildren<Renderer>() != null)
+                {
+                    if (noteContoller.gameObject.GetComponentInChildren<Renderer>().bounds != null)
+                    {
+                        var boundsString = noteContoller.gameObject.GetComponentInChildren<Renderer>().bounds;//.ToString();
+                        if (boundsString != null)
+                        {
+                            //Console.WriteLine(boundsString.ToString());
+                        }
+                    }
+                }
+                foreach (Transform child in noteContoller.gameObject.transform)
+                {
+                    if (!child.Find("fakeMesh") && selectedNote != "DefaultNotes" && cubeMesh != null)
+                    {
+                        GameObject whichMesh;
+                        if (noteContoller.noteData.noteType == NoteType.NoteA)
+                        {
+                            whichMesh = cubeMeshRed;
+                        }
+                        else if (noteContoller.noteData.noteType == NoteType.NoteB)
+                        {
+                            whichMesh = cubeMesh;
+                        }
+                        else return;
+                        noteContoller.gameObject.GetComponentInChildren<MeshRenderer>().enabled = false;
+                        GameObject fakeMesh = new GameObject("fakeMesh");
+                        fakeMesh.transform.SetParent(child);
+                        MeshRenderer meshRender = fakeMesh.AddComponent(typeof(MeshRenderer)) as MeshRenderer;
+                        MeshFilter meshFilter = fakeMesh.AddComponent(typeof(MeshFilter)) as MeshFilter;
+                        fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+                        fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+                        fakeMesh.transform.Rotate(new Vector3(-90, 0, 0), Space.Self);
+                        meshFilter.mesh = whichMesh.GetComponent<MeshFilter>().mesh;
+                        meshRender.material = whichMesh.GetComponent<Renderer>().material;
+                        //meshRender.material.SetTexture("_Tex", cubeTexture);
+                        Console.WriteLine(meshRender.material.name);
+                        //Console.WriteLine(meshRender.material.mainTexture.name);
+                        Console.WriteLine(meshRender.material.shader.name);
+
+                        /*GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                        cube.transform.SetParent(child);
+                        cube.transform.localPosition = new Vector3(0, 0, 0);
+                        cube.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+                        cube.GetComponent<Renderer>().material = child.GetComponentInChildren<MeshRenderer>().material;
+                        cube.name = "fakeMesh";*/
+                    }
+                }
+
                 if (selectedNote != "DefaultNotes")
                 {
                     if (cubeMesh != null)
                     {
-                        Console.WriteLine(cubeMesh.name);
-                        noteContoller.gameObject.GetComponentInChildren<MeshFilter>().mesh = cubeMesh.GetComponent<MeshFilter>().mesh;
+                        //Console.WriteLine(noteContoller.gameObject.GetComponentInChildren<MeshFilter>().mesh.bounds);
+                        //Console.WriteLine(cubeMesh.name);
+                        /*noteContoller.gameObject.GetComponentInChildren<MeshFilter>().mesh = cubeMesh.GetComponent<MeshFilter>().mesh;
+                        noteContoller.gameObject.GetComponentInChildren<Renderer>().material = cubeMaterial;
+                        */
+                        //noteContoller.gameObject.GetComponentInChildren<Renderer>().material.shader = Shader.Find("BeatSaber/Unlit Glow");
                     }
                 }
             }
@@ -164,19 +245,35 @@ namespace CustomNotes
             {
                 Console.WriteLine("STARTING");
                 selectedNote = path;
-
-                assetBundle =
-                    AssetBundle.LoadFromFile(selectedNote);
-                //Console.WriteLine(assetBundle.GetAllAssetNames()[0]);
+                var isPath = IsValidPath(selectedNote);
+                Console.WriteLine("IS PATH: " + isPath);
+                if (isPath == true)
+                {
+                    assetBundle = AssetBundle.LoadFromFile(selectedNote);
+                }else if(isPath == false){
+                    try
+                    {
+                        assetBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(selectedNote));
+                    }
+                    catch
+                    {
+                        Console.WriteLine("Failed to load as resource stream - path does not exist");
+                    }
+                }
+                foreach (string assetName in assetBundle.GetAllAssetNames())
+                {
+                    Console.WriteLine(assetName);
+                }
                 if (assetBundle == null)
                 {
-                    Console.WriteLine("something went wrong getting the asset bundle");
+                    Console.WriteLine("something went wrong getting the asset bundle!");
                 }
                 else
                 {
                     Console.WriteLine("Succesfully obtained the asset bundle!");
                     //SaberScript.CustomSaber = assetBundle;
-                    cubeMesh = assetBundle.LoadAsset<GameObject>("assets/materials/cubemesh.prefab");
+                    cubeMesh = assetBundle.LoadAsset<GameObject>("assets/blue_block.prefab");
+                    cubeMeshRed = assetBundle.LoadAsset<GameObject>("assets/red_block.prefab");
                     //now we need to unassign the assigned function
                     //reassignFunction();
                 }
@@ -188,12 +285,13 @@ namespace CustomNotes
                     assetBundle.Unload(true);
                     assetBundle = null;
                     cubeMesh = null;
+                    cubeMeshRed = null;
                 }
                 selectedNote = "DefaultNotes";
             }
 
             //PlayerPrefs.SetString("lastSaber", _currentSaberPath);
-            Console.WriteLine($"Loaded saber {path}");
+            Console.WriteLine($"Loaded custom note {path}");
         }
 
 
