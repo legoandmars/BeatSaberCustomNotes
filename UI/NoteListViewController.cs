@@ -29,7 +29,7 @@ namespace CustomNotes.UI
             LevelListTableCell _tableCell = GetTableCell(false);
             _tableCell.GetPrivateField<TextMeshProUGUI>("_songNameText").text = note.noteDescriptor.NoteName;
             _tableCell.GetPrivateField<TextMeshProUGUI>("_authorText").text = note.noteDescriptor.AuthorName;
-            _tableCell.GetPrivateField<UnityEngine.UI.RawImage>("_coverRawImage").texture = UnityEngine.Texture2D.blackTexture;
+            _tableCell.GetPrivateField<UnityEngine.UI.RawImage>("_coverRawImage").texture = note.noteDescriptor.Icon ?? UnityEngine.Texture2D.blackTexture;
             _tableCell.reuseIdentifier = "CustomNoteListCell";
             return _tableCell;
         }

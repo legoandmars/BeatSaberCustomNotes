@@ -150,15 +150,28 @@ namespace CustomNotes
                     GameObject customNote;
                     if (noteContoller.noteData.noteType == NoteType.NoteA)
                     {
+                        if(noteContoller.noteData.cutDirection == NoteCutDirection.Any)
+                            customNote = customNotes[selectedNote].noteDotLeft ?? customNotes[selectedNote].noteLeft;
+                        else
                             customNote = customNotes[selectedNote].noteLeft;
                     }
                     else if (noteContoller.noteData.noteType == NoteType.NoteB)
                     {
+                        if (noteContoller.noteData.cutDirection == NoteCutDirection.Any)
+                            customNote = customNotes[selectedNote].noteDotRight ?? customNotes[selectedNote].noteRight;
+                        else
                             customNote = customNotes[selectedNote].noteRight;
                     }
                     else return;
                     var noteMesh = noteContoller.gameObject.GetComponentInChildren<MeshRenderer>();
                     noteMesh.enabled = false;
+                    if(customNotes[selectedNote].noteDescriptor.DisableBaseNoteArrows)
+                    {
+                        noteContoller.gameObject.transform.Find("NoteCube").Find("NoteArrow").GetComponent<MeshRenderer>().enabled = false;
+                        noteContoller.gameObject.transform.Find("NoteCube").Find("NoteArrowGlow").GetComponent<SpriteRenderer>().enabled = false;
+                        noteContoller.gameObject.transform.Find("NoteCube").Find("NoteCircleGlow").GetComponent<SpriteRenderer>().enabled = false;
+                    }
+
                     GameObject fakeMesh = GameObject.Instantiate(customNote);
                     fakeMesh.name = "customNote";
                     fakeMesh.transform.SetParent(child);

@@ -14,6 +14,8 @@ namespace CustomNotes
         public NoteDescriptor noteDescriptor { get; private set; }
         public GameObject noteLeft { get; private set; }
         public GameObject noteRight { get; private set; }
+        public GameObject noteDotLeft { get; private set; }
+        public GameObject noteDotRight { get; private set; }
 
         public CustomNote(string path)
         {
@@ -34,6 +36,8 @@ namespace CustomNotes
                 //                 Logger.log.Info(c);
                 noteLeft = note.transform.Find("NoteLeft").gameObject;
                 noteRight = note.transform.Find("NoteRight").gameObject;
+                noteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
+                noteDotRight = note.transform.Find("NoteDotRight")?.gameObject;
 
             }
             else
