@@ -297,11 +297,12 @@ namespace CustomNotes
             if (SceneManager.GetActiveScene().name == "GameCore")
             {
                 if (customNotes[selectedNote].path != "DefaultNotes")
-                    if (BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.ghostNotes == true || BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows == true)
-                    {
-                        BS_Utils.Gameplay.ScoreSubmission.DisableSubmission("Custom Notes");
-                        Logger.log.Notice("Disabling Score Submission for GN/DA and Custom Notes");
-                    }
+                    BS_Utils.Gameplay.ScoreSubmission.DisableSubmission("Custom Notes");
+     //           if (BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.ghostNotes == true || BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows == true)
+     //               {
+     //                   BS_Utils.Gameplay.ScoreSubmission.DisableSubmission("Custom Notes");
+     //                   Logger.log.Notice("Disabling Score Submission for GN/DA and Custom Notes");
+     //               }
             }
         }
     }
