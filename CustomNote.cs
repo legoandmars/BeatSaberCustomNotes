@@ -16,7 +16,7 @@ namespace CustomNotes
         public GameObject noteRight { get; private set; }
         public GameObject noteDotLeft { get; private set; }
         public GameObject noteDotRight { get; private set; }
-
+        public GameObject noteBomb { get; private set; }
         public CustomNote(string path)
         {
             this.path = path;
@@ -38,6 +38,7 @@ namespace CustomNotes
                 noteRight = note.transform.Find("NoteRight").gameObject;
                 noteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
                 noteDotRight = note.transform.Find("NoteDotRight")?.gameObject;
+                noteBomb = note.transform.Find("NoteBomb")?.gameObject;
 
             }
             else
