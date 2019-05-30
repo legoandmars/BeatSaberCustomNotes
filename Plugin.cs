@@ -28,7 +28,7 @@ namespace CustomNotes
         private GameObject noteLeft;
         private GameObject noteRight;
 
-        private List<string> customNotePaths;
+        private List<string> customNotePaths = new List<string>();
         private string selectedNote;
 
         public void OnApplicationStart()
@@ -68,8 +68,8 @@ namespace CustomNotes
             System.IO.Directory.CreateDirectory(Path.Combine(Application.dataPath, "../CustomNotes/"));
             customNotePaths = (Directory.GetFiles(Path.Combine(Application.dataPath, "../CustomNotes/"),
                 "*.note", SearchOption.TopDirectoryOnly).ToList());
-            Console.WriteLine("Found " + customNotePaths.Count + " note(s)");
             customNotePaths.Insert(0, "DefaultNotes");
+            Console.WriteLine("Found " + customNotePaths.Count + " note(s)");
             LoadNoteAsset(customNotePaths[0]);
         }
 
@@ -130,25 +130,23 @@ namespace CustomNotes
             try
             {
                 Transform child = noteContoller.gameObject.transform.Find("NoteCube");
-                GameObject.Destroy(child.Find("fakeMesh")?.gameObject);
+                GameObject.Destroy(child.Find("customNote")?.gameObject);
                 if (selectedNote != "DefaultNotes" && noteLeft != null)
                 {
                     GameObject customNote;
                     if (noteContoller.noteData.noteType == NoteType.NoteA)
                     {
-                        if (noteRight != null)
-                            customNote = noteRight;
-                        else
                             customNote = noteLeft;
                     }
                     else if (noteContoller.noteData.noteType == NoteType.NoteB)
                     {
-                        customNote = noteLeft;
+                            customNote = noteRight;
                     }
                     else return;
                     var noteMesh = noteContoller.gameObject.GetComponentInChildren<MeshRenderer>();
                     noteMesh.enabled = false;
                     GameObject fakeMesh = GameObject.Instantiate(customNote);
+                    fakeMesh.name = "customNote";
                     fakeMesh.transform.SetParent(child);
                     fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
                     fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
@@ -217,7 +215,6 @@ namespace CustomNotes
                    
                     GameObject note = assetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
                     selectedNoteDescriptor = note?.GetComponent<NoteDescriptor>();
-                    selectedNote = selectedNoteDescriptor?.NoteName;
                     //         Console.WriteLine("Succesfully obtained the asset bundle!");
                     //            foreach (var c in assetBundle.AllAssetNames())
                     //                 Logger.log.Info(c);
