@@ -32,11 +32,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CustomNote.cs" />
     <Compile Include="NoteDescriptor.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="PluginConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\NoteListViewController.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="manifest.json" />
@@ -50,6 +52,9 @@
     </Reference>
     <Reference Include="BeatSaberCustomUI">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\BeatSaberCustomUI.dll</HintPath>
+    </Reference>
+    <Reference Include="BS_Utils">
+      <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\BS_Utils.dll</HintPath>
     </Reference>
     <Reference Include="INIFileParser">
       <HintPath>C:\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\INIFileParser.dll</HintPath>
