@@ -11,6 +11,7 @@ using System.IO;
 using System.Collections.Generic;
 using CustomUI.BeatSaber;
 using HMUI;
+using Harmony;
 namespace CustomNotes
 {
     public class Plugin : IBeatSaberPlugin
@@ -30,6 +31,8 @@ namespace CustomNotes
         {
             Console.WriteLine("Starting CustomNotes!");
             loadCustomNotes();
+            var harmony = HarmonyInstance.Create("CustomNotesHarmonyInstance");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         private bool IsValidPath(string path, bool allowRelativePaths = false)
@@ -105,12 +108,12 @@ namespace CustomNotes
             if (nextScene.name == "GameCore")
             {
                 //      Console.WriteLine("Custom Notes - Loading Scene");
-                var spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault<BeatmapObjectSpawnController>();
-                if (spawnController)
-                {
-                    spawnController.noteDidStartJumpEvent -= injectNotes;
-                    spawnController.noteDidStartJumpEvent += injectNotes;
-                }
+     //           var spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault<BeatmapObjectSpawnController>();
+     //           if (spawnController)
+     //           {
+     //               spawnController.noteDidStartJumpEvent -= injectNotes;
+     //               spawnController.noteDidStartJumpEvent += injectNotes;
+     //           }
                 if (colorManager == null)
                     colorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
                 CheckCustomNotesScoreDisable();
@@ -139,84 +142,9 @@ namespace CustomNotes
 
         }
 
-        private void injectNotes(BeatmapObjectSpawnController spawnContoller, NoteController noteContoller)
+        private void injectNotes(BeatmapObjectSpawnController spawnContoller, NoteController noteController)
         {
-            try
-            {
-                var noteMesh = noteContoller.gameObject.GetComponentInChildren<MeshRenderer>();
-                noteMesh.enabled = true;
-                if (noteContoller.noteData.noteType != NoteType.Bomb)
-                {
-                    Transform child = noteContoller.gameObject.transform.Find("NoteCube");
-                    GameObject.Destroy(child.Find("customNote")?.gameObject);
-                    if (customNotes[selectedNote].path != "DefaultNotes")
-                    {
-                        GameObject customNote;
-                        switch (noteContoller.noteData.noteType)
-                        {
-                            case NoteType.NoteA:
-                                if (noteContoller.noteData.cutDirection == NoteCutDirection.Any)
-                                    customNote = customNotes[selectedNote].noteDotLeft ?? customNotes[selectedNote].noteLeft;
-                                else
-                                    customNote = customNotes[selectedNote].noteLeft;
-                                break;
-                            case NoteType.NoteB:
-                                if (noteContoller.noteData.cutDirection == NoteCutDirection.Any)
-                                    customNote = customNotes[selectedNote].noteDotRight ?? customNotes[selectedNote].noteRight;
-                                else
-                                    customNote = customNotes[selectedNote].noteRight;
-                                break;
-                            default:
-                                return;
-
-                        }
-                        noteMesh.enabled = false;
-                        if (customNotes[selectedNote].noteDescriptor.DisableBaseNoteArrows)
-                        {
-                            if (noteContoller.noteData.cutDirection != NoteCutDirection.Any)
-                                noteContoller.gameObject.transform.Find("NoteCube").Find("NoteArrow").GetComponent<MeshRenderer>().enabled = false;
-                            noteContoller.gameObject.transform.Find("NoteCube").Find("NoteArrowGlow").GetComponent<SpriteRenderer>().enabled = false;
-                            noteContoller.gameObject.transform.Find("NoteCube").Find("NoteCircleGlow").GetComponent<SpriteRenderer>().enabled = false;
-                        }
-
-                        GameObject fakeMesh = GameObject.Instantiate(customNote);
-                        fakeMesh.name = "customNote";
-                        fakeMesh.transform.SetParent(child);
-                        fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-                        fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-                        fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
-                    }
-                }
-                else
-                {
-                    Transform child = noteContoller.gameObject.transform.Find("Mesh");
-                    GameObject.Destroy(child.Find("customNote")?.gameObject);
-                    if (customNotes[selectedNote].path != "DefaultNotes")
-                    {
-                        GameObject customNote;
-                        if (customNotes[selectedNote].noteBomb)
-                        {
-                            customNote = customNotes[selectedNote].noteBomb;
-
-                        }
-                        else
-                            return;
-                        noteMesh.enabled = false;
-                        GameObject fakeMesh = GameObject.Instantiate(customNote);
-                        fakeMesh.name = "customNote";
-                        fakeMesh.transform.SetParent(child);
-                        fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-                        fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-                        fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
-                    }
-
-
-                }
-            }
-            catch (Exception err)
-            {
-                Logger.log.Error(err);
-            }
+           
         }
         /*
         public void LoadNoteAsset(string path)
