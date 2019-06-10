@@ -65,7 +65,8 @@ namespace CustomNotes
         {
             System.IO.Directory.CreateDirectory(Path.Combine(Application.dataPath, "../CustomNotes/"));
             customNotePaths = (Directory.GetFiles(Path.Combine(Application.dataPath, "../CustomNotes/"),
-                "*.note", SearchOption.TopDirectoryOnly).ToList());
+                "*.note", SearchOption.TopDirectoryOnly).Concat(Directory.GetFiles(Path.Combine(Application.dataPath, "../CustomNotes/"),
+                "*.bloq", SearchOption.TopDirectoryOnly)).ToList());
             customNotePaths.Insert(0, "DefaultNotes");
             Logger.log.Info("Found " + customNotePaths.Count + " note(s)");
             List<CustomNote> loadedNotes = new List<CustomNote>();

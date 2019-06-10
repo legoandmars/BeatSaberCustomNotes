@@ -16,7 +16,7 @@ namespace CustomNotes.HarmonyPatches
             try
             {
                 var noteMesh = noteController.gameObject.GetComponentInChildren<MeshRenderer>();
-                noteMesh.enabled = true;
+     //           noteMesh.enabled = true;
                     CustomNote activeNote = Plugin.customNotes[Plugin.selectedNote];
                     Transform child = noteController.gameObject.transform.Find("NoteCube");
                     GameObject.Destroy(child.Find("customNote")?.gameObject);

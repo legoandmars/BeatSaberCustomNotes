@@ -2,9 +2,9 @@
   "$schema": "https://raw.githubusercontent.com/nike4613/ModSaber-MetadataFileSchema/master/Schema.json",
   "author": "Kyle 1413",
   "description": "Adds support for custom notes in beat saber",
-  "gameVersion": "1.0.1",
+  "gameVersion": "1.1.0",
   "id": "CustomNotes",
   "name": "CustomNotes",
-  "version": "0.9.0-beta",
+  "version": "1.0.0",
   "features": []
 }
