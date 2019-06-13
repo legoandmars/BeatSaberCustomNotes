@@ -72,7 +72,16 @@ namespace CustomNotes
             List<CustomNote> loadedNotes = new List<CustomNote>();
             for (int i = 0; i < customNotePaths.Count; i++)
             {
-                loadedNotes.Add(new CustomNote(customNotePaths[i]));
+                try
+                {
+                    CustomNote newNote = new CustomNote(customNotePaths[i]);
+                    if (newNote.assetBundle != null)
+                        loadedNotes.Add(newNote);
+                }
+                catch (Exception ex)
+                {
+                    Logger.log.Notice("Failed to Load Custom Note from Path " + customNotePaths[i]);
+                }
             }
             customNotes = loadedNotes.ToArray();
             //       LoadNoteAsset(customNotePaths[0]);
