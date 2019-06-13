@@ -12,5 +12,7 @@ namespace CustomNotes
         public string AuthorName = "Author";
         public Texture2D Icon;
         public bool DisableBaseNoteArrows = false;
+        public bool UsesNoteColor = false;
+        public float NoteColorStrength = 1.0f;
     }
 }
