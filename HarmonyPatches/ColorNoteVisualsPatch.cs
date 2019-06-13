@@ -47,39 +47,17 @@ namespace CustomNotes.HarmonyPatches
 
                     if (activeNote.noteDescriptor.UsesNoteColor)
                     {
-                        var field = ____colorManager.GetType().GetField("_colorA", BindingFlags.Instance | BindingFlags.NonPublic);
-                        SimpleColorSO leftSimpleColor = (SimpleColorSO)field.GetValue(____colorManager);
-                        var field2 = ____colorManager.GetType().GetField("_colorB", BindingFlags.Instance | BindingFlags.NonPublic);
-                        SimpleColorSO rightSimpleColor = (SimpleColorSO)field2.GetValue(____colorManager);
-                        Color leftColor = leftSimpleColor.color;
-                        Color rightColor = rightSimpleColor.color;
-                        float colorMultiplier = activeNote.noteDescriptor.NoteColorStrength;
-                        //pepega
-                        leftColor.r = leftColor.r * colorMultiplier;
-                        leftColor.g = leftColor.g * colorMultiplier;
-                        leftColor.b = leftColor.b * colorMultiplier;
-                        rightColor.r = rightColor.r * colorMultiplier;
-                        rightColor.g = rightColor.g * colorMultiplier;
-                        rightColor.b = rightColor.b * colorMultiplier;
+                        Color noteColor = ____colorManager.ColorForNoteType(noteController.noteData.noteType) * activeNote.noteDescriptor.NoteColorStrength;
 
-                        foreach (Transform noteChild in customNote.GetComponentsInChildren<Transform>())
+                        for (int i = 0; i < customNote.GetComponentsInChildren<Transform>().Length; i++)
                         {
-                            DisableNoteColorOnGameobject colorDisabled = noteChild.GetComponent<DisableNoteColorOnGameobject>();
+                            DisableNoteColorOnGameobject colorDisabled = customNote.GetComponentsInChildren<Transform>()[i].GetComponent<DisableNoteColorOnGameobject>();
                             if (!colorDisabled)
                             {
-                                Renderer childRenderer = noteChild.GetComponent<Renderer>();
+                                Renderer childRenderer = customNote.GetComponentsInChildren<Transform>()[i].GetComponent<Renderer>();
                                 if (childRenderer)
                                 {
-                                    if (noteController.noteData.noteType == NoteType.NoteA)
-                                    {
-                                        childRenderer.material.SetColor("_Color", leftColor);
-
-                                    }
-                                    else if (noteController.noteData.noteType == NoteType.NoteB)
-                                    {
-                                        childRenderer.material.SetColor("_Color", rightColor);
-
-                                    }
+                                    childRenderer.material.SetColor("_Color", noteColor);
                                 }
                             }
                         }
