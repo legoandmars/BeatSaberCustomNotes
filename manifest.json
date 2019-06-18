@@ -3,8 +3,8 @@
   "author": "Kyle 1413",
   "description": "Adds support for custom notes in beat saber",
   "gameVersion": "1.1.0",
-  "id": "CustomNotes",
+  "id": "Custom Notes",
   "name": "CustomNotes",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "features": []
 }
