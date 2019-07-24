@@ -33,6 +33,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CustomNote.cs" />
+    <Compile Include="DisableNoteColorOnGameobject.cs" />
     <Compile Include="HarmonyPatches\ColorNoteVisualsPatch.cs" />
     <Compile Include="NoteDescriptor.cs" />
     <Compile Include="Plugin.cs" />
