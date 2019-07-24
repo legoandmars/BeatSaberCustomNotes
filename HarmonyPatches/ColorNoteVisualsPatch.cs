@@ -44,7 +44,7 @@ namespace CustomNotes.HarmonyPatches
 
                     }
                     noteMesh.enabled = false;
-                    MaterialSwapper.ReplaceMaterialsForGameObject(customNote);
+                    //MaterialSwapper.ReplaceMaterialsForGameObject(customNote);
                     if (activeNote.noteDescriptor.UsesNoteColor)
                     {
                         Color noteColor = ____colorManager.ColorForNoteType(noteController.noteData.noteType) * activeNote.noteDescriptor.NoteColorStrength;
@@ -117,7 +117,7 @@ namespace CustomNotes.HarmonyPatches
                     else
                         return;
                     bombMesh.enabled = false;
-                    MaterialSwapper.ReplaceMaterialsForGameObject(customNote);
+                    //MaterialSwapper.ReplaceMaterialsForGameObject(customNote);
                     GameObject fakeMesh = GameObject.Instantiate(customNote);
                     fakeMesh.name = "customNote";
                     fakeMesh.transform.SetParent(child);

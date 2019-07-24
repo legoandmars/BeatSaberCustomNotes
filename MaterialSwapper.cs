@@ -8,42 +8,35 @@ namespace CustomNotes
 {
     class MaterialSwapper
     {
-        public static Material note { get; private set; }
-        public static Material bomb { get; private set; }
-        public static Material arrow { get; private set; }
-
-        const string noteReplaceMatName = "_note_replace (Instance)";
-        const string bombReplaceMatName = "_bomb_replace (Instance)";
-        const string arrowReplaceMatName = "_arrow_replace (Instance)";
+        public static Material[] allMaterials { get; private set; }
 
         public static void GetMaterials()
         {
             // This object should be created in the Menu Scene
             // Grab materials from Menu Scene objects
+            allMaterials = Resources.FindObjectsOfTypeAll<Material>();
             var materials = Resources.FindObjectsOfTypeAll<Material>();
             foreach (Material test in materials)
             {
                 Console.WriteLine("MATERIAL NAME");
                 Console.WriteLine(test.name);
             }
-            note = new Material(materials.First(x => x.name == "NoteHD"));
-            arrow = new Material(materials.First(x => x.name == "NoteArrowHD"));
-            if (materials.First(x => x.name == "BombNote"))
-            {
-                bomb = new Material(materials.First(x => x.name == "BombNote"));
-            }
-            //bomb = new Material(materials.First(x => x.name == "BombNote"));
         }
 
         public static void ReplaceMaterialsForGameObject(GameObject go)
         {
-            if (note == null || bomb == null || arrow == null) GetMaterials();
-            ReplaceAllMaterialsForGameObjectChildren(go, note, noteReplaceMatName);
+            if (allMaterials == null) GetMaterials();
+            foreach(Material currentMaterial in allMaterials)
+            {
+                string materialName = currentMaterial.name.ToLower()+"_replace (Instance)";
+                ReplaceAllMaterialsForGameObjectChildren(go, currentMaterial, materialName);
+            }
+            /*ReplaceAllMaterialsForGameObjectChildren(go, note, noteReplaceMatName);
             ReplaceAllMaterialsForGameObjectChildren(go, arrow, arrowReplaceMatName);
             if (bomb != null)
             {
                 ReplaceAllMaterialsForGameObjectChildren(go, bomb, bombReplaceMatName);
-            }
+            }*/
         }
 
         public static void ReplaceAllMaterialsForGameObjectChildren(GameObject go, Material mat, string matToReplaceName = "")

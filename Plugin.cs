@@ -125,6 +125,24 @@ namespace CustomNotes
                 //               spawnController.noteDidStartJumpEvent -= injectNotes;
                 //               spawnController.noteDidStartJumpEvent += injectNotes;
                 //           }
+                CustomNote activeNote = Plugin.customNotes[Plugin.selectedNote];
+                if (activeNote.noteDescriptor.NoteName != "Default")
+                {
+                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteLeft);
+                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteRight);
+                    if (activeNote.noteDotLeft != null)
+                    {
+                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteDotLeft);
+                    }
+                    if (activeNote.noteDotRight != null)
+                    {
+                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteDotRight);
+                    }
+                    if (activeNote.noteBomb != null)
+                    {
+                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteBomb);
+                    }
+                }
                 if (colorManager == null)
                     colorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
                 CheckCustomNotesScoreDisable();
