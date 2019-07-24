@@ -128,6 +128,7 @@ namespace CustomNotes
                 CustomNote activeNote = Plugin.customNotes[Plugin.selectedNote];
                 if (activeNote.noteDescriptor.NoteName != "Default")
                 {
+                    MaterialSwapper.GetMaterials();
                     MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteLeft);
                     MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteRight);
                     if (activeNote.noteDotLeft != null)
