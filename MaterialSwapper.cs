@@ -15,12 +15,6 @@ namespace CustomNotes
             // This object should be created in the Menu Scene
             // Grab materials from Menu Scene objects
             allMaterials = Resources.FindObjectsOfTypeAll<Material>();
-            var materials = Resources.FindObjectsOfTypeAll<Material>();
-            foreach (Material test in materials)
-            {
-                Console.WriteLine("MATERIAL NAME");
-                Console.WriteLine(test.name);
-            }
         }
 
         public static void ReplaceMaterialsForGameObject(GameObject go)
