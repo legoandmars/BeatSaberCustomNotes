@@ -85,6 +85,21 @@ namespace CustomNotes
                 }
             }
             customNotes = loadedNotes.ToArray();
+            string lastNote = PlayerPrefs.GetString("lastNote", null);
+            /*Console.WriteLine("LAST NOTE WAS");
+            Console.WriteLine(lastNote);*/
+            if (lastNote != null)
+            {
+                for (int i = 0; i < customNotes.Length; i++)
+                {
+                    var tempNote = customNotes[i];
+                    if (tempNote.path == lastNote)
+                    {
+                        selectedNote = i;
+                    }
+                }
+            }
+
             //       LoadNoteAsset(customNotePaths[0]);
         }
 
@@ -160,7 +175,7 @@ namespace CustomNotes
                     UI.NoteListViewController noteListViewController = BeatSaberUI.CreateViewController<UI.NoteListViewController>();
                     noteListViewController.backButtonPressed += delegate () { _notesMenu.Dismiss(); };
                     _notesMenu.SetMainViewController(noteListViewController, true);
-                    noteListViewController.DidSelectRowEvent += delegate (TableView view, int row) { selectedNote = row; };
+                    noteListViewController.DidSelectRowEvent += delegate (TableView view, int row) { selectedNote = row; PlayerPrefs.SetString("lastNote", customNotes[selectedNote].path); };
                 }
 
                 CustomUI.MenuButton.MenuButtonUI.AddButton("CustomNotes", delegate () { _notesMenu.Present(); });
