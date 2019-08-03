@@ -16,7 +16,6 @@ namespace CustomNotes
 {
     public class Plugin : IBeatSaberPlugin
     {
-        internal static CustomMenu _notesMenu;
         internal static Material noteMaterial = null;
         internal static ColorManager colorManager;
         public void Init(IPALogger logger)
@@ -169,16 +168,17 @@ namespace CustomNotes
         {
             if (scene.name == "MenuCore")
             {
-                if (_notesMenu == null)
-                {
-                    _notesMenu = BeatSaberUI.CreateCustomMenu<CustomMenu>("Custom Notes");
+                    CustomNotes.UI.CustomNotesUI.OnLoad();
+                    /*_notesMenu = BeatSaberUI.CreateCustomMenu<CustomMenu>("Custom Notes");
                     UI.NoteListViewController noteListViewController = BeatSaberUI.CreateViewController<UI.NoteListViewController>();
-                    noteListViewController.backButtonPressed += delegate () { _notesMenu.Dismiss(); };
+                    UI.NotePreviewController notePreviewController = BeatSaberUI.CreateViewController<UI.NotePreviewController>();
+                    noteListViewController.backButtonPressed += delegate () { _notesMenu.Dismiss(); noteListViewController.Deselect();};
                     _notesMenu.SetMainViewController(noteListViewController, true);
                     noteListViewController.DidSelectRowEvent += delegate (TableView view, int row) { selectedNote = row; PlayerPrefs.SetString("lastNote", customNotes[selectedNote].path);};
-                }
+                    */
 
-                CustomUI.MenuButton.MenuButtonUI.AddButton("CustomNotes", delegate () { _notesMenu.Present(); });
+
+                //CustomUI.MenuButton.MenuButtonUI.AddButton("CustomNotes", delegate () { _notesMenu.Present(); });
             }
         }
 

@@ -41,6 +41,10 @@
     <Compile Include="Logger.cs" />
     <Compile Include="PluginConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UI\GenericFlowCoordinator.cs" />
+    <Compile Include="UI\CustomNotesUI.cs" />
+    <Compile Include="UI\NoteListFlowCoordinator.cs" />
+    <Compile Include="UI\NotePreviewController.cs" />
     <Compile Include="UI\NoteListViewController.cs" />
   </ItemGroup>
   <ItemGroup>

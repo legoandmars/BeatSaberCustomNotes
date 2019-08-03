@@ -47,7 +47,7 @@ namespace CustomNotes.HarmonyPatches
                     //MaterialSwapper.ReplaceMaterialsForGameObject(customNote);
                     if (activeNote.noteDescriptor.UsesNoteColor)
                     {
-                        Color noteColor = ____colorManager.ColorForNoteType(noteController.noteData.noteType) * activeNote.noteDescriptor.NoteColorStrength;
+                        Color noteColor = ____colorManager.ColorForNoteType(noteController.noteData.noteType);// * activeNote.noteDescriptor.NoteColorStrength;
 
                         for (int i = 0; i < customNote.GetComponentsInChildren<Transform>().Length; i++)
                         {
