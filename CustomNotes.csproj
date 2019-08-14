@@ -32,9 +32,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="EventFilterBehaviour.cs" />
-    <Compile Include="EventFilters.cs" />
-    <Compile Include="EventManager.cs" />
     <Compile Include="MaterialSwapper.cs" />
     <Compile Include="CustomNote.cs" />
     <Compile Include="DisableNoteColorOnGameobject.cs" />

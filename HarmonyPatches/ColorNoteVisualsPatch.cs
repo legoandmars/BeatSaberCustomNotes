@@ -78,7 +78,6 @@ namespace CustomNotes.HarmonyPatches
                     fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
                     fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                     fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
-                    AddEvents(fakeMesh);
                     /*var field = ____colorManager.GetType().GetField("_colorA", BindingFlags.Instance | BindingFlags.NonPublic);
                     var leftColor = field.GetValue(____colorManager);
                     var field2 = ____colorManager.GetType().GetField("_colorB", BindingFlags.Instance | BindingFlags.NonPublic);
@@ -92,15 +91,6 @@ namespace CustomNotes.HarmonyPatches
                 Logger.log.Error(err);
             }
         }
-        private static void AddEvents(GameObject noteObject)
-        {
-            EventManager noteEventManager = noteObject.GetComponent<EventManager>();
-            if(noteEventManager == null)
-            {
-                noteEventManager = noteObject.AddComponent<EventManager>();
-            }
-            Console.WriteLine("ADDED EVENT MANAGER FOR BLOQ");
-        }
     }
 
     [HarmonyPatch(typeof(BombNoteController), "Init")]
@@ -112,11 +102,9 @@ namespace CustomNotes.HarmonyPatches
             {
 
                 var bombMesh = __instance.gameObject.GetComponentInChildren<MeshRenderer>();
-                //var noteData = bombMesh.gameObject.GetComponent<NoteMovement>;
                 bombMesh.enabled = true;
                 CustomNote activeNote = Plugin.customNotes[Plugin.selectedNote];
                 Transform child = __instance.gameObject.transform.Find("Mesh");
-
                 GameObject.Destroy(child.Find("customNote")?.gameObject);
                 if (activeNote.path != "DefaultNotes")
                 {
@@ -135,9 +123,7 @@ namespace CustomNotes.HarmonyPatches
                     fakeMesh.transform.SetParent(child);
                     fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
                     fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-                    //fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
-                    fakeMesh.transform.rotation = Quaternion.Euler(-(child.transform.rotation.eulerAngles) + new Vector3(0,0,45));
-                    //Console.WriteLine(fakeMesh.transform.rotation);
+                    fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
                 }
 
 
