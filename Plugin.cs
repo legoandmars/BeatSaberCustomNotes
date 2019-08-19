@@ -1,38 +1,34 @@
-﻿using System.IO;
-using System.Linq;
+﻿using CustomNotes.ConfigUtilities;
+using CustomNotes.HarmonyPatches;
+using CustomNotes.UI;
+using CustomNotes.Utilities;
 using IPA;
 using IPA.Config;
 using IPA.Loader;
 using IPA.Utilities;
-using IPALogger = IPA.Logging.Logger;
-using LogLevel = IPA.Logging.Logger.Level;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using CustomNotes.ConfigUtilities;
-using CustomNotes.HarmonyPatches;
-using CustomNotes.UI;
-using CustomNotes.Utilities;
+using IPALogger = IPA.Logging.Logger;
+using LogLevel = IPA.Logging.Logger.Level;
 
 namespace CustomNotes
 {
     public class Plugin : IBeatSaberPlugin, IDisablablePlugin
     {
         public static string PluginName => "CustomNotes";
-        public static string PluginVersion { get; private set; } = "0"; // Default value
+        public static SemVer.Version PluginVersion { get; private set; } = new SemVer.Version("0.0.0"); // Default
         public static string PluginAssetPath => Path.Combine(BeatSaber.InstallPath, "CustomNotes");
 
         internal static Ref<PluginConfig> config;
         internal static IConfigProvider configProvider;
 
-        internal static ColorManager colorManager { get; set; }
+        internal static ColorManager ColorManager { get; set; }
 
         public void Init(IPALogger logger, [Config.Prefer("json")] IConfigProvider cfgProvider, PluginLoader.PluginMetadata metadata)
         {
-            if (logger != null)
-            {
-                Logger.log = logger;
-                Logger.Log("Logger prepared", LogLevel.Debug);
-            }
+            Logger.log = logger;
 
             configProvider = cfgProvider;
             config = cfgProvider.MakeLink<PluginConfig>((p, v) =>
@@ -43,12 +39,8 @@ namespace CustomNotes
                 }
                 config = v;
             });
-            Logger.Log("Configuration loaded", LogLevel.Debug);
 
-            if (metadata != null)
-            {
-                PluginVersion = metadata.Version.ToString();
-            }
+            PluginVersion = metadata?.Version;
         }
 
         public void OnApplicationStart() => Load();
@@ -99,14 +91,18 @@ namespace CustomNotes
                     {
                         MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
                     }
-                }
 
-                if (colorManager == null)
+                    CheckCustomNotesScoreDisable();
+                }
+                else
                 {
-                    colorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
+                    ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
                 }
 
-                CheckCustomNotesScoreDisable();
+                if (ColorManager == null)
+                {
+                    ColorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
+                }
             }
         }
 
@@ -149,10 +145,6 @@ namespace CustomNotes
                         BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows == true)
                     {
                         ScoreUtility.DisableScoreSubmission("ModifiersEnabled");
-                    }
-                    else
-                    {
-                        ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
                     }
                 }
             }

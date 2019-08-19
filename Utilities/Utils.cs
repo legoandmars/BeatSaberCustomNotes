@@ -1,6 +1,6 @@
-﻿using UnityEngine;
-using IPA.Loader;
+﻿using IPA.Loader;
 using IPA.Old;
+using UnityEngine;
 
 namespace CustomNotes.Utilities
 {
@@ -14,7 +14,7 @@ namespace CustomNotes.Utilities
         public static bool ActivateGameObject(GameObject gameObject, bool setActive) => ActivateGameObject(gameObject, setActive, null);
 
         /// <summary>
-        /// Sets the active state of a primary GameObject and the sets the opposite active state for the secondary GameObject.
+        /// Sets the active state of a primary GameObject and then sets the opposite active state for the secondary GameObject.
         /// </summary>
         /// <param name="primary"></param>
         /// <param name="setActive">Desired state</param>
@@ -47,7 +47,12 @@ namespace CustomNotes.Utilities
         {
             if (IsPluginPresent(PluginName))
             {
-                PluginLoader.PluginInfo pluginInfo = PluginManager.GetPluginFromId(PluginName);
+                PluginLoader.PluginInfo pluginInfo = PluginManager.GetPlugin(PluginName);
+                if (pluginInfo?.Metadata == null)
+                {
+                    pluginInfo = PluginManager.GetPluginFromId(PluginName);
+                }
+
                 if (pluginInfo?.Metadata != null)
                 {
                     return PluginManager.IsEnabled(pluginInfo.Metadata);

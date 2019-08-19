@@ -15,7 +15,7 @@ By switching to the default notes or turning off these modifiers, score submissi
 ## For developers
 
 ### Contributing to CustomNotes
-In order to build this project, please add your Beat Saber directory path to the `CustomNotes.csproj.user` file located in the project directory like for example this:
+In order to build this project, please add your Beat Saber directory path to the `CustomNotes.csproj.user` file located in the project directory.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
