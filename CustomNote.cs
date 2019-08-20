@@ -1,51 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using UnityEngine;
+using LogLevel = IPA.Logging.Logger.Level;
+
 namespace CustomNotes
 {
     public class CustomNote
     {
+        public string FileName { get; private set; }
+        public AssetBundle AssetBundle { get; private set; }
+        public NoteDescriptor NoteDescriptor { get; private set; }
+        public GameObject NoteLeft { get; private set; }
+        public GameObject NoteRight { get; private set; }
+        public GameObject NoteDotLeft { get; private set; }
+        public GameObject NoteDotRight { get; private set; }
+        public GameObject NoteBomb { get; private set; }
 
-        public string path { get; private set; }
-        public AssetBundle assetBundle { get; private set; }
-        public NoteDescriptor noteDescriptor { get; private set; }
-        public GameObject noteLeft { get; private set; }
-        public GameObject noteRight { get; private set; }
-        public GameObject noteDotLeft { get; private set; }
-        public GameObject noteDotRight { get; private set; }
-        public GameObject noteBomb { get; private set; }
-        public CustomNote(string path)
+        public CustomNote(string fileName)
         {
-            this.path = path;
+            FileName = fileName;
 
-            if(path != "DefaultNotes")
+            if (fileName != "DefaultNotes")
             {
-                assetBundle = AssetBundle.LoadFromFile(path);
-                if (assetBundle == null)
-                {
-                    Logger.log.Warn("something went wrong getting the asset bundle!");
-                    return;
-                }
-                GameObject note = assetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
-                noteDescriptor = note?.GetComponent<NoteDescriptor>();
-                //         Console.WriteLine("Succesfully obtained the asset bundle!");
-                //            foreach (var c in assetBundle.AllAssetNames())
-                //                 Logger.log.Info(c);
-                noteLeft = note.transform.Find("NoteLeft").gameObject;
-                noteRight = note.transform.Find("NoteRight").gameObject;
-                noteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
-                noteDotRight = note.transform.Find("NoteDotRight")?.gameObject;
-                noteBomb = note.transform.Find("NoteBomb")?.gameObject;
+                AssetBundle = AssetBundle.LoadFromFile(Path.Combine(Plugin.PluginAssetPath, fileName));
 
+                if (AssetBundle != null)
+                {
+                    GameObject note = AssetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
+
+                    NoteDescriptor = note?.GetComponent<NoteDescriptor>();
+                    NoteLeft = note.transform.Find("NoteLeft").gameObject;
+                    NoteRight = note.transform.Find("NoteRight").gameObject;
+                    NoteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
+                    NoteDotRight = note.transform.Find("NoteDotRight")?.gameObject;
+                    NoteBomb = note.transform.Find("NoteBomb")?.gameObject;
+                }
+                else
+                {
+                    Logger.Log("Something went wrong getting the AssetBundle!", LogLevel.Warning);
+                }
             }
             else
             {
-                noteDescriptor = new NoteDescriptor { AuthorName = "Beat Saber", NoteName = "Default" };
+                NoteDescriptor = new NoteDescriptor
+                {
+                    AuthorName = "Beat Saber",
+                    NoteName = "Default"
+                };
             }
         }
-
     }
 }
