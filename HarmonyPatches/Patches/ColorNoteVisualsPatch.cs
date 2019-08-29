@@ -183,7 +183,7 @@ namespace CustomNotes.HarmonyPatches
                         fakeMesh.transform.SetParent(child);
                         fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
                         fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-                        fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
+                        fakeMesh.transform.Rotate(new Vector3(0f, 0f, 90f), Space.Self);
                     }
                 }
             }
