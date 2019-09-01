@@ -1,131 +1,68 @@
-﻿using IPA;
+﻿using CustomNotes.ConfigUtilities;
+using CustomNotes.HarmonyPatches;
+using CustomNotes.UI;
+using CustomNotes.Utilities;
+using IPA;
 using IPA.Config;
+using IPA.Loader;
 using IPA.Utilities;
-using UnityEngine.SceneManagement;
-using UnityEngine;
-using IPALogger = IPA.Logging.Logger;
-using System;
-using System.Reflection;
-using System.Linq;
 using System.IO;
-using System.Collections.Generic;
-using CustomUI.BeatSaber;
-using HMUI;
-using Harmony;
+using System.Linq;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using IPALogger = IPA.Logging.Logger;
+using LogLevel = IPA.Logging.Logger.Level;
+
 namespace CustomNotes
 {
-    public class Plugin : IBeatSaberPlugin
+    public class Plugin : IBeatSaberPlugin, IDisablablePlugin
     {
-        internal static CustomMenu _notesMenu;
-        internal static Material noteMaterial = null;
-        internal static ColorManager colorManager;
-        public void Init(IPALogger logger)
+        public static string PluginName => "CustomNotes";
+        public static SemVer.Version PluginVersion { get; private set; } = new SemVer.Version("0.0.0"); // Default
+        public static string PluginAssetPath => Path.Combine(BeatSaber.InstallPath, "CustomNotes");
+
+        internal static Ref<PluginConfig> config;
+        internal static IConfigProvider configProvider;
+
+        internal static ColorManager ColorManager { get; set; }
+
+        public void Init(IPALogger logger, [Config.Prefer("json")] IConfigProvider cfgProvider, PluginLoader.PluginMetadata metadata)
         {
             Logger.log = logger;
-        }
-        internal static CustomNote[] customNotes;
-        internal static int selectedNote = 0;
-        private List<string> customNotePaths = new List<string>();
 
-        public void OnApplicationStart()
-        {
-            Console.WriteLine("Starting CustomNotes!");
-            loadCustomNotes();
-            var harmony = HarmonyInstance.Create("CustomNotesHarmonyInstance");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-        }
-
-        private bool IsValidPath(string path, bool allowRelativePaths = false)
-        {
-            bool isValid = true;
-
-            try
+            configProvider = cfgProvider;
+            config = cfgProvider.MakeLink<PluginConfig>((p, v) =>
             {
-                string fullPath = Path.GetFullPath(path);
-
-                if (allowRelativePaths)
+                if (v.Value == null || v.Value.RegenerateConfig || v.Value == null && v.Value.RegenerateConfig)
                 {
-                    isValid = Path.IsPathRooted(path);
+                    p.Store(v.Value = new PluginConfig() { RegenerateConfig = false });
                 }
-                else
-                {
-                    string root = Path.GetPathRoot(path);
-                    isValid = string.IsNullOrEmpty(root.Trim(new char[] { '\\', '/' })) == false;
-                }
-            }
-            catch (Exception ex)
-            {
-                isValid = false;
-            }
+                config = v;
+            });
 
-            return isValid;
+            PluginVersion = metadata?.Version;
         }
 
-        public void loadCustomNotes()
-        {
-            System.IO.Directory.CreateDirectory(Path.Combine(Application.dataPath, "../CustomNotes/"));
-            customNotePaths = (Directory.GetFiles(Path.Combine(Application.dataPath, "../CustomNotes/"),
-                "*.note", SearchOption.TopDirectoryOnly).Concat(Directory.GetFiles(Path.Combine(Application.dataPath, "../CustomNotes/"),
-                "*.bloq", SearchOption.TopDirectoryOnly)).ToList());
-        //    customNotePaths.Insert(0, "DefaultNotes");
-            Logger.log.Info("Found " + customNotePaths.Count + " note(s)");
-            List<CustomNote> loadedNotes = new List<CustomNote>();
-            loadedNotes.Add(new CustomNote("DefaultNotes"));
-            for (int i = 0; i < customNotePaths.Count; i++)
-            {
-                try
-                {
-                    CustomNote newNote = new CustomNote(customNotePaths[i]);
-                    if (newNote.assetBundle != null)
-                        loadedNotes.Add(newNote);
-                }
-                catch (Exception ex)
-                {
-                    Logger.log.Notice("Failed to Load Custom Note from Path " + customNotePaths[i]);
-                }
-            }
-            customNotes = loadedNotes.ToArray();
-            string lastNote = PlayerPrefs.GetString("lastNote", null);
-            /*Console.WriteLine("LAST NOTE WAS");
-            Console.WriteLine(lastNote);*/
-            if (lastNote != null)
-            {
-                for (int i = 0; i < customNotes.Length; i++)
-                {
-                    var tempNote = customNotes[i];
-                    if (tempNote.path == lastNote)
-                    {
-                        selectedNote = i;
-                    }
-                }
-            }
-
-            //       LoadNoteAsset(customNotePaths[0]);
-        }
-
-        public void OnApplicationQuit()
-        {
-            //    Logger.log.Debug("OnApplicationQuit");
-        }
-
-        public void OnFixedUpdate()
-        {
-
-        }
+        public void OnApplicationStart() => Load();
+        public void OnApplicationQuit() => Unload();
+        public void OnEnable() => Load("enabled");
+        public void OnDisable() => Unload();
 
         public void OnUpdate()
         {
             if (Input.GetKeyDown(KeyCode.N))
             {
-                if (customNotePaths.Count == 1) return;
-                if (selectedNote >= customNotes.Length - 1)
+                if (NoteAssetLoader.customNoteFiles.Count != 1)
                 {
-                    selectedNote = -1;
+                    if (NoteAssetLoader.selectedNote >= NoteAssetLoader.customNotes.Length - 1)
+                    {
+                        NoteAssetLoader.selectedNote = -1;
+                    }
+
+                    NoteAssetLoader.selectedNote++;
+                    Logger.Log($"Switched To Note: {NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].NoteDescriptor.NoteName}");
+                    CheckCustomNotesScoreDisable();
                 }
-                selectedNote++;
-                Logger.log.Info("Switched To Note:" + customNotes[selectedNote].noteDescriptor.NoteName);
-                CheckCustomNotesScoreDisable();
-                //         LoadNoteAsset(newNote);
             }
         }
 
@@ -133,35 +70,39 @@ namespace CustomNotes
         {
             if (nextScene.name == "GameCore")
             {
-                //      Console.WriteLine("Custom Notes - Loading Scene");
-                //           var spawnController = Resources.FindObjectsOfTypeAll<BeatmapObjectSpawnController>().FirstOrDefault<BeatmapObjectSpawnController>();
-                //           if (spawnController)
-                //           {
-                //               spawnController.noteDidStartJumpEvent -= injectNotes;
-                //               spawnController.noteDidStartJumpEvent += injectNotes;
-                //           }
-                CustomNote activeNote = Plugin.customNotes[Plugin.selectedNote];
-                if (activeNote.noteDescriptor.NoteName != "Default")
+                CustomNote activeNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote];
+                if (activeNote.NoteDescriptor.NoteName != "Default")
                 {
                     MaterialSwapper.GetMaterials();
-                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteLeft);
-                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteRight);
-                    if (activeNote.noteDotLeft != null)
+                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteLeft);
+                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteRight);
+
+                    if (activeNote.NoteDotLeft != null)
                     {
-                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteDotLeft);
+                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteDotLeft);
                     }
-                    if (activeNote.noteDotRight != null)
+
+                    if (activeNote.NoteDotRight != null)
                     {
-                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteDotRight);
+                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteDotRight);
                     }
-                    if (activeNote.noteBomb != null)
+
+                    if (activeNote.NoteBomb != null)
                     {
-                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.noteBomb);
+                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
                     }
+
+                    CheckCustomNotesScoreDisable();
                 }
-                if (colorManager == null)
-                    colorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
-                CheckCustomNotesScoreDisable();
+                else
+                {
+                    ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
+                }
+
+                if (ColorManager == null)
+                {
+                    ColorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
+                }
             }
         }
 
@@ -169,113 +110,43 @@ namespace CustomNotes
         {
             if (scene.name == "MenuCore")
             {
-                if (_notesMenu == null)
-                {
-                    _notesMenu = BeatSaberUI.CreateCustomMenu<CustomMenu>("Custom Notes");
-                    UI.NoteListViewController noteListViewController = BeatSaberUI.CreateViewController<UI.NoteListViewController>();
-                    noteListViewController.backButtonPressed += delegate () { _notesMenu.Dismiss(); };
-                    _notesMenu.SetMainViewController(noteListViewController, true);
-                    noteListViewController.DidSelectRowEvent += delegate (TableView view, int row) { selectedNote = row; PlayerPrefs.SetString("lastNote", customNotes[selectedNote].path);};
-                }
-
-                CustomUI.MenuButton.MenuButtonUI.AddButton("CustomNotes", delegate () { _notesMenu.Present(); });
+                SettingsUI.CreateMenu();
             }
         }
 
-        public void OnSceneUnloaded(Scene scene)
+        public void OnSceneUnloaded(Scene scene) { }
+        public void OnFixedUpdate() { }
+
+        private void Load(string msg = "started")
         {
+            Configuration.Load();
 
+            NoteAssetLoader.LoadCustomNotes();
+            Patches.ApplyHarmonyPatches();
+
+            Logger.Log($"{PluginName} v.{PluginVersion} has been {msg}.", LogLevel.Notice);
         }
 
-        private void injectNotes(BeatmapObjectSpawnController spawnContoller, NoteController noteController)
+        private void Unload()
         {
+            Patches.RemoveHarmonyPatches();
+            ScoreUtility.Cleanup();
 
+            Configuration.Save();
         }
-        /*
-        public void LoadNoteAsset(string path)
-        {
-         //   Console.WriteLine("LOADING " + path);
-            if (assetBundle != null)
-            {
-                assetBundle.Unload(true);
-            }
 
-            if (path != "DefaultNotes")
-            {
-                noteLeft = null;
-                noteRight = null;
-          //      Console.WriteLine("STARTING");
-                selectedNote = path;
-                assetBundle = AssetBundle.LoadFromFile(selectedNote);
-           //     var isPath = IsValidPath(selectedNote);
-        //        Console.WriteLine("IS PATH: " + isPath);
-        
-                if (isPath == true)
-                {
-                    assetBundle = AssetBundle.LoadFromFile(selectedNote);
-                }
-                else if (isPath == false)
-                {
-                    try
-                    {
-                        assetBundle = AssetBundle.LoadFromStream(Assembly.GetExecutingAssembly().GetManifestResourceStream(selectedNote));
-                    }
-                    catch
-                    {
-                        Logger.log.Warn("Failed to load as resource stream - path does not exist");
-                    }
-                }
-                
-                foreach (string assetName in assetBundle.GetAllAssetNames())
-                {
-                    Console.WriteLine(assetName);
-                }
-                if (assetBundle == null)
-                {
-                    Logger.log.Warn("something went wrong getting the asset bundle!");
-                }
-                else
-                {
-                   
-                    GameObject note = assetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
-                    selectedNoteDescriptor = note?.GetComponent<NoteDescriptor>();
-                    //         Console.WriteLine("Succesfully obtained the asset bundle!");
-                    //            foreach (var c in assetBundle.AllAssetNames())
-                    //                 Logger.log.Info(c);
-                   noteLeft = note.transform.Find("NoteLeft").gameObject;
-                    noteRight = note.transform.Find("NoteRight").gameObject;
-             //       noteLeft = assetBundle.LoadAsset<GameObject>("assets/blue_block.prefab");
-             //       if (noteLeft == null)
-             //           noteLeft = assetBundle.LoadAsset<GameObject>("assets/materials/cubemesh.prefab");
-
-//                    noteRight = assetBundle.LoadAsset<GameObject>("assets/red_block.prefab");
-                }
-            }
-            else
-            {
-                if (assetBundle != null)
-                {
-                    assetBundle.Unload(true);
-                    assetBundle = null;
-                    noteLeft = null;
-                    noteRight = null;
-                }
-                selectedNote = "DefaultNotes";
-            }
-            Logger.log.Info($"Loaded custom note {selectedNote}");
-        }
-        */
-        public void CheckCustomNotesScoreDisable()
+        private void CheckCustomNotesScoreDisable()
         {
             if (SceneManager.GetActiveScene().name == "GameCore")
             {
-                if (customNotes[selectedNote].path != "DefaultNotes")
-                    //                   BS_Utils.Gameplay.ScoreSubmission.DisableSubmission("Custom Notes");
-                    if (BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.ghostNotes == true || BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows == true)
+                if (NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].FileName != "DefaultNotes")
+                {
+                    if (BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.ghostNotes == true ||
+                        BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows == true)
                     {
-                        BS_Utils.Gameplay.ScoreSubmission.DisableSubmission("Custom Notes");
-                        Logger.log.Notice("Disabling Score Submission for GN/DA and Custom Notes");
+                        ScoreUtility.DisableScoreSubmission("ModifiersEnabled");
                     }
+                }
             }
         }
     }
