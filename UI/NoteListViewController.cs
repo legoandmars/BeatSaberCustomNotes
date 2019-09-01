@@ -19,7 +19,7 @@ namespace CustomNotes.UI
             return NoteAssetLoader.customNotes.Length;
         }
 
-        public override TableCell CellForIdx(int idx)
+        public override TableCell CellForIdx(TableView tableView, int idx)
         {
             CustomNote note = NoteAssetLoader.customNotes[idx];
 
