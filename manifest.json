@@ -9,7 +9,7 @@
   "icon": "CustomNotes.Resources.icon.png",
   "id": "Custom Notes",
   "name": "CustomNotes",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "dependsOn": {
     "BSIPA": "^3.12.23",
     "CustomUI": "^1.5.6",
