@@ -110,7 +110,7 @@ namespace CustomNotes
         {
             if (scene.name == "MenuCore")
             {
-                SettingsUI.CreateMenu();
+            //    SettingsUI.CreateMenu();
             }
         }
 
@@ -123,7 +123,7 @@ namespace CustomNotes
 
             NoteAssetLoader.LoadCustomNotes();
             Patches.ApplyHarmonyPatches();
-
+            SettingsUI.CreateMenu();
             Logger.Log($"{PluginName} v.{PluginVersion} has been {msg}.", LogLevel.Notice);
         }
 
