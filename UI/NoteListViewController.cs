@@ -32,7 +32,7 @@ namespace CustomNotes.UI
         }
 
         [UIAction("#post-parse")]
-        internal void SetupSaberList()
+        internal void SetupList()
         {
             customListTableData.data.Clear();
             foreach (CustomNote note in NoteAssetLoader.customNotes)
