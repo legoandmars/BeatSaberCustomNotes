@@ -23,6 +23,7 @@ namespace CustomNotes.UI
         {
             NoteAssetLoader.selectedNote = row;
             Configuration.CurrentlySelectedNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].FileName;
+            Configuration.Save();
 
         }
 
