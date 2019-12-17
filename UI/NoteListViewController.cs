@@ -19,7 +19,7 @@ namespace CustomNotes.UI
 
 
         [UIAction("noteSelect")]
-        internal void SelectSaber(TableView tableView, int row)
+        internal void Select(TableView tableView, int row)
         {
             NoteAssetLoader.selectedNote = row;
             Configuration.CurrentlySelectedNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].FileName;
