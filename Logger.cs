@@ -8,7 +8,7 @@ namespace CustomNotes
 {
     public static class Logger
     {
-        internal static IPALogger log { private get; set; }
+        internal static IPALogger log { get; set; }
 
         public static void Log(string message, LogLevel severity = LogLevel.Info)
         {
