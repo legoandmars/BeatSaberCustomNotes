@@ -1,6 +1,7 @@
-﻿using CustomNotes.ConfigUtilities;
+﻿using CustomNotes.Data;
 using CustomNotes.HarmonyPatches;
-using CustomNotes.UI;
+using CustomNotes.Settings;
+using CustomNotes.Settings.UI;
 using CustomNotes.Utilities;
 using IPA;
 using IPA.Config;
@@ -16,30 +17,21 @@ namespace CustomNotes
 {
     public class Plugin : IBeatSaberPlugin, IDisablablePlugin
     {
+        private static ColorManager ColorManager;
+
         public static string PluginName => "CustomNotes";
         public static SemVer.Version PluginVersion { get; private set; } = new SemVer.Version("0.0.0"); // Default
         public static string PluginAssetPath => Path.Combine(BeatSaber.InstallPath, "CustomNotes");
 
-        internal static Ref<PluginConfig> config;
-        internal static IConfigProvider configProvider;
-
-        internal static ColorManager ColorManager { get; set; }
-
         public void Init(IPALogger logger, [Config.Prefer("json")] IConfigProvider cfgProvider, PluginLoader.PluginMetadata metadata)
         {
             Logger.log = logger;
+            Configuration.Init(cfgProvider);
 
-            configProvider = cfgProvider;
-            config = cfgProvider.MakeLink<PluginConfig>((p, v) =>
+            if (metadata?.Version != null)
             {
-                if (v.Value == null || v.Value.RegenerateConfig || v.Value == null && v.Value.RegenerateConfig)
-                {
-                    p.Store(v.Value = new PluginConfig() { RegenerateConfig = false });
-                }
-                config = v;
-            });
-
-            PluginVersion = metadata?.Version;
+                PluginVersion = metadata.Version;
+            }
         }
 
         public void OnApplicationStart() => Load();

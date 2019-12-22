@@ -3,7 +3,7 @@ using HMUI;
 using IPA.Utilities;
 using System;
 
-namespace CustomNotes.UI
+namespace CustomNotes.Settings.UI
 {
     internal class CustomNotesFlowCoordinator : FlowCoordinator
     {

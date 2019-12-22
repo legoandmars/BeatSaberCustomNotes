@@ -1,6 +1,6 @@
-﻿namespace CustomNotes.ConfigUtilities
+﻿namespace CustomNotes.Settings.Utilities
 {
-    internal class PluginConfig
+    public class PluginConfig
     {
         public bool RegenerateConfig = true;
 

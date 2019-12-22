@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CustomNotes.Data;
+using CustomNotes.Settings;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;

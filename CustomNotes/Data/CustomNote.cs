@@ -1,18 +1,18 @@
 ﻿using System.IO;
 using UnityEngine;
 
-namespace CustomNotes
+namespace CustomNotes.Data
 {
     public class CustomNote
     {
-        public string FileName { get; private set; }
-        public AssetBundle AssetBundle { get; private set; }
-        public NoteDescriptor NoteDescriptor { get; private set; }
-        public GameObject NoteLeft { get; private set; }
-        public GameObject NoteRight { get; private set; }
-        public GameObject NoteDotLeft { get; private set; }
-        public GameObject NoteDotRight { get; private set; }
-        public GameObject NoteBomb { get; private set; }
+        public string FileName { get; }
+        public AssetBundle AssetBundle { get; }
+        public NoteDescriptor NoteDescriptor { get; }
+        public GameObject NoteLeft { get; }
+        public GameObject NoteRight { get; }
+        public GameObject NoteDotLeft { get; }
+        public GameObject NoteDotRight { get; }
+        public GameObject NoteBomb { get; }
 
         public CustomNote(string fileName)
         {

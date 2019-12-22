@@ -1,13 +1,14 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
+using CustomNotes.Data;
 using CustomNotes.Utilities;
 using HMUI;
 
-namespace CustomNotes.UI
+namespace CustomNotes.Settings.UI
 {
     internal class NotesListView : BeatSaberMarkupLanguage.ViewControllers.BSMLResourceViewController
     {
-        public override string ResourceName => "CustomNotes.UI.noteList.bsml";
+        public override string ResourceName => "CustomNotes.Settings.UI.Views.noteList.bsml";
 
         [UIComponent("noteList")]
         public CustomListTableData customListTableData;

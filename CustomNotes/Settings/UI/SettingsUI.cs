@@ -2,7 +2,7 @@
 using BeatSaberMarkupLanguage.MenuButtons;
 using BS_Utils.Utilities;
 
-namespace CustomNotes.UI
+namespace CustomNotes.Settings.UI
 {
     internal class SettingsUI
     {
