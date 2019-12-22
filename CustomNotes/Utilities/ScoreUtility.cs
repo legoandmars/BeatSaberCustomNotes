@@ -21,9 +21,9 @@ namespace CustomNotes.Utilities
 
                 if (!ScoreIsBlocked)
                 {
-                    Logger.Log("ScoreSubmission has been disabled.", LogLevel.Notice);
                     ScoreSubmission.ProlongedDisableSubmission(Plugin.PluginName);
                     ScoreIsBlocked = true;
+                    Logger.log.Info("ScoreSubmission has been disabled.");
                 }
             }
         }
@@ -39,9 +39,9 @@ namespace CustomNotes.Utilities
 
                 if (ScoreIsBlocked && ScoreBlockList.Count == 0)
                 {
-                    Logger.Log("ScoreSubmission has been re-enabled.", LogLevel.Notice);
                     ScoreSubmission.RemoveProlongedDisable(Plugin.PluginName);
                     ScoreIsBlocked = false;
+                    Logger.log.Info("ScoreSubmission has been re-enabled.");
                 }
             }
         }
@@ -55,9 +55,9 @@ namespace CustomNotes.Utilities
             {
                 if (ScoreIsBlocked)
                 {
-                    Logger.Log("Plugin is exiting, ScoreSubmission has been re-enabled.", LogLevel.Notice);
                     ScoreSubmission.RemoveProlongedDisable(Plugin.PluginName);
                     ScoreIsBlocked = false;
+                    Logger.log.Info("Plugin is exiting, ScoreSubmission has been re-enabled.");
                 }
 
                 if (ScoreBlockList.Count != 0)

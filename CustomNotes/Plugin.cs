@@ -60,7 +60,7 @@ namespace CustomNotes
                     }
 
                     NoteAssetLoader.selectedNote++;
-                    Logger.Log($"Switched To Note: {NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].NoteDescriptor.NoteName}");
+                    Logger.log.Info($"Switched to note '{NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].NoteDescriptor.NoteName}'");
                     CheckCustomNotesScoreDisable();
                 }
             }
@@ -124,7 +124,7 @@ namespace CustomNotes
             NoteAssetLoader.LoadCustomNotes();
             Patches.ApplyHarmonyPatches();
             SettingsUI.CreateMenu();
-            Logger.Log($"{PluginName} v.{PluginVersion} has been {msg}.", LogLevel.Notice);
+            Logger.log.Info($"{PluginName} v.{PluginVersion} has {msg}.");
         }
 
         private void Unload()

@@ -36,7 +36,7 @@ namespace CustomNotes
                 }
                 else
                 {
-                    Logger.Log("Something went wrong getting the AssetBundle!", LogLevel.Warning);
+                    Logger.log.Warn($"Something went wrong getting the AssetBundle for '{fileName}'!");
                 }
             }
             else

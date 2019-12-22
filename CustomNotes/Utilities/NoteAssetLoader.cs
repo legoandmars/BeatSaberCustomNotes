@@ -52,7 +52,7 @@ namespace CustomNotes.Utilities
                     customNoteFiles.Add(file.Split('\\', '/').Last());
                 }
 
-                Logger.Log($"Found {customNoteFiles.Count} note(s)", LogLevel.Debug);
+                Logger.log.Debug($"{customNoteFiles.Count} note(s) found.");
                 List<CustomNote> loadedNotes = new List<CustomNote>
                 {
                     new CustomNote("DefaultNotes"),
@@ -70,8 +70,8 @@ namespace CustomNotes.Utilities
                     }
                     catch (Exception ex)
                     {
-                        Logger.Log($"Failed to Load Custom Note with name \"{customNoteFile}\"", LogLevel.Warning);
-                        Logger.Log(ex, LogLevel.Warning);
+                        Logger.log.Warn($"Failed to Load Custom Note with name '{customNoteFile}'.");
+                        Logger.log.Warn(ex);
                     }
                 }
 

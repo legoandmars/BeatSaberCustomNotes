@@ -16,7 +16,6 @@ namespace CustomNotes
             Plugin.config.Value.lastNote = CurrentlySelectedNote;
 
             Plugin.configProvider.Store(Plugin.config.Value);
-            Logger.Log("Configuration saved!", LogLevel.Debug);
         }
     }
 }
