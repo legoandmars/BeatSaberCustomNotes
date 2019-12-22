@@ -7,88 +7,35 @@ using System.Linq;
 
 namespace CustomNotes.Utilities
 {
-    public static class NoteAssetLoader
+    public class NoteAssetLoader
     {
         public static bool IsLoaded { get; private set; }
-
-        internal static int selectedNote = 0;
-        internal static List<string> customNoteFiles = new List<string>();
-        internal static CustomNote[] customNotes;
-
-        internal static bool IsValidPath(string path, bool allowRelativePaths = false)
-        {
-            bool isValid;
-
-            try
-            {
-                if (allowRelativePaths)
-                {
-                    isValid = Path.IsPathRooted(path);
-                }
-                else
-                {
-                    string root = Path.GetPathRoot(path);
-                    isValid = string.IsNullOrEmpty(root.Trim(new char[] { '\\', '/' })) == false;
-                }
-            }
-            catch
-            {
-                isValid = false;
-            }
-
-            return isValid;
-        }
+        public static int SelectedNote { get; internal set; } = 0;
+        public static IEnumerable<CustomNote> CustomNoteObjects { get; private set; }
+        public static IEnumerable<string> CustomNoteFiles { get; private set; } = Enumerable.Empty<string>();
 
         internal static void LoadCustomNotes()
         {
             if (!IsLoaded)
             {
                 Directory.CreateDirectory(Plugin.PluginAssetPath);
-                List<string> files = Directory.GetFiles(Plugin.PluginAssetPath,
-                    "*.note", SearchOption.TopDirectoryOnly).Concat(Directory.GetFiles(Plugin.PluginAssetPath,
-                    "*.bloq", SearchOption.TopDirectoryOnly)).ToList();
 
-                foreach (string file in files)
-                {
-                    customNoteFiles.Add(file.Split('\\', '/').Last());
-                }
+                IEnumerable<string> noteFilter = new List<string> { "*.bloq", "*.note", };
+                CustomNoteFiles = Utils.GetFileNames(Plugin.PluginAssetPath, noteFilter, SearchOption.TopDirectoryOnly);
+                Logger.log.Debug($"{CustomNoteFiles.Count()} note(s) found.");
 
-                Logger.log.Debug($"{customNoteFiles.Count} note(s) found.");
-                List<CustomNote> loadedNotes = new List<CustomNote>
-                {
-                    new CustomNote("DefaultNotes"),
-                };
-
-                foreach (string customNoteFile in customNoteFiles)
-                {
-                    try
-                    {
-                        CustomNote newNote = new CustomNote(customNoteFile);
-                        if (newNote.AssetBundle != null)
-                        {
-                            loadedNotes.Add(newNote);
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.log.Warn($"Failed to Load Custom Note with name '{customNoteFile}'.");
-                        Logger.log.Warn(ex);
-                    }
-                }
-
-                customNotes = loadedNotes.ToArray();
+                CustomNoteObjects = LoadCustomNotes(CustomNoteFiles);
+                Logger.log.Debug($"{CustomNoteObjects.Count()} note(s) loaded.");
 
                 if (Configuration.CurrentlySelectedNote != null)
                 {
-                    int currentNoteCount = 0;
-                    foreach (CustomNote customNote in customNotes)
+                    int numberOfNotes = CustomNoteObjects.Count();
+                    for (int i = 0; i < numberOfNotes; i++)
                     {
-                        if (customNote.FileName == Configuration.CurrentlySelectedNote)
+                        if (CustomNoteObjects.ElementAt(i).FileName == Configuration.CurrentlySelectedNote)
                         {
-                            selectedNote = currentNoteCount;
+                            SelectedNote = i;
                         }
-
-                        currentNoteCount++;
                     }
                 }
 
@@ -96,6 +43,31 @@ namespace CustomNotes.Utilities
             }
         }
 
-        private static void InjectNotes(BeatmapObjectSpawnController spawnContoller, NoteController noteController) { }
+        private static IEnumerable<CustomNote> LoadCustomNotes(IEnumerable<string> customNoteFiles)
+        {
+            IList<CustomNote> customNotes = new List<CustomNote>
+            {
+                new CustomNote("DefaultNotes"),
+            };
+
+            foreach (string customNoteFile in customNoteFiles)
+            {
+                try
+                {
+                    CustomNote newNote = new CustomNote(customNoteFile);
+                    if (newNote.AssetBundle != null)
+                    {
+                        customNotes.Add(newNote);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.log.Warn($"Failed to Load Custom Note with name '{customNoteFile}'.");
+                    Logger.log.Warn(ex);
+                }
+            }
+
+            return customNotes;
+        }
     }
 }

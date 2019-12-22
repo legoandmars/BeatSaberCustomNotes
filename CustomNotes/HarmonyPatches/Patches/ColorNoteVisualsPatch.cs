@@ -2,6 +2,7 @@
 using CustomNotes.Utilities;
 using Harmony;
 using System;
+using System.Linq;
 using UnityEngine;
 
 namespace CustomNotes.HarmonyPatches
@@ -14,7 +15,7 @@ namespace CustomNotes.HarmonyPatches
         {
             try
             {
-                CustomNote activeNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote];
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
 
                 if (activeNote.FileName != "DefaultNotes")
                 {
@@ -60,7 +61,7 @@ namespace CustomNotes.HarmonyPatches
         {
             try
             {
-                CustomNote activeNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote];
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
 
                 if (activeNote.FileName != "DefaultNotes")
                 {
@@ -140,7 +141,7 @@ namespace CustomNotes.HarmonyPatches
         {
             try
             {
-                CustomNote activeNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote];
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
                 Transform child = __instance.gameObject.transform.Find("Mesh");
 
                 // Only instantiate a new CustomNote if one is not already attached to this object
@@ -167,7 +168,7 @@ namespace CustomNotes.HarmonyPatches
         {
             try
             {
-                CustomNote activeNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote];
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
 
                 if (activeNote.FileName != "DefaultNotes"
                     && activeNote.NoteBomb)

@@ -3,6 +3,7 @@ using BeatSaberMarkupLanguage.Components;
 using CustomNotes.Data;
 using CustomNotes.Utilities;
 using HMUI;
+using System.Linq;
 
 namespace CustomNotes.Settings.UI
 {
@@ -16,8 +17,8 @@ namespace CustomNotes.Settings.UI
         [UIAction("noteSelect")]
         public void Select(TableView tableView, int row)
         {
-            NoteAssetLoader.selectedNote = row;
-            Configuration.CurrentlySelectedNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].FileName;
+            NoteAssetLoader.SelectedNote = row;
+            Configuration.CurrentlySelectedNote = NoteAssetLoader.CustomNoteObjects.ElementAt(row).FileName;
         }
 
         protected override void DidDeactivate(DeactivationType deactivationType)
@@ -30,13 +31,13 @@ namespace CustomNotes.Settings.UI
         {
             customListTableData.data.Clear();
 
-            foreach (CustomNote note in NoteAssetLoader.customNotes)
+            foreach (CustomNote note in NoteAssetLoader.CustomNoteObjects)
             {
                 customListTableData.data.Add(new CustomListTableData.CustomCellInfo(note.NoteDescriptor.NoteName, note.NoteDescriptor.AuthorName, note.NoteDescriptor.Icon));
             }
 
             customListTableData.tableView.ReloadData();
-            int selectedNote = NoteAssetLoader.selectedNote;
+            int selectedNote = NoteAssetLoader.SelectedNote;
 
             customListTableData.tableView.ScrollToCellWithIdx(selectedNote, HMUI.TableViewScroller.ScrollPositionType.Beginning, false);
             customListTableData.tableView.SelectCellWithIdx(selectedNote); //(0, HMUI.TableViewScroller.ScrollPositionType.Beginning, false);

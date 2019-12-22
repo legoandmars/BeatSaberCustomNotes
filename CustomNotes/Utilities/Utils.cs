@@ -1,5 +1,8 @@
 ﻿using IPA.Loader;
 using IPA.Old;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEngine;
 
 namespace CustomNotes.Utilities
@@ -68,6 +71,64 @@ namespace CustomNotes.Utilities
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Validate path.
+        /// </summary>
+        /// <param name="path">Path to validate.</param>
+        /// <param name="allowRelativePaths">Allow relative paths.</param>
+        public static bool IsValidPath(string path, bool allowRelativePaths = false)
+        {
+            bool isValid;
+
+            try
+            {
+                if (allowRelativePaths)
+                {
+                    isValid = Path.IsPathRooted(path);
+                }
+                else
+                {
+                    string root = Path.GetPathRoot(path);
+                    isValid = !string.IsNullOrEmpty(root.Trim(new char[] { '\\', '/' }));
+                }
+            }
+            catch
+            {
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        /// <summary>
+        /// Gets every file matching the filter in a path.
+        /// </summary>
+        /// <param name="path">Directory to search in.</param>
+        /// <param name="filters">Pattern(s) to search for.</param>
+        /// <param name="searchOption">Search options.</param>
+        /// <param name="fullPath">Keep filepaths.</param>
+        public static IEnumerable<string> GetFileNames(string path, IEnumerable<string> filters, SearchOption searchOption, bool fullPath = false)
+        {
+            List<string> filePaths = new List<string>();
+            foreach (string filter in filters)
+            {
+                filePaths.AddRange(Directory.GetFiles(path, filter, searchOption));
+            }
+
+            if (fullPath)
+            {
+                return filePaths.Distinct();
+            }
+
+            IList<string> fileNames = new List<string>();
+            foreach (string filePath in filePaths)
+            {
+                fileNames.Add(Path.GetFileName(filePath));
+            }
+
+            return fileNames.Distinct();
         }
 
         /// <summary>

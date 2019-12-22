@@ -43,15 +43,18 @@ namespace CustomNotes
         {
             if (Input.GetKeyDown(KeyCode.N))
             {
-                if (NoteAssetLoader.customNoteFiles.Count != 1)
+                int noteCount = NoteAssetLoader.CustomNoteFiles.Count();
+                if (noteCount != 1)
                 {
-                    if (NoteAssetLoader.selectedNote >= NoteAssetLoader.customNotes.Length - 1)
+                    if (NoteAssetLoader.SelectedNote >= noteCount - 1)
                     {
-                        NoteAssetLoader.selectedNote = -1;
+                        NoteAssetLoader.SelectedNote = -1;
                     }
 
-                    NoteAssetLoader.selectedNote++;
-                    Logger.log.Info($"Switched to note '{NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].NoteDescriptor.NoteName}'");
+                    NoteAssetLoader.SelectedNote++;
+                    string noteName = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote).NoteDescriptor.NoteName;
+
+                    Logger.log.Info($"Switched to note '{noteName}'");
                     CheckCustomNotesScoreDisable();
                 }
             }
@@ -61,7 +64,7 @@ namespace CustomNotes
         {
             if (nextScene.name == "GameCore")
             {
-                CustomNote activeNote = NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote];
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
                 if (activeNote.NoteDescriptor.NoteName != "Default")
                 {
                     MaterialSwapper.GetMaterials();
@@ -130,7 +133,8 @@ namespace CustomNotes
         {
             if (SceneManager.GetActiveScene().name == "GameCore")
             {
-                if (NoteAssetLoader.customNotes[NoteAssetLoader.selectedNote].FileName != "DefaultNotes")
+                string fileName = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote).FileName;
+                if (fileName != "DefaultNotes")
                 {
                     if (BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.ghostNotes == true ||
                         BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows == true)
