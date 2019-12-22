@@ -3,7 +3,6 @@ CustomNotes adds the ability to swap out the default notes with custom ones in B
 
 # Installation Instructions
 * Download the latest version of CustomNotes from any current mod manager.
-* You can also manually install the mod by downloading the (latest?) prebuilt "CustomNotes.dll" from the "Releases Tab" and copying it into your Beat Saber plugins folder.
 
 To change which note model is used, simply select a different note in the Mod settings for CustomNotes in-game, or press the "N" key.
 
@@ -15,7 +14,8 @@ By switching to the default notes or turning off these modifiers, score submissi
 ## For developers
 
 ### Contributing to CustomNotes
-In order to build this project, please add your Beat Saber directory path to the `CustomNotes.csproj.user` file located in the project directory.
+In order to build this project, please create the file `CustomNotes.csproj.user` and add your Beat Saber directory path to it in the project directory.
+This file should not be uploaded to GitHub and is in the .gitignore.
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -27,7 +27,7 @@ In order to build this project, please add your Beat Saber directory path to the
 </Project>
 ```
 
-If you plan on adding any new dependencies which are located in the Beat Saber directory, it would be nice if you edited the paths to use `$(BeatSaberDir)` in `CustomNotes.csproj` like so to keep some consistency
+If you plan on adding any new dependencies which are located in the Beat Saber directory, it would be nice if you edited the paths to use `$(BeatSaberDir)` in `CustomNotes.csproj`
 
 ```xml
 ...
