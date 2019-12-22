@@ -81,7 +81,6 @@ namespace CustomNotes.Settings.UI
             if (!preview)
             {
                 preview = new GameObject();
-                preview.transform.Translate(1.8f, 1.2f, 1.8f);
                 preview.transform.Rotate(0.0f, 60.0f, 0.0f);
                 preview.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
             }
@@ -123,6 +122,9 @@ namespace CustomNotes.Settings.UI
 
         private void InitializePreviewNotes(CustomNote customNote, Transform transform)
         {
+            // Position previewer based on the CustomNote having a NoteBomb
+            preview.transform.position = customNote.NoteBomb ? new Vector3(1.8f, 1.2f, 1.8f) : new Vector3(1.9f, 1.2f, 1.6f);
+
             noteLeft = CreatePreviewNote(customNote.NoteLeft, transform, leftArrowPos);
             noteDotLeft = CreatePreviewNote(customNote.NoteDotLeft, transform, leftDotPos);
             noteRight = CreatePreviewNote(customNote.NoteRight, transform, rightArrowPos);
