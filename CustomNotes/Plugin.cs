@@ -34,10 +34,9 @@ namespace CustomNotes
             }
         }
 
-        public void OnApplicationStart() => Load();
-        public void OnApplicationQuit() => Unload();
-        public void OnEnable() => Load("enabled");
+        public void OnEnable() => Load();
         public void OnDisable() => Unload();
+        public void OnApplicationQuit() => Unload();
 
         public void OnUpdate()
         {
@@ -88,7 +87,7 @@ namespace CustomNotes
 
                     CheckCustomNotesScoreDisable();
                 }
-                else
+                else if (ScoreUtility.ScoreIsBlocked)
                 {
                     ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
                 }
@@ -100,25 +99,19 @@ namespace CustomNotes
             }
         }
 
-        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode)
-        {
-            if (scene.name == "MenuCore")
-            {
-                //    SettingsUI.CreateMenu();
-            }
-        }
-
+        public void OnApplicationStart() { }
+        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) { }
         public void OnSceneUnloaded(Scene scene) { }
         public void OnFixedUpdate() { }
 
-        private void Load(string msg = "started")
+        private void Load()
         {
             Configuration.Load();
-
             NoteAssetLoader.LoadCustomNotes();
             Patches.ApplyHarmonyPatches();
             SettingsUI.CreateMenu();
-            Logger.log.Info($"{PluginName} v.{PluginVersion} has {msg}.");
+
+            Logger.log.Info($"{PluginName} v.{PluginVersion} has started.");
         }
 
         private void Unload()
@@ -136,10 +129,14 @@ namespace CustomNotes
                 string fileName = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote).FileName;
                 if (fileName != "DefaultNotes")
                 {
-                    if (BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.ghostNotes == true ||
-                        BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows == true)
+                    if (BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.ghostNotes == true
+                        || BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows == true)
                     {
                         ScoreUtility.DisableScoreSubmission("ModifiersEnabled");
+                    }
+                    else
+                    {
+                        ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
                     }
                 }
             }
