@@ -40,6 +40,37 @@ namespace CustomNotes.Utilities
         }
 
         /// <summary>
+        /// Colorize a Note based on a ColorManager and CustomNote configuration
+        /// </summary>
+        /// <param name="colorManager">ColorManager</param>
+        /// <param name="noteType">Type of note</param>
+        /// <param name="colorStrength">Color strength</param>
+        /// <param name="noteObject">Note to colorize</param>
+        public static void ColorizeCustomNote(ColorManager colorManager, NoteType noteType, float colorStrength, GameObject noteObject)
+        {
+            if (!noteObject || !colorManager)
+            {
+                return;
+            }
+
+            Color noteColor = colorManager.ColorForNoteType(noteType) * colorStrength;
+            int numberOfChildren = noteObject.GetComponentsInChildren<Transform>().Length;
+
+            for (int i = 0; i < numberOfChildren; i++)
+            {
+                DisableNoteColorOnGameobject colorDisabled = noteObject.GetComponentsInChildren<Transform>()[i].GetComponent<DisableNoteColorOnGameobject>();
+                if (!colorDisabled)
+                {
+                    Renderer childRenderer = noteObject.GetComponentsInChildren<Transform>()[i].GetComponent<Renderer>();
+                    if (childRenderer)
+                    {
+                        childRenderer.material.SetColor("_Color", noteColor);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
         /// Check if a BSIPA plugin is enabled
         /// </summary>
         /// <param name="PluginName">Name or Id to search for</param>
