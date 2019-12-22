@@ -34,6 +34,7 @@
   <ItemGroup>
     <Compile Include="Settings\Configuration.cs" />
     <Compile Include="HarmonyPatches\HarmonyPatches.cs" />
+    <Compile Include="Settings\UI\NotesPreviewView.cs" />
     <Compile Include="Settings\UI\CustomNotesFlowCoordinator.cs" />
     <Compile Include="Utilities\MaterialSwapper.cs" />
     <Compile Include="Data\CustomNote.cs" />
@@ -109,6 +110,8 @@
     <EmbeddedResource Include="Resources\description.md" />
     <EmbeddedResource Include="Resources\icon.png" />
     <EmbeddedResource Include="Settings\UI\Views\noteList.bsml" />
+    <EmbeddedResource Include="Settings\UI\Views\notePreview.bsml" />
+    <EmbeddedResource Include="Resources\cn_arrowplaceholder.bloq" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

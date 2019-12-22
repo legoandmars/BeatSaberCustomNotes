@@ -3,6 +3,7 @@ using IPA.Old;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace CustomNotes.Utilities
@@ -12,28 +13,28 @@ namespace CustomNotes.Utilities
         /// <summary>
         /// Sets the active state of a GameObject.
         /// </summary>
-        /// <param name="gameObject"></param>
-        /// <param name="setActive">Desired state</param>
+        /// <param name="gameObject">GameObject.</param>
+        /// <param name="setActive">Desired state.</param>
         public static bool ActivateGameObject(GameObject gameObject, bool setActive) => ActivateGameObject(gameObject, setActive, null);
 
         /// <summary>
         /// Sets the active state of a primary GameObject and then sets the opposite active state for the secondary GameObject.
         /// </summary>
-        /// <param name="primary"></param>
-        /// <param name="setActive">Desired state</param>
-        /// <param name="secondary"></param>
-        public static bool ActivateGameObject(GameObject primary, bool setActive, GameObject secondary)
+        /// <param name="primaryObject">Primary GameObject.</param>
+        /// <param name="setActive">Desired state.</param>
+        /// <param name="secondaryObject">Secondary GameObject.</param>
+        public static bool ActivateGameObject(GameObject primaryObject, bool setActive, GameObject secondaryObject)
         {
-            if (primary)
+            if (primaryObject)
             {
-                if (primary.activeSelf != setActive)
+                if (primaryObject.activeSelf != setActive)
                 {
-                    primary.SetActive(setActive);
+                    primaryObject.SetActive(setActive);
                 }
 
-                if (secondary != null)
+                if (secondaryObject != null)
                 {
-                    return ActivateGameObject(secondary, !setActive);
+                    return ActivateGameObject(secondaryObject, !setActive);
                 }
 
                 return true;
@@ -71,6 +72,28 @@ namespace CustomNotes.Utilities
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Loads an embedded resource from the calling assembly
+        /// </summary>
+        /// <param name="resourcePath">Path to resource</param>
+        public static byte[] LoadFromResource(string resourcePath)
+        {
+            return GetResource(Assembly.GetCallingAssembly(), resourcePath);
+        }
+
+        /// <summary>
+        /// Loads an embedded resource from an assembly
+        /// </summary>
+        /// <param name="assembly">Assembly to load from</param>
+        /// <param name="resourcePath">Path to resource</param>
+        public static byte[] GetResource(Assembly assembly, string resourcePath)
+        {
+            Stream stream = assembly.GetManifestResourceStream(resourcePath);
+            byte[] data = new byte[stream.Length];
+            stream.Read(data, 0, (int)stream.Length);
+            return data;
         }
 
         /// <summary>
@@ -132,9 +155,9 @@ namespace CustomNotes.Utilities
         }
 
         /// <summary>
-        /// Check if a BSIPA plugin is enabled
+        /// Check if a BSIPA plugin is enabled.
         /// </summary>
-        /// <param name="PluginName">Name or Id to search for</param>
+        /// <param name="PluginName">Name or Id to search for.</param>
         public static bool IsPluginEnabled(string PluginName)
         {
             if (IsPluginPresent(PluginName))
@@ -155,23 +178,23 @@ namespace CustomNotes.Utilities
         }
 
         /// <summary>
-        /// Check if a plugin exists
+        /// Check if a plugin exists.
         /// </summary>
-        /// <param name="PluginName">Name or Id to search for</param>
+        /// <param name="PluginName">Name or Id to search for.</param>
         public static bool IsPluginPresent(string PluginName)
         {
             // Check in BSIPA
-            if (PluginManager.GetPlugin(PluginName) != null ||
-                PluginManager.GetPluginFromId(PluginName) != null)
+            if (PluginManager.GetPlugin(PluginName) != null
+                || PluginManager.GetPluginFromId(PluginName) != null)
             {
                 return true;
             }
 
 #pragma warning disable CS0618 // IPA is obsolete
             // Check in old IPA
-            foreach (IPlugin p in PluginManager.Plugins)
+            foreach (IPlugin plugin in PluginManager.Plugins)
             {
-                if (p.Name == PluginName)
+                if (plugin.Name == PluginName)
                 {
                     return true;
                 }

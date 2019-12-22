@@ -1,29 +1,53 @@
 ﻿using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
+using BeatSaberMarkupLanguage.ViewControllers;
 using CustomNotes.Data;
 using CustomNotes.Utilities;
 using HMUI;
+using System;
 using System.Linq;
+using UnityEngine;
 
 namespace CustomNotes.Settings.UI
 {
-    internal class NotesListView : BeatSaberMarkupLanguage.ViewControllers.BSMLResourceViewController
+    internal class NotesListView : BSMLResourceViewController
     {
         public override string ResourceName => "CustomNotes.Settings.UI.Views.noteList.bsml";
+
+        private bool isGeneratingPreview = false;
+        private GameObject preview;
+
+        // Notes
+        private GameObject noteLeft;
+        private GameObject noteDotLeft;
+        private GameObject noteRight;
+        private GameObject noteDotRight;
+        private GameObject noteBomb;
+
+        // NoteArrows
+        private CustomNote fakeNoteArrows = null;
+        private GameObject fakeLeftArrow;
+        private GameObject fakeLeftDot;
+        private GameObject fakeRightArrow;
+        private GameObject fakeRightDot;
+
+        // NotePositions (Local to the previewer)
+        private Vector3 leftDotPos = new Vector3(0.0f, 1.5f, 0.0f);
+        private Vector3 leftArrowPos = new Vector3(0.0f, 0.0f, 0.0f);
+        private Vector3 rightDotPos = new Vector3(1.5f, 1.5f, 0.0f);
+        private Vector3 rightArrowPos = new Vector3(1.5f, 0.0f, 0.0f);
+        private Vector3 bombPos = new Vector3(3.0f, 0.75f, 0.0f);
 
         [UIComponent("noteList")]
         public CustomListTableData customListTableData;
 
         [UIAction("noteSelect")]
-        public void Select(TableView tableView, int row)
+        public void Select(TableView _, int row)
         {
             NoteAssetLoader.SelectedNote = row;
             Configuration.CurrentlySelectedNote = NoteAssetLoader.CustomNoteObjects.ElementAt(row).FileName;
-        }
 
-        protected override void DidDeactivate(DeactivationType deactivationType)
-        {
-            base.DidDeactivate(deactivationType);
+            GenerateNotePreview(row);
         }
 
         [UIAction("#post-parse")]
@@ -33,14 +57,176 @@ namespace CustomNotes.Settings.UI
 
             foreach (CustomNote note in NoteAssetLoader.CustomNoteObjects)
             {
-                customListTableData.data.Add(new CustomListTableData.CustomCellInfo(note.NoteDescriptor.NoteName, note.NoteDescriptor.AuthorName, note.NoteDescriptor.Icon));
+                CustomListTableData.CustomCellInfo customCellInfo = new CustomListTableData.CustomCellInfo(note.NoteDescriptor.NoteName, note.NoteDescriptor.AuthorName, note.NoteDescriptor.Icon);
+                customListTableData.data.Add(customCellInfo);
             }
 
             customListTableData.tableView.ReloadData();
             int selectedNote = NoteAssetLoader.SelectedNote;
 
-            customListTableData.tableView.ScrollToCellWithIdx(selectedNote, HMUI.TableViewScroller.ScrollPositionType.Beginning, false);
-            customListTableData.tableView.SelectCellWithIdx(selectedNote); //(0, HMUI.TableViewScroller.ScrollPositionType.Beginning, false);
+            customListTableData.tableView.ScrollToCellWithIdx(selectedNote, TableViewScroller.ScrollPositionType.Beginning, false);
+            customListTableData.tableView.SelectCellWithIdx(selectedNote);
+        }
+
+        protected override void DidActivate(bool firstActivation, ActivationType type)
+        {
+            base.DidActivate(firstActivation, type);
+
+            if (fakeNoteArrows == null)
+            {
+                byte[] resource = Utils.LoadFromResource("CustomNotes.Resources.cn_arrowplaceholder.bloq");
+                fakeNoteArrows = new CustomNote(resource);
+            }
+
+            if (!preview)
+            {
+                preview = new GameObject();
+                preview.transform.Translate(1.8f, 1.2f, 1.8f);
+                preview.transform.Rotate(0.0f, 60.0f, 0.0f);
+                preview.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+            }
+
+            Select(customListTableData.tableView, NoteAssetLoader.SelectedNote);
+        }
+
+        protected override void DidDeactivate(DeactivationType deactivationType)
+        {
+            base.DidDeactivate(deactivationType);
+            ClearPreview();
+        }
+
+        private void GenerateNotePreview(int selectedNote)
+        {
+            if (!isGeneratingPreview)
+            {
+                try
+                {
+                    isGeneratingPreview = true;
+                    ClearNotes();
+
+                    CustomNote currentNote = NoteAssetLoader.CustomNoteObjects.ElementAt(selectedNote);
+                    if (currentNote != null)
+                    {
+                        InitializePreviewNotes(currentNote, preview.transform);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Logger.log.Error(ex);
+                }
+                finally
+                {
+                    isGeneratingPreview = false;
+                }
+            }
+        }
+
+        private void InitializePreviewNotes(CustomNote customNote, Transform transform)
+        {
+            noteLeft = CreatePreviewNote(customNote.NoteLeft, transform, leftArrowPos);
+            noteDotLeft = CreatePreviewNote(customNote.NoteDotLeft, transform, leftDotPos);
+            noteRight = CreatePreviewNote(customNote.NoteRight, transform, rightArrowPos);
+            noteDotRight = CreatePreviewNote(customNote.NoteDotRight, transform, rightDotPos);
+            noteBomb = CreatePreviewNote(customNote.NoteBomb, transform, bombPos);
+
+            // Fake the Note Dots if no CustomNote Dot existed in the CustomNote
+            if (noteLeft && !noteDotLeft)
+            {
+                noteDotLeft = CreatePreviewNote(customNote.NoteLeft, transform, leftDotPos);
+            }
+            if (noteRight && !noteDotRight)
+            {
+                noteDotRight = CreatePreviewNote(customNote.NoteRight, transform, rightDotPos);
+            }
+
+            // Add arrows to arrowless notes
+            if (!customNote.NoteDescriptor.DisableBaseNoteArrows && fakeNoteArrows != null)
+            {
+                if (noteLeft && noteRight)
+                {
+                    AddNoteArrows(fakeNoteArrows, transform);
+                }
+            }
+
+            if (customNote.NoteDescriptor.UsesNoteColor)
+            {
+                ColorManager colorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
+                if (colorManager)
+                {
+                    float colorStrength = customNote.NoteDescriptor.NoteColorStrength;
+
+                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteA, colorStrength, noteLeft);
+                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteB, colorStrength, noteRight);
+                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteB, colorStrength, noteDotRight);
+                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteA, colorStrength, noteDotLeft);
+                }
+                else
+                {
+                    Logger.log.Warn("Failed to locate a suitable ColorManager for the CustomNote preview");
+                }
+            }
+        }
+
+        private GameObject CreatePreviewNote(GameObject note, Transform transform, Vector3 localPosition)
+        {
+            GameObject noteObject = InstantiateGameObject(note, transform);
+            PositionPreviewNote(localPosition, noteObject);
+            return noteObject;
+        }
+
+        private void AddNoteArrows(CustomNote customNote, Transform transform)
+        {
+            fakeLeftArrow = CreatePreviewNote(customNote.NoteLeft, transform, leftArrowPos);
+            fakeLeftDot = CreatePreviewNote(customNote.NoteDotLeft, transform, leftDotPos);
+            fakeRightArrow = CreatePreviewNote(customNote.NoteRight, transform, rightArrowPos);
+            fakeRightDot = CreatePreviewNote(customNote.NoteDotRight, transform, rightDotPos);
+        }
+
+        private GameObject InstantiateGameObject(GameObject gameObject, Transform transform = null)
+        {
+            if (gameObject)
+            {
+                return transform ? Instantiate(gameObject, transform) : Instantiate(gameObject);
+            }
+
+            return null;
+        }
+
+        private void PositionPreviewNote(Vector3 vector, GameObject noteObject)
+        {
+            if (noteObject && vector != null)
+            {
+                noteObject.transform.localPosition = vector;
+            }
+        }
+
+        private void ClearPreview()
+        {
+            DestroyGameObject(ref preview);
+            ClearNotes();
+        }
+
+        private void ClearNotes()
+        {
+            DestroyGameObject(ref noteLeft);
+            DestroyGameObject(ref noteDotLeft);
+            DestroyGameObject(ref noteRight);
+            DestroyGameObject(ref noteDotRight);
+            DestroyGameObject(ref noteBomb);
+
+            DestroyGameObject(ref fakeLeftArrow);
+            DestroyGameObject(ref fakeLeftDot);
+            DestroyGameObject(ref fakeRightArrow);
+            DestroyGameObject(ref fakeRightDot);
+        }
+
+        private void DestroyGameObject(ref GameObject gameObject)
+        {
+            if (gameObject)
+            {
+                Destroy(gameObject);
+                gameObject = null;
+            }
         }
     }
 }

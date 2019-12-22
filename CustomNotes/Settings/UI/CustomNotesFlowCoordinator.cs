@@ -8,12 +8,14 @@ namespace CustomNotes.Settings.UI
     internal class CustomNotesFlowCoordinator : FlowCoordinator
     {
         private NotesListView notesListView;
+        private NotesPreviewView notesPreviewView;
 
         public void Awake()
         {
             if (notesListView == null)
             {
                 notesListView = BeatSaberUI.CreateViewController<NotesListView>();
+                notesPreviewView = BeatSaberUI.CreateViewController<NotesPreviewView>();
             }
         }
 
@@ -25,7 +27,7 @@ namespace CustomNotes.Settings.UI
                 {
                     title = "Custom Notes";
                     showBackButton = true;
-                    ProvideInitialViewControllers(notesListView, null, null);
+                    ProvideInitialViewControllers(notesListView, null, notesPreviewView);
                 }
             }
             catch (Exception ex)
