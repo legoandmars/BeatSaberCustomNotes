@@ -1,6 +1,4 @@
-﻿using LogLevel = IPA.Logging.Logger.Level;
-
-namespace CustomNotes
+﻿namespace CustomNotes
 {
     internal static class Configuration
     {

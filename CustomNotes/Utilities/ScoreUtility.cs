@@ -1,22 +1,22 @@
-﻿using System.Collections.Generic;
-using BS_Utils.Gameplay;
-using LogLevel = IPA.Logging.Logger.Level;
+﻿using BS_Utils.Gameplay;
+using System.Collections.Generic;
 
 namespace CustomNotes.Utilities
 {
-    internal class ScoreUtility
+    public class ScoreUtility
     {
-        private static List<string> ScoreBlockList = new List<string>();
-        private static bool ScoreIsBlocked = false;
-        private static object acquireLock = new object();
+        private static readonly object acquireLock = new object();
+        private static readonly IList<string> scoreBlockList = new List<string>();
 
-        internal static void DisableScoreSubmission(string BlockedBy)
+        public static bool ScoreIsBlocked { get; private set; } = false;
+
+        internal static void DisableScoreSubmission(string blockedBy)
         {
             lock (acquireLock)
             {
-                if (!ScoreBlockList.Contains(BlockedBy))
+                if (!scoreBlockList.Contains(blockedBy))
                 {
-                    ScoreBlockList.Add(BlockedBy);
+                    scoreBlockList.Add(blockedBy);
                 }
 
                 if (!ScoreIsBlocked)
@@ -28,16 +28,16 @@ namespace CustomNotes.Utilities
             }
         }
 
-        internal static void EnableScoreSubmission(string BlockedBy)
+        internal static void EnableScoreSubmission(string blockedBy)
         {
             lock (acquireLock)
             {
-                if (ScoreBlockList.Contains(BlockedBy))
+                if (scoreBlockList.Contains(blockedBy))
                 {
-                    ScoreBlockList.Remove(BlockedBy);
+                    scoreBlockList.Remove(blockedBy);
                 }
 
-                if (ScoreIsBlocked && ScoreBlockList.Count == 0)
+                if (ScoreIsBlocked && scoreBlockList.Count == 0)
                 {
                     ScoreSubmission.RemoveProlongedDisable(Plugin.PluginName);
                     ScoreIsBlocked = false;
@@ -60,9 +60,9 @@ namespace CustomNotes.Utilities
                     Logger.log.Info("Plugin is exiting, ScoreSubmission has been re-enabled.");
                 }
 
-                if (ScoreBlockList.Count != 0)
+                if (scoreBlockList.Count != 0)
                 {
-                    ScoreBlockList.Clear();
+                    scoreBlockList.Clear();
                 }
             }
         }

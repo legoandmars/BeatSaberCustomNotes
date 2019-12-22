@@ -11,7 +11,6 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using IPALogger = IPA.Logging.Logger;
-using LogLevel = IPA.Logging.Logger.Level;
 
 namespace CustomNotes
 {
@@ -110,7 +109,7 @@ namespace CustomNotes
         {
             if (scene.name == "MenuCore")
             {
-            //    SettingsUI.CreateMenu();
+                //    SettingsUI.CreateMenu();
             }
         }
 

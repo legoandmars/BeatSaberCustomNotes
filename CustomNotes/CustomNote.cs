@@ -1,6 +1,5 @@
 ﻿using System.IO;
 using UnityEngine;
-using LogLevel = IPA.Logging.Logger.Level;
 
 namespace CustomNotes
 {
