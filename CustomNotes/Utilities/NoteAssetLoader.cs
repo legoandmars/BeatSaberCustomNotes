@@ -11,7 +11,7 @@ namespace CustomNotes.Utilities
     {
         public static bool IsLoaded { get; private set; }
         public static int SelectedNote { get; internal set; } = 0;
-        public static IEnumerable<CustomNote> CustomNoteObjects { get; private set; }
+        public static IList<CustomNote> CustomNoteObjects { get; private set; }
         public static IEnumerable<string> CustomNoteFiles { get; private set; } = Enumerable.Empty<string>();
 
         internal static void LoadCustomNotes()
@@ -25,14 +25,14 @@ namespace CustomNotes.Utilities
                 Logger.log.Debug($"{CustomNoteFiles.Count()} note(s) found.");
 
                 CustomNoteObjects = LoadCustomNotes(CustomNoteFiles);
-                Logger.log.Debug($"{CustomNoteObjects.Count()} note(s) loaded.");
+                Logger.log.Debug($"{CustomNoteObjects.Count} note(s) loaded.");
 
                 if (Configuration.CurrentlySelectedNote != null)
                 {
-                    int numberOfNotes = CustomNoteObjects.Count();
+                    int numberOfNotes = CustomNoteObjects.Count;
                     for (int i = 0; i < numberOfNotes; i++)
                     {
-                        if (CustomNoteObjects.ElementAt(i).FileName == Configuration.CurrentlySelectedNote)
+                        if (CustomNoteObjects[i].FileName == Configuration.CurrentlySelectedNote)
                         {
                             SelectedNote = i;
                         }
@@ -43,7 +43,7 @@ namespace CustomNotes.Utilities
             }
         }
 
-        private static IEnumerable<CustomNote> LoadCustomNotes(IEnumerable<string> customNoteFiles)
+        private static IList<CustomNote> LoadCustomNotes(IEnumerable<string> customNoteFiles)
         {
             IList<CustomNote> customNotes = new List<CustomNote>
             {

@@ -134,10 +134,10 @@ namespace CustomNotes.Utilities
         /// <param name="fullPath">Keep filepaths.</param>
         public static IEnumerable<string> GetFileNames(string path, IEnumerable<string> filters, SearchOption searchOption, bool fullPath = false)
         {
-            List<string> filePaths = new List<string>();
+            IEnumerable<string> filePaths = Enumerable.Empty<string>();
             foreach (string filter in filters)
             {
-                filePaths.AddRange(Directory.GetFiles(path, filter, searchOption));
+                filePaths = filePaths.Union(Directory.GetFiles(path, filter, searchOption));
             }
 
             if (fullPath)
@@ -148,7 +148,10 @@ namespace CustomNotes.Utilities
             IList<string> fileNames = new List<string>();
             foreach (string filePath in filePaths)
             {
-                fileNames.Add(Path.GetFileName(filePath));
+                if (!fileNames.Contains(filePath))
+                {
+                    fileNames.Add(Path.GetFileName(filePath));
+                }
             }
 
             return fileNames.Distinct();

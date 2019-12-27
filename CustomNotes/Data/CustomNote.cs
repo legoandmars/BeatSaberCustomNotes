@@ -21,22 +21,29 @@ namespace CustomNotes.Data
 
             if (fileName != "DefaultNotes")
             {
-                AssetBundle = AssetBundle.LoadFromFile(Path.Combine(Plugin.PluginAssetPath, fileName));
-
-                if (AssetBundle != null)
+                try
                 {
+                    AssetBundle = AssetBundle.LoadFromFile(Path.Combine(Plugin.PluginAssetPath, fileName));
                     GameObject note = AssetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
 
-                    NoteDescriptor = note?.GetComponent<NoteDescriptor>();
+                    NoteDescriptor = note.GetComponent<NoteDescriptor>();
                     NoteLeft = note.transform.Find("NoteLeft").gameObject;
                     NoteRight = note.transform.Find("NoteRight").gameObject;
                     NoteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
                     NoteDotRight = note.transform.Find("NoteDotRight")?.gameObject;
                     NoteBomb = note.transform.Find("NoteBomb")?.gameObject;
                 }
-                else
+                catch
                 {
-                    Logger.log.Warn($"Something went wrong getting the AssetBundle for '{fileName}'!");
+                    Logger.log.Warn($"Something went wrong getting the AssetBundle for '{FileName}'!");
+
+                    NoteDescriptor = new NoteDescriptor
+                    {
+                        NoteName = "Invalid Note (Delete it!)",
+                        AuthorName = FileName,
+                    };
+
+                    FileName = "DefaultNotes";
                 }
             }
             else
@@ -53,24 +60,31 @@ namespace CustomNotes.Data
         {
             if (noteObject != null)
             {
-                AssetBundle = AssetBundle.LoadFromMemory(noteObject);
-
-                if (AssetBundle != null)
+                try
                 {
+                    AssetBundle = AssetBundle.LoadFromMemory(noteObject);
                     GameObject note = AssetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
                     FileName = note.name;
 
-                    NoteDescriptor = note?.GetComponent<NoteDescriptor>();
+                    NoteDescriptor = note.GetComponent<NoteDescriptor>();
                     NoteLeft = note.transform.Find("NoteLeft").gameObject;
                     NoteRight = note.transform.Find("NoteRight").gameObject;
                     NoteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
                     NoteDotRight = note.transform.Find("NoteDotRight")?.gameObject;
                     NoteBomb = note.transform.Find("NoteBomb")?.gameObject;
                 }
-                else
+                catch (Exception ex)
                 {
-                    FileName = "Invalid";
                     Logger.log.Warn($"Something went wrong getting the AssetBundle for resource!");
+                    Logger.log.Warn(ex);
+
+                    NoteDescriptor = new NoteDescriptor
+                    {
+                        NoteName = "Internal Error (Report it!)",
+                        AuthorName = FileName,
+                    };
+
+                    FileName = "DefaultNotes";
                 }
             }
             else

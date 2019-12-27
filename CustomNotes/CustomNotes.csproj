@@ -38,9 +38,9 @@
     <Compile Include="Settings\UI\CustomNotesFlowCoordinator.cs" />
     <Compile Include="Utilities\MaterialSwapper.cs" />
     <Compile Include="Data\CustomNote.cs" />
-    <Compile Include="Data\DisableNoteColorOnGameobject.cs" />
+    <Compile Include="Data\NoteExtensions\DisableNoteColorOnGameobject.cs" />
     <Compile Include="HarmonyPatches\Patches\ColorNoteVisualsPatch.cs" />
-    <Compile Include="Data\NoteDescriptor.cs" />
+    <Compile Include="Data\NoteExtensions\NoteDescriptor.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Settings\Utilities\PluginConfig.cs" />

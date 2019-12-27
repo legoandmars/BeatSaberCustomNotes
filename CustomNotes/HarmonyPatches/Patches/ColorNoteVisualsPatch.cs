@@ -2,7 +2,6 @@
 using CustomNotes.Utilities;
 using Harmony;
 using System;
-using System.Linq;
 using UnityEngine;
 
 namespace CustomNotes.HarmonyPatches
@@ -15,7 +14,7 @@ namespace CustomNotes.HarmonyPatches
         {
             try
             {
-                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
 
                 if (activeNote.FileName != "DefaultNotes")
                 {
@@ -39,8 +38,6 @@ namespace CustomNotes.HarmonyPatches
 
                     if (customNote != null)
                     {
-                        Utils.ColorizeCustomNote(____colorManager, noteController.noteData.noteType, activeNote.NoteDescriptor.NoteColorStrength, customNote);
-
                         // Custom Note of type Arrow/Dot not spawned yet for new default note object
                         GameObject fakeMesh = UnityEngine.Object.Instantiate(customNote);
                         fakeMesh.name = name;
@@ -48,6 +45,8 @@ namespace CustomNotes.HarmonyPatches
                         fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
                         fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                         fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
+
+                        Utils.ColorizeCustomNote(____colorManager, noteController.noteData.noteType, activeNote.NoteDescriptor.NoteColorStrength, fakeMesh);
                     }
                 }
             }
@@ -61,7 +60,7 @@ namespace CustomNotes.HarmonyPatches
         {
             try
             {
-                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
 
                 if (activeNote.FileName != "DefaultNotes")
                 {
@@ -141,7 +140,7 @@ namespace CustomNotes.HarmonyPatches
         {
             try
             {
-                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
                 Transform child = __instance.gameObject.transform.Find("Mesh");
 
                 // Only instantiate a new CustomNote if one is not already attached to this object
@@ -168,7 +167,7 @@ namespace CustomNotes.HarmonyPatches
         {
             try
             {
-                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
 
                 if (activeNote.FileName != "DefaultNotes"
                     && activeNote.NoteBomb)

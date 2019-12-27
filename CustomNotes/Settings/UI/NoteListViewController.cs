@@ -45,7 +45,7 @@ namespace CustomNotes.Settings.UI
         public void Select(TableView _, int row)
         {
             NoteAssetLoader.SelectedNote = row;
-            Configuration.CurrentlySelectedNote = NoteAssetLoader.CustomNoteObjects.ElementAt(row).FileName;
+            Configuration.CurrentlySelectedNote = NoteAssetLoader.CustomNoteObjects[row].FileName;
 
             GenerateNotePreview(row);
         }
@@ -103,7 +103,7 @@ namespace CustomNotes.Settings.UI
                     isGeneratingPreview = true;
                     ClearNotes();
 
-                    CustomNote currentNote = NoteAssetLoader.CustomNoteObjects.ElementAt(selectedNote);
+                    CustomNote currentNote = NoteAssetLoader.CustomNoteObjects[selectedNote];
                     if (currentNote != null)
                     {
                         InitializePreviewNotes(currentNote, preview.transform);

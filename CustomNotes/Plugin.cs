@@ -17,8 +17,6 @@ namespace CustomNotes
 {
     public class Plugin : IBeatSaberPlugin, IDisablablePlugin
     {
-        private static ColorManager ColorManager;
-
         public static string PluginName => "CustomNotes";
         public static SemVer.Version PluginVersion { get; private set; } = new SemVer.Version("0.0.0"); // Default
         public static string PluginAssetPath => Path.Combine(BeatSaber.InstallPath, "CustomNotes");
@@ -51,7 +49,7 @@ namespace CustomNotes
                     }
 
                     NoteAssetLoader.SelectedNote++;
-                    string noteName = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote).NoteDescriptor.NoteName;
+                    string noteName = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote].NoteDescriptor.NoteName;
 
                     Logger.log.Info($"Switched to note '{noteName}'");
                     CheckCustomNotesScoreDisable();
@@ -63,7 +61,7 @@ namespace CustomNotes
         {
             if (nextScene.name == "GameCore")
             {
-                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote);
+                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
                 if (activeNote.NoteDescriptor.NoteName != "Default")
                 {
                     MaterialSwapper.GetMaterials();
@@ -90,11 +88,6 @@ namespace CustomNotes
                 else if (ScoreUtility.ScoreIsBlocked)
                 {
                     ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
-                }
-
-                if (ColorManager == null)
-                {
-                    ColorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
                 }
             }
         }
