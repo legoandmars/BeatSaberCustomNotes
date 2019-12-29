@@ -148,9 +148,10 @@ namespace CustomNotes.Utilities
             IList<string> fileNames = new List<string>();
             foreach (string filePath in filePaths)
             {
-                if (!fileNames.Contains(filePath))
+                string fileName = Path.GetFileName(filePath);
+                if (!fileNames.Contains(fileName))
                 {
-                    fileNames.Add(Path.GetFileName(filePath));
+                    fileNames.Add(fileName);
                 }
             }
 
