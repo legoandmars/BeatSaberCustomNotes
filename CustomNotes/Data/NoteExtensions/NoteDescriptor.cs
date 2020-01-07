@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 
+// Class has to be in this namespace due to compatibility
 namespace CustomNotes
 {
     public class NoteDescriptor : MonoBehaviour

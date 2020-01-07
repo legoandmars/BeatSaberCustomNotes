@@ -1,36 +1,37 @@
 ﻿using Harmony;
+using System.Reflection;
 
 namespace CustomNotes.HarmonyPatches
 {
     /// <summary>
     /// Apply and remove all of our Harmony patches through this class
     /// </summary>
-    internal class Patches
+    public class Patches
     {
-        internal static bool IsPatched { get; private set; }
+        private static HarmonyInstance instance;
 
-        private static HarmonyInstance Instance;
-        private static string InstanceId = "com.legoandmars.beatsaber.customnotes";
+        public static bool IsPatched { get; private set; }
+        public const string InstanceId = "com.legoandmars.beatsaber.customnotes";
 
         internal static void ApplyHarmonyPatches()
         {
             if (!IsPatched)
             {
-                if (Instance == null)
+                if (instance == null)
                 {
-                    Instance = HarmonyInstance.Create(InstanceId);
+                    instance = HarmonyInstance.Create(InstanceId);
                 }
 
-                Instance.PatchAll(System.Reflection.Assembly.GetExecutingAssembly());
+                instance.PatchAll(Assembly.GetExecutingAssembly());
                 IsPatched = true;
             }
         }
 
         internal static void RemoveHarmonyPatches()
         {
-            if (Instance != null && IsPatched)
+            if (instance != null && IsPatched)
             {
-                Instance.UnpatchAll(InstanceId);
+                instance.UnpatchAll(InstanceId);
                 IsPatched = false;
             }
         }

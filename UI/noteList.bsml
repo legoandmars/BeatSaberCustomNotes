@@ -1,5 +1,0 @@
-﻿<vertical>
-  <page-button event-click='noteList#PageUp' direction='Up'></page-button>
-  <list id='noteList' expand-cell='true' select-cell='noteSelect'></list>
-  <page-button event-click='noteList#PageDown' direction='Down'></page-button>
-</vertical>

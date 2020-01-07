@@ -1,10 +1,11 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace CustomNotes.Utilities
 {
     internal class MaterialSwapper
     {
-        public static Material[] AllMaterials { get; private set; }
+        public static IEnumerable<Material> AllMaterials { get; private set; }
 
         public static void GetMaterials()
         {
@@ -36,7 +37,8 @@ namespace CustomNotes.Utilities
 
         public static void ReplaceAllMaterialsForGameObjectChildren(GameObject gameObject, Material material, string materialToReplaceName = "")
         {
-            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>(true))
+            IEnumerable<Renderer> renderers = gameObject.GetComponentsInChildren<Renderer>(true);
+            foreach (Renderer renderer in renderers)
             {
                 ReplaceAllMaterialsForGameObject(renderer.gameObject, material, materialToReplaceName);
             }

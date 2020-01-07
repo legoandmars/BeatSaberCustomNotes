@@ -1,35 +1,34 @@
-﻿using IPA.Utilities;
+﻿using BeatSaberMarkupLanguage;
 using HMUI;
+using IPA.Utilities;
 using System;
-using BeatSaberMarkupLanguage;
-namespace CustomNotes.UI
+
+namespace CustomNotes.Settings.UI
 {
-    class CustomNotesFlowCoordinator : FlowCoordinator
+    internal class CustomNotesFlowCoordinator : FlowCoordinator
     {
-        private NotesListView _notesListView;
+        private NotesListView notesListView;
+        private NotesPreviewView notesPreviewView;
+
         public void Awake()
         {
-            if (_notesListView == null)
+            if (notesListView == null)
             {
-                _notesListView = BeatSaberUI.CreateViewController<NotesListView>();
+                notesListView = BeatSaberUI.CreateViewController<NotesListView>();
+                notesPreviewView = BeatSaberUI.CreateViewController<NotesPreviewView>();
             }
         }
+
         protected override void DidActivate(bool firstActivation, ActivationType activationType)
         {
             try
             {
                 if (firstActivation)
                 {
-
                     title = "Custom Notes";
                     showBackButton = true;
-                    ProvideInitialViewControllers(_notesListView);
+                    ProvideInitialViewControllers(notesListView, null, notesPreviewView);
                 }
-                if (activationType == ActivationType.AddedToHierarchy)
-                {
-
-                }
-
             }
             catch (Exception ex)
             {
@@ -39,10 +38,9 @@ namespace CustomNotes.UI
 
         protected override void BackButtonWasPressed(ViewController topViewController)
         {
-            // dismiss ourselves
-            var mainFlow = BeatSaberMarkupLanguage.BeatSaberUI.MainFlowCoordinator;
+            // Dismiss ourselves
+            MainFlowCoordinator mainFlow = BeatSaberUI.MainFlowCoordinator;
             mainFlow.InvokePrivateMethod("DismissFlowCoordinator", this, null, false);
         }
     }
-
 }

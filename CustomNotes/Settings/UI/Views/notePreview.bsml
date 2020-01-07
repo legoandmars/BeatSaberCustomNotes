@@ -1,0 +1,5 @@
+﻿<vertical child-control-height='false'>
+  <horizontal bg='panel-top' pad-left='10' pad-right='10' horizontal-fit='PreferredSize'>
+    <text text='Notes Preview' align='Center' font-size='10' />
+  </horizontal>
+</vertical>
