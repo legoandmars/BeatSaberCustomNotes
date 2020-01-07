@@ -8,7 +8,6 @@ using IPA.Config;
 using IPA.Loader;
 using IPA.Utilities;
 using System.IO;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using IPALogger = IPA.Logging.Logger;
@@ -40,7 +39,7 @@ namespace CustomNotes
         {
             if (Input.GetKeyDown(KeyCode.N))
             {
-                int noteCount = NoteAssetLoader.CustomNoteFiles.Count();
+                int noteCount = NoteAssetLoader.CustomNoteObjects.Count;
                 if (noteCount != 1)
                 {
                     if (NoteAssetLoader.SelectedNote >= noteCount - 1)
@@ -62,7 +61,7 @@ namespace CustomNotes
             if (nextScene.name == "GameCore")
             {
                 CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
-                if (activeNote.NoteDescriptor.NoteName != "Default")
+                if (activeNote.FileName != "DefaultNotes")
                 {
                     MaterialSwapper.GetMaterials();
                     MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteLeft);
@@ -119,7 +118,7 @@ namespace CustomNotes
         {
             if (SceneManager.GetActiveScene().name == "GameCore")
             {
-                string fileName = NoteAssetLoader.CustomNoteObjects.ElementAt(NoteAssetLoader.SelectedNote).FileName;
+                string fileName = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote].FileName;
                 if (fileName != "DefaultNotes")
                 {
                     if (BS_Utils.Plugin.LevelData.GameplayCoreSceneSetupData.gameplayModifiers.ghostNotes == true

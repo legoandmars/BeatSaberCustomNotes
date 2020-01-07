@@ -21,7 +21,7 @@ namespace CustomNotes.Utilities
                 Directory.CreateDirectory(Plugin.PluginAssetPath);
 
                 IEnumerable<string> noteFilter = new List<string> { "*.bloq", "*.note", };
-                CustomNoteFiles = Utils.GetFileNames(Plugin.PluginAssetPath, noteFilter, SearchOption.TopDirectoryOnly);
+                CustomNoteFiles = Utils.GetFileNames(Plugin.PluginAssetPath, noteFilter, SearchOption.AllDirectories, true);
                 Logger.log.Debug($"{CustomNoteFiles.Count()} note(s) found.");
 
                 CustomNoteObjects = LoadCustomNotes(CustomNoteFiles);

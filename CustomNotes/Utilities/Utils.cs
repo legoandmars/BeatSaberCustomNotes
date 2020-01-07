@@ -58,14 +58,14 @@ namespace CustomNotes.Utilities
             }
 
             Color noteColor = colorManager.ColorForNoteType(noteType) * colorStrength;
-            int numberOfChildren = noteObject.GetComponentsInChildren<Transform>().Length;
 
-            for (int i = 0; i < numberOfChildren; i++)
+            IEnumerable<Transform> childTransforms = noteObject.GetComponentsInChildren<Transform>();
+            foreach (Transform childTransform in childTransforms)
             {
-                DisableNoteColorOnGameobject colorDisabled = noteObject.GetComponentsInChildren<Transform>()[i].GetComponent<DisableNoteColorOnGameobject>();
+                DisableNoteColorOnGameobject colorDisabled = childTransform.GetComponent<DisableNoteColorOnGameobject>();
                 if (!colorDisabled)
                 {
-                    Renderer childRenderer = noteObject.GetComponentsInChildren<Transform>()[i].GetComponent<Renderer>();
+                    Renderer childRenderer = childTransform.GetComponent<Renderer>();
                     if (childRenderer)
                     {
                         childRenderer.material.SetColor("_Color", noteColor);
@@ -131,31 +131,36 @@ namespace CustomNotes.Utilities
         /// <param name="path">Directory to search in.</param>
         /// <param name="filters">Pattern(s) to search for.</param>
         /// <param name="searchOption">Search options.</param>
-        /// <param name="fullPath">Keep filepaths.</param>
-        public static IEnumerable<string> GetFileNames(string path, IEnumerable<string> filters, SearchOption searchOption, bool fullPath = false)
+        /// <param name="returnShortPath">Remove path from filepaths.</param>
+        public static IEnumerable<string> GetFileNames(string path, IEnumerable<string> filters, SearchOption searchOption, bool returnShortPath = false)
         {
-            IEnumerable<string> filePaths = Enumerable.Empty<string>();
+            IList<string> filePaths = new List<string>();
+
             foreach (string filter in filters)
             {
-                filePaths = filePaths.Union(Directory.GetFiles(path, filter, searchOption));
-            }
-
-            if (fullPath)
-            {
-                return filePaths.Distinct();
-            }
-
-            IList<string> fileNames = new List<string>();
-            foreach (string filePath in filePaths)
-            {
-                string fileName = Path.GetFileName(filePath);
-                if (!fileNames.Contains(fileName))
+                if (returnShortPath)
                 {
-                    fileNames.Add(fileName);
+                    foreach (string directoryFile in Directory.GetFiles(path, filter, searchOption))
+                    {
+                        string filePath = directoryFile.Replace(path, "");
+                        if (filePath.StartsWith(@"\") && filePath.Length > 0)
+                        {
+                            filePath = filePath.Substring(1, filePath.Length - 1);
+                        }
+
+                        if (!string.IsNullOrWhiteSpace(filePath) && !filePaths.Contains(filePath))
+                        {
+                            filePaths.Add(filePath);
+                        }
+                    }
+                }
+                else
+                {
+                    filePaths = filePaths.Union(Directory.GetFiles(path, filter, searchOption)).ToList();
                 }
             }
 
-            return fileNames.Distinct();
+            return filePaths.Distinct();
         }
 
         /// <summary>
