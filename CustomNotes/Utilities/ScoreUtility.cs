@@ -5,18 +5,17 @@ namespace CustomNotes.Utilities
 {
     public class ScoreUtility
     {
-        private static readonly object acquireLock = new object();
         private static readonly IList<string> scoreBlockList = new List<string>();
 
         public static bool ScoreIsBlocked { get; private set; } = false;
 
-        internal static void DisableScoreSubmission(string blockedBy)
+        internal static void DisableScoreSubmission(string reason)
         {
-            lock (acquireLock)
+            lock (scoreBlockList)
             {
-                if (!scoreBlockList.Contains(blockedBy))
+                if (!scoreBlockList.Contains(reason))
                 {
-                    scoreBlockList.Add(blockedBy);
+                    scoreBlockList.Add(reason);
                 }
 
                 if (!ScoreIsBlocked)
@@ -28,13 +27,13 @@ namespace CustomNotes.Utilities
             }
         }
 
-        internal static void EnableScoreSubmission(string blockedBy)
+        internal static void EnableScoreSubmission(string reason)
         {
-            lock (acquireLock)
+            lock (scoreBlockList)
             {
-                if (scoreBlockList.Contains(blockedBy))
+                if (scoreBlockList.Contains(reason))
                 {
-                    scoreBlockList.Remove(blockedBy);
+                    scoreBlockList.Remove(reason);
                 }
 
                 if (ScoreIsBlocked && scoreBlockList.Count == 0)
@@ -51,13 +50,13 @@ namespace CustomNotes.Utilities
         /// </summary>
         internal static void Cleanup()
         {
-            lock (acquireLock)
+            lock (scoreBlockList)
             {
                 if (ScoreIsBlocked)
                 {
+                    Logger.log.Info("Plugin is exiting, ScoreSubmission has been re-enabled.");
                     ScoreSubmission.RemoveProlongedDisable(Plugin.PluginName);
                     ScoreIsBlocked = false;
-                    Logger.log.Info("Plugin is exiting, ScoreSubmission has been re-enabled.");
                 }
 
                 if (scoreBlockList.Count != 0)

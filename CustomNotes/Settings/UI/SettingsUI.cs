@@ -6,7 +6,7 @@ namespace CustomNotes.Settings.UI
 {
     internal class SettingsUI
     {
-        public static CustomNotesFlowCoordinator _notesFlowCoordinator;
+        public static NotesFlowCoordinator _notesFlowCoordinator;
         public static bool created = false;
 
         public static void CreateMenu()
@@ -24,7 +24,7 @@ namespace CustomNotes.Settings.UI
         {
             if (_notesFlowCoordinator == null)
             {
-                _notesFlowCoordinator = BeatSaberUI.CreateFlowCoordinator<CustomNotesFlowCoordinator>();
+                _notesFlowCoordinator = BeatSaberUI.CreateFlowCoordinator<NotesFlowCoordinator>();
             }
 
             BeatSaberUI.MainFlowCoordinator.InvokeMethod("PresentFlowCoordinator", _notesFlowCoordinator, null, false, false);

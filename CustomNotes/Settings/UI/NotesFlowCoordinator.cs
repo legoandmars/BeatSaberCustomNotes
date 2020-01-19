@@ -5,17 +5,17 @@ using System;
 
 namespace CustomNotes.Settings.UI
 {
-    internal class CustomNotesFlowCoordinator : FlowCoordinator
+    internal class NotesFlowCoordinator : FlowCoordinator
     {
         private NotesListView notesListView;
-        private NotesPreviewView notesPreviewView;
+        private NotePreviewView notesPreviewView;
 
         public void Awake()
         {
             if (notesListView == null)
             {
                 notesListView = BeatSaberUI.CreateViewController<NotesListView>();
-                notesPreviewView = BeatSaberUI.CreateViewController<NotesPreviewView>();
+                notesPreviewView = BeatSaberUI.CreateViewController<NotePreviewView>();
             }
         }
 

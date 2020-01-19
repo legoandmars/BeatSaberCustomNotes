@@ -8,7 +8,7 @@ namespace CustomNotes.Data
     {
         public string FileName { get; }
         public AssetBundle AssetBundle { get; }
-        public NoteDescriptor NoteDescriptor { get; }
+        public NoteDescriptor Descriptor { get; }
         public GameObject NoteLeft { get; }
         public GameObject NoteRight { get; }
         public GameObject NoteDotLeft { get; }
@@ -26,7 +26,7 @@ namespace CustomNotes.Data
                     AssetBundle = AssetBundle.LoadFromFile(Path.Combine(Plugin.PluginAssetPath, fileName));
                     GameObject note = AssetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
 
-                    NoteDescriptor = note.GetComponent<NoteDescriptor>();
+                    Descriptor = note.GetComponent<NoteDescriptor>();
                     NoteLeft = note.transform.Find("NoteLeft").gameObject;
                     NoteRight = note.transform.Find("NoteRight").gameObject;
                     NoteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
@@ -37,7 +37,7 @@ namespace CustomNotes.Data
                 {
                     Logger.log.Warn($"Something went wrong getting the AssetBundle for '{FileName}'!");
 
-                    NoteDescriptor = new NoteDescriptor
+                    Descriptor = new NoteDescriptor
                     {
                         NoteName = "Invalid Note (Delete it!)",
                         AuthorName = FileName,
@@ -48,7 +48,7 @@ namespace CustomNotes.Data
             }
             else
             {
-                NoteDescriptor = new NoteDescriptor
+                Descriptor = new NoteDescriptor
                 {
                     AuthorName = "Beat Saber",
                     NoteName = "Default"
@@ -66,7 +66,7 @@ namespace CustomNotes.Data
                     GameObject note = AssetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
                     FileName = note.name;
 
-                    NoteDescriptor = note.GetComponent<NoteDescriptor>();
+                    Descriptor = note.GetComponent<NoteDescriptor>();
                     NoteLeft = note.transform.Find("NoteLeft").gameObject;
                     NoteRight = note.transform.Find("NoteRight").gameObject;
                     NoteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
@@ -78,7 +78,7 @@ namespace CustomNotes.Data
                     Logger.log.Warn($"Something went wrong getting the AssetBundle for resource!");
                     Logger.log.Warn(ex);
 
-                    NoteDescriptor = new NoteDescriptor
+                    Descriptor = new NoteDescriptor
                     {
                         NoteName = "Internal Error (Report it!)",
                         AuthorName = FileName,
@@ -90,6 +90,18 @@ namespace CustomNotes.Data
             else
             {
                 throw new ArgumentNullException("noteObject cannot be null for the constructor!");
+            }
+        }
+
+        public void Destroy()
+        {
+            if (AssetBundle != null)
+            {
+                AssetBundle.Unload(true);
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(Descriptor);
             }
         }
     }

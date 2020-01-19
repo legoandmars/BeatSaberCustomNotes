@@ -14,7 +14,7 @@ namespace CustomNotes.Utilities
         public static IList<CustomNote> CustomNoteObjects { get; private set; }
         public static IEnumerable<string> CustomNoteFiles { get; private set; } = Enumerable.Empty<string>();
 
-        internal static void LoadCustomNotes()
+        internal static void Load()
         {
             if (!IsLoaded)
             {
@@ -22,10 +22,10 @@ namespace CustomNotes.Utilities
 
                 IEnumerable<string> noteFilter = new List<string> { "*.bloq", "*.note", };
                 CustomNoteFiles = Utils.GetFileNames(Plugin.PluginAssetPath, noteFilter, SearchOption.AllDirectories, true);
-                Logger.log.Debug($"{CustomNoteFiles.Count()} note(s) found.");
+                Logger.log.Debug($"{CustomNoteFiles.Count()} external note(s) found.");
 
                 CustomNoteObjects = LoadCustomNotes(CustomNoteFiles);
-                Logger.log.Debug($"{CustomNoteObjects.Count} note(s) loaded.");
+                Logger.log.Debug($"{CustomNoteObjects.Count} total note(s) loaded.");
 
                 if (Configuration.CurrentlySelectedNote != null)
                 {
@@ -43,6 +43,29 @@ namespace CustomNotes.Utilities
             }
         }
 
+        internal static void Reload()
+        {
+            Logger.log.Debug("Reloading the NoteAssetLoader");
+
+            Clear();
+            Load();
+        }
+
+        internal static void Clear()
+        {
+            int numberOfObjects = CustomNoteObjects.Count;
+            for (int i = 0; i < numberOfObjects; i++)
+            {
+                CustomNoteObjects[i].Destroy();
+                CustomNoteObjects[i] = null;
+            }
+
+            IsLoaded = false;
+            SelectedNote = 0;
+            CustomNoteObjects = new List<CustomNote>();
+            CustomNoteFiles = Enumerable.Empty<string>();
+        }
+
         private static IList<CustomNote> LoadCustomNotes(IEnumerable<string> customNoteFiles)
         {
             IList<CustomNote> customNotes = new List<CustomNote>
@@ -55,7 +78,7 @@ namespace CustomNotes.Utilities
                 try
                 {
                     CustomNote newNote = new CustomNote(customNoteFile);
-                    if (newNote.AssetBundle != null)
+                    if (newNote != null)
                     {
                         customNotes.Add(newNote);
                     }

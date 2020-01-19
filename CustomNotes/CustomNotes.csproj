@@ -33,9 +33,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Settings\Configuration.cs" />
-    <Compile Include="HarmonyPatches\HarmonyPatches.cs" />
-    <Compile Include="Settings\UI\NotesPreviewView.cs" />
-    <Compile Include="Settings\UI\CustomNotesFlowCoordinator.cs" />
+    <Compile Include="HarmonyPatches\CustomNotesPatches.cs" />
+    <Compile Include="Settings\UI\NotePreviewView.cs" />
+    <Compile Include="Settings\UI\NotesFlowCoordinator.cs" />
     <Compile Include="Utilities\MaterialSwapper.cs" />
     <Compile Include="Data\CustomNote.cs" />
     <Compile Include="Data\NoteExtensions\DisableNoteColorOnGameobject.cs" />

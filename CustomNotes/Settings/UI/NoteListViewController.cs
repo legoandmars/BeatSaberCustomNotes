@@ -50,6 +50,14 @@ namespace CustomNotes.Settings.UI
             GenerateNotePreview(row);
         }
 
+        [UIAction("reloadNotes")]
+        public void ReloadNotes()
+        {
+            NoteAssetLoader.Reload();
+            SetupList();
+            Select(customListTableData.tableView, NoteAssetLoader.SelectedNote);
+        }
+
         [UIAction("#post-parse")]
         public void SetupList()
         {
@@ -57,7 +65,7 @@ namespace CustomNotes.Settings.UI
 
             foreach (CustomNote note in NoteAssetLoader.CustomNoteObjects)
             {
-                CustomListTableData.CustomCellInfo customCellInfo = new CustomListTableData.CustomCellInfo(note.NoteDescriptor.NoteName, note.NoteDescriptor.AuthorName, note.NoteDescriptor.Icon);
+                CustomListTableData.CustomCellInfo customCellInfo = new CustomListTableData.CustomCellInfo(note.Descriptor.NoteName, note.Descriptor.AuthorName, note.Descriptor.Icon);
                 customListTableData.data.Add(customCellInfo);
             }
 
@@ -142,7 +150,7 @@ namespace CustomNotes.Settings.UI
             }
 
             // Add arrows to arrowless notes
-            if (!customNote.NoteDescriptor.DisableBaseNoteArrows && fakeNoteArrows != null)
+            if (!customNote.Descriptor.DisableBaseNoteArrows && fakeNoteArrows != null)
             {
                 if (noteLeft && noteRight)
                 {
@@ -150,17 +158,19 @@ namespace CustomNotes.Settings.UI
                 }
             }
 
-            if (customNote.NoteDescriptor.UsesNoteColor)
+            if (customNote.Descriptor.UsesNoteColor)
             {
                 ColorManager colorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
                 if (colorManager)
                 {
-                    float colorStrength = customNote.NoteDescriptor.NoteColorStrength;
+                    float colorStrength = customNote.Descriptor.NoteColorStrength;
+                    Color noteAColor = colorManager.ColorForNoteType(NoteType.NoteA);
+                    Color noteBColor  = colorManager.ColorForNoteType(NoteType.NoteB);
 
-                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteA, colorStrength, noteLeft);
-                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteB, colorStrength, noteRight);
-                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteB, colorStrength, noteDotRight);
-                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteA, colorStrength, noteDotLeft);
+                    Utils.ColorizeCustomNote(noteAColor, colorStrength, noteLeft);
+                    Utils.ColorizeCustomNote(noteBColor, colorStrength, noteRight);
+                    Utils.ColorizeCustomNote(noteBColor, colorStrength, noteDotRight);
+                    Utils.ColorizeCustomNote(noteAColor, colorStrength, noteDotLeft);
                 }
                 else
                 {

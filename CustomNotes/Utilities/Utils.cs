@@ -50,14 +50,14 @@ namespace CustomNotes.Utilities
         /// <param name="noteType">Type of note</param>
         /// <param name="colorStrength">Color strength</param>
         /// <param name="noteObject">Note to colorize</param>
-        public static void ColorizeCustomNote(ColorManager colorManager, NoteType noteType, float colorStrength, GameObject noteObject)
+        public static void ColorizeCustomNote(Color color, float colorStrength, GameObject noteObject)
         {
-            if (!noteObject || !colorManager)
+            if (!noteObject || color == null)
             {
                 return;
             }
 
-            Color noteColor = colorManager.ColorForNoteType(noteType) * colorStrength;
+            Color noteColor = color * colorStrength;
 
             IEnumerable<Transform> childTransforms = noteObject.GetComponentsInChildren<Transform>();
             foreach (Transform childTransform in childTransforms)
@@ -138,12 +138,14 @@ namespace CustomNotes.Utilities
 
             foreach (string filter in filters)
             {
+                IEnumerable<string> directoryFiles = Directory.GetFiles(path, filter, searchOption);
+
                 if (returnShortPath)
                 {
-                    foreach (string directoryFile in Directory.GetFiles(path, filter, searchOption))
+                    foreach (string directoryFile in directoryFiles)
                     {
                         string filePath = directoryFile.Replace(path, "");
-                        if (filePath.StartsWith(@"\") && filePath.Length > 0)
+                        if (filePath.Length > 0 && filePath.StartsWith(@"\"))
                         {
                             filePath = filePath.Substring(1, filePath.Length - 1);
                         }
@@ -156,7 +158,7 @@ namespace CustomNotes.Utilities
                 }
                 else
                 {
-                    filePaths = filePaths.Union(Directory.GetFiles(path, filter, searchOption)).ToList();
+                    filePaths = filePaths.Union(directoryFiles).ToList();
                 }
             }
 
