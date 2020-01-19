@@ -46,7 +46,10 @@ namespace CustomNotes.HarmonyPatches
                         fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                         fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
 
-                        Utils.ColorizeCustomNote(____colorManager.ColorForNoteType(noteController.noteData.noteType), activeNote.Descriptor.NoteColorStrength, fakeMesh);
+                        if (activeNote.Descriptor.UsesNoteColor)
+                        {
+                            Utils.ColorizeCustomNote(____colorManager.ColorForNoteType(noteController.noteData.noteType), activeNote.Descriptor.NoteColorStrength, fakeMesh);
+                        }
                     }
                 }
             }
