@@ -44,8 +44,7 @@ namespace CustomNotes.Utilities
         /// <summary>
         /// Colorize a Note based on a ColorManager and CustomNote configuration
         /// </summary>
-        /// <param name="colorManager">ColorManager</param>
-        /// <param name="noteType">Type of note</param>
+        /// <param name="color">Color</param>
         /// <param name="colorStrength">Color strength</param>
         /// <param name="noteObject">Note to colorize</param>
         public static void ColorizeCustomNote(Color color, float colorStrength, GameObject noteObject)
