@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CustomNotes.Settings.UI
 {
-    internal class NotesListView : BSMLResourceViewController
+    internal class NoteListView : BSMLResourceViewController
     {
         public override string ResourceName => "CustomNotes.Settings.UI.Views.noteList.bsml";
 
@@ -37,6 +37,8 @@ namespace CustomNotes.Settings.UI
         private Vector3 rightDotPos = new Vector3(1.5f, 1.5f, 0.0f);
         private Vector3 rightArrowPos = new Vector3(1.5f, 0.0f, 0.0f);
         private Vector3 bombPos = new Vector3(3.0f, 0.75f, 0.0f);
+
+        public Action<CustomNote> customNoteChanged;
 
         [UIComponent("noteList")]
         public CustomListTableData customListTableData;
@@ -82,8 +84,8 @@ namespace CustomNotes.Settings.UI
 
             if (fakeNoteArrows == null)
             {
-                byte[] resource = Utils.LoadFromResource("CustomNotes.Resources.cn_arrowplaceholder.bloq");
-                fakeNoteArrows = new CustomNote(resource);
+                byte[] resource = Utils.LoadFromResource("CustomNotes.Resources.Notes.cn_arrowplaceholder.bloq");
+                fakeNoteArrows = new CustomNote(resource, "cn_arrowplaceholder.bloq");
             }
 
             if (!preview)
@@ -114,6 +116,7 @@ namespace CustomNotes.Settings.UI
                     CustomNote currentNote = NoteAssetLoader.CustomNoteObjects[selectedNote];
                     if (currentNote != null)
                     {
+                        customNoteChanged?.Invoke(currentNote);
                         InitializePreviewNotes(currentNote, preview.transform);
                     }
                 }

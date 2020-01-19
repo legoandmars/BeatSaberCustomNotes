@@ -1,0 +1,8 @@
+﻿<vertical child-control-height='false'>
+  <horizontal bg='panel-top' pad-left='10' pad-right='10' horizontal-fit='PreferredSize'>
+    <text text='Note Description' align='Center' font-size='10' />
+  </horizontal>
+  <horizontal pref-width='100' pref-height='45'>
+    <text-page id='note-description' font-size='5.5' align='Center' />
+  </horizontal>
+</vertical>

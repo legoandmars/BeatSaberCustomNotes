@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -11,46 +11,26 @@
     <AssemblyName>CustomNotes</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <ItemGroup>
-    <Compile Include="Settings\Configuration.cs" />
-    <Compile Include="HarmonyPatches\CustomNotesPatches.cs" />
-    <Compile Include="Settings\UI\NotePreviewView.cs" />
-    <Compile Include="Settings\UI\NotesFlowCoordinator.cs" />
-    <Compile Include="Utilities\MaterialSwapper.cs" />
-    <Compile Include="Data\CustomNote.cs" />
-    <Compile Include="Data\NoteExtensions\DisableNoteColorOnGameobject.cs" />
-    <Compile Include="HarmonyPatches\Patches\ColorNoteVisualsPatch.cs" />
-    <Compile Include="Data\NoteExtensions\NoteDescriptor.cs" />
-    <Compile Include="Plugin.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="Settings\Utilities\PluginConfig.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Settings\UI\NoteListViewController.cs" />
-    <Compile Include="Settings\UI\SettingsUI.cs" />
-    <Compile Include="Utilities\NoteAssetLoader.cs" />
-    <Compile Include="Utilities\ScoreUtility.cs" />
-    <Compile Include="Utilities\Utils.cs" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="0Harmony.1.2.0.1">
       <HintPath>$(BeatSaberDir)\Libs\0Harmony.1.2.0.1.dll</HintPath>
@@ -100,18 +80,47 @@
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Settings\Configuration.cs" />
+    <Compile Include="HarmonyPatches\CustomNotesPatches.cs" />
+    <Compile Include="Settings\UI\NoteDetailsViewController.cs" />
+    <Compile Include="Settings\UI\NotePreviewView.cs" />
+    <Compile Include="Settings\UI\NotesFlowCoordinator.cs" />
+    <Compile Include="Utilities\MaterialSwapper.cs" />
+    <Compile Include="Data\CustomNote.cs" />
+    <Compile Include="Data\NoteExtensions\DisableNoteColorOnGameobject.cs" />
+    <Compile Include="HarmonyPatches\Patches\ColorNoteVisualsPatch.cs" />
+    <Compile Include="Data\NoteExtensions\NoteDescriptor.cs" />
+    <Compile Include="Plugin.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="Settings\Utilities\PluginConfig.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings\UI\NoteListViewController.cs" />
+    <Compile Include="Settings\UI\SettingsUI.cs" />
+    <Compile Include="Utilities\NoteAssetLoader.cs" />
+    <Compile Include="Utilities\ScoreUtility.cs" />
+    <Compile Include="Utilities\Utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="manifest.json" />
     <EmbeddedResource Include="Resources\description.md" />
-    <EmbeddedResource Include="Resources\icon.png" />
+    <EmbeddedResource Include="Resources\Icons\default.png" />
+    <EmbeddedResource Include="Resources\Icons\defaultCustom.png" />
+    <EmbeddedResource Include="Resources\Icons\error.png" />
+    <EmbeddedResource Include="Resources\Icons\icon.png" />
+    <EmbeddedResource Include="Resources\Notes\cn_arrowplaceholder.bloq" />
+    <EmbeddedResource Include="Settings\UI\Views\noteDetails.bsml" />
     <EmbeddedResource Include="Settings\UI\Views\noteList.bsml" />
     <EmbeddedResource Include="Settings\UI\Views\notePreview.bsml" />
-    <EmbeddedResource Include="Resources\cn_arrowplaceholder.bloq" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

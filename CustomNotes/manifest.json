@@ -6,7 +6,7 @@
     "Adds support for custom notes in beat saber"
   ],
   "gameVersion": "1.6.2",
-  "icon": "CustomNotes.Resources.icon.png",
+  "icon": "CustomNotes.Resources.Icons.icon.png",
   "id": "Custom Notes",
   "name": "CustomNotes",
   "version": "1.5.0",

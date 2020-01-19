@@ -1,12 +1,11 @@
 ﻿using BeatSaberMarkupLanguage;
 using BeatSaberMarkupLanguage.MenuButtons;
-using BS_Utils.Utilities;
 
 namespace CustomNotes.Settings.UI
 {
     internal class SettingsUI
     {
-        public static NotesFlowCoordinator _notesFlowCoordinator;
+        public static NotesFlowCoordinator notesFlowCoordinator;
         public static bool created = false;
 
         public static void CreateMenu()
@@ -22,12 +21,12 @@ namespace CustomNotes.Settings.UI
 
         public static void ShowNotesFlow()
         {
-            if (_notesFlowCoordinator == null)
+            if (notesFlowCoordinator == null)
             {
-                _notesFlowCoordinator = BeatSaberUI.CreateFlowCoordinator<NotesFlowCoordinator>();
+                notesFlowCoordinator = BeatSaberUI.CreateFlowCoordinator<NotesFlowCoordinator>();
             }
 
-            BeatSaberUI.MainFlowCoordinator.InvokeMethod("PresentFlowCoordinator", _notesFlowCoordinator, null, false, false);
+            BeatSaberUI.MainFlowCoordinator.PresentFlowCoordinator(notesFlowCoordinator, null, false, false);
         }
 
         private static void NotesMenuButtonPressed() => ShowNotesFlow();
