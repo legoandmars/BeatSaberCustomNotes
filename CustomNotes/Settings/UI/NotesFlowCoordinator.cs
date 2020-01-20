@@ -1,6 +1,5 @@
 ﻿using BeatSaberMarkupLanguage;
 using HMUI;
-using IPA.Utilities;
 using System;
 
 namespace CustomNotes.Settings.UI
@@ -13,12 +12,19 @@ namespace CustomNotes.Settings.UI
 
         public void Awake()
         {
-            if (noteListView == null)
+            if (!notePreviewView)
+            {
+                notePreviewView = BeatSaberUI.CreateViewController<NotePreviewViewController>();
+            }
+
+            if (!noteDetailsView)
+            {
+                noteDetailsView = BeatSaberUI.CreateViewController<NoteDetailsViewController>();
+            }
+
+            if (!noteListView)
             {
                 noteListView = BeatSaberUI.CreateViewController<NoteListViewController>();
-                notePreviewView = BeatSaberUI.CreateViewController<NotePreviewViewController>();
-                noteDetailsView = BeatSaberUI.CreateViewController<NoteDetailsViewController>();
-
                 noteListView.customNoteChanged += noteDetailsView.OnNoteWasChanged;
             }
         }
@@ -43,8 +49,7 @@ namespace CustomNotes.Settings.UI
         protected override void BackButtonWasPressed(ViewController topViewController)
         {
             // Dismiss ourselves
-            MainFlowCoordinator mainFlow = BeatSaberUI.MainFlowCoordinator;
-            mainFlow.InvokePrivateMethod("DismissFlowCoordinator", this, null, false);
+            BeatSaberUI.MainFlowCoordinator.DismissFlowCoordinator(this, null, false);
         }
     }
 }
