@@ -2,7 +2,6 @@
 using BeatSaberMarkupLanguage.ViewControllers;
 using CustomNotes.Data;
 using CustomNotes.Utilities;
-using TMPro;
 
 namespace CustomNotes.Settings
 {
@@ -12,9 +11,6 @@ namespace CustomNotes.Settings
 
         [UIComponent("note-description")]
         public TextPageScrollView noteDescription;
-
-        [UIComponent("score-submission-info")]
-        public TextMeshProUGUI scoreSubmissionInfo;
 
         public void OnNoteWasChanged(CustomNote customNote)
         {

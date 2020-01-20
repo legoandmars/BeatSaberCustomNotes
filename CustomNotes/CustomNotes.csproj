@@ -93,7 +93,7 @@
     <Compile Include="Settings\Configuration.cs" />
     <Compile Include="HarmonyPatches\CustomNotesPatches.cs" />
     <Compile Include="Settings\UI\NoteDetailsViewController.cs" />
-    <Compile Include="Settings\UI\NotePreviewView.cs" />
+    <Compile Include="Settings\UI\NotePreviewViewController.cs" />
     <Compile Include="Settings\UI\NotesFlowCoordinator.cs" />
     <Compile Include="Utilities\MaterialSwapper.cs" />
     <Compile Include="Data\CustomNote.cs" />

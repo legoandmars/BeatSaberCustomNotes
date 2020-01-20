@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CustomNotes.Settings.UI
 {
-    internal class NoteListView : BSMLResourceViewController
+    internal class NoteListViewController : BSMLResourceViewController
     {
         public override string ResourceName => "CustomNotes.Settings.UI.Views.noteList.bsml";
 

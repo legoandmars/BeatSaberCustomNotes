@@ -7,16 +7,16 @@ namespace CustomNotes.Settings.UI
 {
     internal class NotesFlowCoordinator : FlowCoordinator
     {
-        private NoteListView noteListView;
-        private NotePreviewView notePreviewView;
+        private NoteListViewController noteListView;
+        private NotePreviewViewController notePreviewView;
         private NoteDetailsViewController noteDetailsView;
 
         public void Awake()
         {
             if (noteListView == null)
             {
-                noteListView = BeatSaberUI.CreateViewController<NoteListView>();
-                notePreviewView = BeatSaberUI.CreateViewController<NotePreviewView>();
+                noteListView = BeatSaberUI.CreateViewController<NoteListViewController>();
+                notePreviewView = BeatSaberUI.CreateViewController<NotePreviewViewController>();
                 noteDetailsView = BeatSaberUI.CreateViewController<NoteDetailsViewController>();
 
                 noteListView.customNoteChanged += noteDetailsView.OnNoteWasChanged;
