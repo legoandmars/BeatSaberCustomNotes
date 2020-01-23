@@ -46,7 +46,10 @@ namespace CustomNotes.HarmonyPatches
                         fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                         fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
 
-                        Utils.ColorizeCustomNote(____colorManager, noteController.noteData.noteType, activeNote.NoteDescriptor.NoteColorStrength, fakeMesh);
+                        if (activeNote.Descriptor.UsesNoteColor)
+                        {
+                            Utils.ColorizeCustomNote(____colorManager.ColorForNoteType(noteController.noteData.noteType), activeNote.Descriptor.NoteColorStrength, fakeMesh);
+                        }
                     }
                 }
             }
@@ -86,7 +89,7 @@ namespace CustomNotes.HarmonyPatches
                     MeshRenderer noteMesh = noteController.gameObject.GetComponentInChildren<MeshRenderer>();
                     noteMesh.enabled = false;
 
-                    if (activeNote.NoteDescriptor.DisableBaseNoteArrows)
+                    if (activeNote.Descriptor.DisableBaseNoteArrows)
                     {
                         ____arrowMeshRenderer.enabled = false;
                         ____arrowGlowSpriteRenderer.enabled = false;

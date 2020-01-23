@@ -6,7 +6,7 @@ namespace CustomNotes.HarmonyPatches
     /// <summary>
     /// Apply and remove all of our Harmony patches through this class
     /// </summary>
-    public class Patches
+    public class CustomNotesPatches
     {
         private static HarmonyInstance instance;
 

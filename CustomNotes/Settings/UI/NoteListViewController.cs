@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CustomNotes.Settings.UI
 {
-    internal class NotesListView : BSMLResourceViewController
+    internal class NoteListViewController : BSMLResourceViewController
     {
         public override string ResourceName => "CustomNotes.Settings.UI.Views.noteList.bsml";
 
@@ -38,6 +38,8 @@ namespace CustomNotes.Settings.UI
         private Vector3 rightArrowPos = new Vector3(1.5f, 0.0f, 0.0f);
         private Vector3 bombPos = new Vector3(3.0f, 0.75f, 0.0f);
 
+        public Action<CustomNote> customNoteChanged;
+
         [UIComponent("noteList")]
         public CustomListTableData customListTableData;
 
@@ -50,6 +52,14 @@ namespace CustomNotes.Settings.UI
             GenerateNotePreview(row);
         }
 
+        [UIAction("reloadNotes")]
+        public void ReloadNotes()
+        {
+            NoteAssetLoader.Reload();
+            SetupList();
+            Select(customListTableData.tableView, NoteAssetLoader.SelectedNote);
+        }
+
         [UIAction("#post-parse")]
         public void SetupList()
         {
@@ -57,7 +67,7 @@ namespace CustomNotes.Settings.UI
 
             foreach (CustomNote note in NoteAssetLoader.CustomNoteObjects)
             {
-                CustomListTableData.CustomCellInfo customCellInfo = new CustomListTableData.CustomCellInfo(note.NoteDescriptor.NoteName, note.NoteDescriptor.AuthorName, note.NoteDescriptor.Icon);
+                CustomListTableData.CustomCellInfo customCellInfo = new CustomListTableData.CustomCellInfo(note.Descriptor.NoteName, note.Descriptor.AuthorName, note.Descriptor.Icon);
                 customListTableData.data.Add(customCellInfo);
             }
 
@@ -74,8 +84,8 @@ namespace CustomNotes.Settings.UI
 
             if (fakeNoteArrows == null)
             {
-                byte[] resource = Utils.LoadFromResource("CustomNotes.Resources.cn_arrowplaceholder.bloq");
-                fakeNoteArrows = new CustomNote(resource);
+                byte[] resource = Utils.LoadFromResource("CustomNotes.Resources.Notes.cn_arrowplaceholder.bloq");
+                fakeNoteArrows = new CustomNote(resource, "cn_arrowplaceholder.bloq");
             }
 
             if (!preview)
@@ -106,6 +116,7 @@ namespace CustomNotes.Settings.UI
                     CustomNote currentNote = NoteAssetLoader.CustomNoteObjects[selectedNote];
                     if (currentNote != null)
                     {
+                        customNoteChanged?.Invoke(currentNote);
                         InitializePreviewNotes(currentNote, preview.transform);
                     }
                 }
@@ -142,7 +153,7 @@ namespace CustomNotes.Settings.UI
             }
 
             // Add arrows to arrowless notes
-            if (!customNote.NoteDescriptor.DisableBaseNoteArrows && fakeNoteArrows != null)
+            if (!customNote.Descriptor.DisableBaseNoteArrows && fakeNoteArrows != null)
             {
                 if (noteLeft && noteRight)
                 {
@@ -150,17 +161,19 @@ namespace CustomNotes.Settings.UI
                 }
             }
 
-            if (customNote.NoteDescriptor.UsesNoteColor)
+            if (customNote.Descriptor.UsesNoteColor)
             {
                 ColorManager colorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
                 if (colorManager)
                 {
-                    float colorStrength = customNote.NoteDescriptor.NoteColorStrength;
+                    float colorStrength = customNote.Descriptor.NoteColorStrength;
+                    Color noteAColor = colorManager.ColorForNoteType(NoteType.NoteA);
+                    Color noteBColor  = colorManager.ColorForNoteType(NoteType.NoteB);
 
-                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteA, colorStrength, noteLeft);
-                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteB, colorStrength, noteRight);
-                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteB, colorStrength, noteDotRight);
-                    Utils.ColorizeCustomNote(colorManager, NoteType.NoteA, colorStrength, noteDotLeft);
+                    Utils.ColorizeCustomNote(noteAColor, colorStrength, noteLeft);
+                    Utils.ColorizeCustomNote(noteBColor, colorStrength, noteRight);
+                    Utils.ColorizeCustomNote(noteBColor, colorStrength, noteDotRight);
+                    Utils.ColorizeCustomNote(noteAColor, colorStrength, noteDotLeft);
                 }
                 else
                 {

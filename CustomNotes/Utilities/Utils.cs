@@ -1,6 +1,4 @@
-﻿using IPA.Loader;
-using IPA.Old;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -46,18 +44,17 @@ namespace CustomNotes.Utilities
         /// <summary>
         /// Colorize a Note based on a ColorManager and CustomNote configuration
         /// </summary>
-        /// <param name="colorManager">ColorManager</param>
-        /// <param name="noteType">Type of note</param>
+        /// <param name="color">Color</param>
         /// <param name="colorStrength">Color strength</param>
         /// <param name="noteObject">Note to colorize</param>
-        public static void ColorizeCustomNote(ColorManager colorManager, NoteType noteType, float colorStrength, GameObject noteObject)
+        public static void ColorizeCustomNote(Color color, float colorStrength, GameObject noteObject)
         {
-            if (!noteObject || !colorManager)
+            if (!noteObject || color == null)
             {
                 return;
             }
 
-            Color noteColor = colorManager.ColorForNoteType(noteType) * colorStrength;
+            Color noteColor = color * colorStrength;
 
             IEnumerable<Transform> childTransforms = noteObject.GetComponentsInChildren<Transform>();
             foreach (Transform childTransform in childTransforms)
@@ -96,33 +93,70 @@ namespace CustomNotes.Utilities
             return data;
         }
 
-        /// <summary>
-        /// Validate path.
-        /// </summary>
-        /// <param name="path">Path to validate.</param>
-        /// <param name="allowRelativePaths">Allow relative paths.</param>
-        public static bool IsValidPath(string path, bool allowRelativePaths = false)
+        private static Texture2D defaultIcon = null;
+        public static Texture2D GetDefaultIcon()
         {
-            bool isValid;
-
-            try
+            if (!defaultIcon)
             {
-                if (allowRelativePaths)
+                try
                 {
-                    isValid = Path.IsPathRooted(path);
+                    byte[] resource = LoadFromResource($"CustomNotes.Resources.Icons.default.png");
+                    defaultIcon = LoadTextureRaw(resource);
                 }
-                else
-                {
-                    string root = Path.GetPathRoot(path);
-                    isValid = !string.IsNullOrEmpty(root.Trim(new char[] { '\\', '/' }));
-                }
-            }
-            catch
-            {
-                isValid = false;
+                catch { }
             }
 
-            return isValid;
+            return defaultIcon;
+        }
+
+        private static Texture2D defaultCustomIcon = null;
+        public static Texture2D GetDefaultCustomIcon()
+        {
+            if (!defaultCustomIcon)
+            {
+                try
+                {
+                    byte[] resource = LoadFromResource($"CustomNotes.Resources.Icons.defaultCustom.png");
+                    defaultCustomIcon = LoadTextureRaw(resource);
+                }
+                catch { }
+            }
+
+            return defaultCustomIcon;
+        }
+
+        private static Texture2D errorIcon = null;
+        public static Texture2D GetErrorIcon()
+        {
+            if (!errorIcon)
+            {
+                try
+                {
+                    byte[] resource = LoadFromResource($"CustomNotes.Resources.Icons.error.png");
+                    errorIcon = LoadTextureRaw(resource);
+                }
+                catch { }
+            }
+
+            return errorIcon;
+        }
+
+        /// <summary>
+        /// Loads an Texture2D from byte[]
+        /// </summary>
+        /// <param name="file"></param>
+        public static Texture2D LoadTextureRaw(byte[] file)
+        {
+            if (file.Length > 0)
+            {
+                Texture2D texture = new Texture2D(2, 2);
+                if (texture.LoadImage(file))
+                {
+                    return texture;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -138,12 +172,14 @@ namespace CustomNotes.Utilities
 
             foreach (string filter in filters)
             {
+                IEnumerable<string> directoryFiles = Directory.GetFiles(path, filter, searchOption);
+
                 if (returnShortPath)
                 {
-                    foreach (string directoryFile in Directory.GetFiles(path, filter, searchOption))
+                    foreach (string directoryFile in directoryFiles)
                     {
                         string filePath = directoryFile.Replace(path, "");
-                        if (filePath.StartsWith(@"\") && filePath.Length > 0)
+                        if (filePath.Length > 0 && filePath.StartsWith(@"\"))
                         {
                             filePath = filePath.Substring(1, filePath.Length - 1);
                         }
@@ -156,7 +192,7 @@ namespace CustomNotes.Utilities
                 }
                 else
                 {
-                    filePaths = filePaths.Union(Directory.GetFiles(path, filter, searchOption)).ToList();
+                    filePaths = filePaths.Union(directoryFiles).ToList();
                 }
             }
 
@@ -164,53 +200,33 @@ namespace CustomNotes.Utilities
         }
 
         /// <summary>
-        /// Check if a BSIPA plugin is enabled.
+        /// Safely unescape \n and \t
         /// </summary>
-        /// <param name="PluginName">Name or Id to search for.</param>
-        public static bool IsPluginEnabled(string PluginName)
+        /// <param name="text"></param>
+        public static string SafeUnescape(string text)
         {
-            if (IsPluginPresent(PluginName))
+            string unescapedString;
+
+            try
             {
-                PluginLoader.PluginInfo pluginInfo = PluginManager.GetPlugin(PluginName);
-                if (pluginInfo?.Metadata == null)
+                if (string.IsNullOrWhiteSpace(text))
                 {
-                    pluginInfo = PluginManager.GetPluginFromId(PluginName);
+                    unescapedString = string.Empty;
                 }
-
-                if (pluginInfo?.Metadata != null)
+                else
                 {
-                    return PluginManager.IsEnabled(pluginInfo.Metadata);
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Check if a plugin exists.
-        /// </summary>
-        /// <param name="PluginName">Name or Id to search for.</param>
-        public static bool IsPluginPresent(string PluginName)
-        {
-            // Check in BSIPA
-            if (PluginManager.GetPlugin(PluginName) != null
-                || PluginManager.GetPluginFromId(PluginName) != null)
-            {
-                return true;
-            }
-
-#pragma warning disable CS0618 // IPA is obsolete
-            // Check in old IPA
-            foreach (IPlugin plugin in PluginManager.Plugins)
-            {
-                if (plugin.Name == PluginName)
-                {
-                    return true;
+                    // Unescape just some of the basic formatting characters
+                    unescapedString = text;
+                    unescapedString = unescapedString.Replace("\\n", "\n");
+                    unescapedString = unescapedString.Replace("\\t", "\t");
                 }
             }
-#pragma warning restore CS0618 // IPA is obsolete
+            catch
+            {
+                unescapedString = text;
+            }
 
-            return false;
+            return unescapedString;
         }
     }
 }

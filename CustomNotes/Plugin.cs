@@ -48,7 +48,7 @@ namespace CustomNotes
                     }
 
                     NoteAssetLoader.SelectedNote++;
-                    string noteName = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote].NoteDescriptor.NoteName;
+                    string noteName = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote].Descriptor.NoteName;
 
                     Logger.log.Info($"Switched to note '{noteName}'");
                     CheckCustomNotesScoreDisable();
@@ -99,8 +99,8 @@ namespace CustomNotes
         private void Load()
         {
             Configuration.Load();
-            NoteAssetLoader.LoadCustomNotes();
-            Patches.ApplyHarmonyPatches();
+            NoteAssetLoader.Load();
+            CustomNotesPatches.ApplyHarmonyPatches();
             SettingsUI.CreateMenu();
 
             Logger.log.Info($"{PluginName} v.{PluginVersion} has started.");
@@ -108,10 +108,10 @@ namespace CustomNotes
 
         private void Unload()
         {
-            Patches.RemoveHarmonyPatches();
+            CustomNotesPatches.RemoveHarmonyPatches();
             ScoreUtility.Cleanup();
-
             Configuration.Save();
+            NoteAssetLoader.Clear();
         }
 
         private void CheckCustomNotesScoreDisable()
