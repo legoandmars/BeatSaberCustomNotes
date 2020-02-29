@@ -2,4 +2,7 @@
   <horizontal bg='panel-top' pad-left='10' pad-right='10' horizontal-fit='PreferredSize'>
     <text text='Note Preview' align='Center' font-size='10' />
   </horizontal>
+  <horizontal pref-width='100' pref-height='45'>
+    <text-page id='error-description' />
+  </horizontal>
 </vertical>

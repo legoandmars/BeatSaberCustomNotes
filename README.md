@@ -4,7 +4,7 @@ CustomNotes adds the ability to swap out the default notes with custom ones in B
 # Installation Instructions
 * Download the latest version of CustomNotes from any current mod manager.
 
-To change which note model is used, simply select a different note in the Mod settings for CustomNotes in-game, or press the "N" key.
+To change which note model is used, simply select a different note in the Mod settings for CustomNotes in-game.
 
 ## Notice
 While a custom note is being used AND you are either playing with the "Ghost Notes" or "Disappearing Arrows" modifier turned on, high-score submission will be temporarily disabled.

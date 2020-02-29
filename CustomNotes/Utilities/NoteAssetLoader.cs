@@ -14,6 +14,9 @@ namespace CustomNotes.Utilities
         public static IList<CustomNote> CustomNoteObjects { get; private set; }
         public static IEnumerable<string> CustomNoteFiles { get; private set; } = Enumerable.Empty<string>();
 
+        /// <summary>
+        /// Load all CustomNotes
+        /// </summary>
         internal static void Load()
         {
             if (!IsLoaded)
@@ -35,6 +38,7 @@ namespace CustomNotes.Utilities
                         if (CustomNoteObjects[i].FileName == Configuration.CurrentlySelectedNote)
                         {
                             SelectedNote = i;
+                            break;
                         }
                     }
                 }
@@ -43,6 +47,9 @@ namespace CustomNotes.Utilities
             }
         }
 
+        /// <summary>
+        /// Reload all CustomNotes
+        /// </summary>
         internal static void Reload()
         {
             Logger.log.Debug("Reloading the NoteAssetLoader");
@@ -51,6 +58,9 @@ namespace CustomNotes.Utilities
             Load();
         }
 
+        /// <summary>
+        /// Clear all loaded CustomNotes
+        /// </summary>
         internal static void Clear()
         {
             int numberOfObjects = CustomNoteObjects.Count;

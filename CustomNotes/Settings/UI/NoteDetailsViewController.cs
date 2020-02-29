@@ -2,6 +2,7 @@
 using BeatSaberMarkupLanguage.ViewControllers;
 using CustomNotes.Data;
 using CustomNotes.Utilities;
+using HMUI;
 
 namespace CustomNotes.Settings
 {
@@ -14,7 +15,14 @@ namespace CustomNotes.Settings
 
         public void OnNoteWasChanged(CustomNote customNote)
         {
-            noteDescription.SetText($"{customNote.Descriptor.NoteName}:\n\n{Utils.SafeUnescape(customNote.Descriptor.Description)}");
+            if (string.IsNullOrWhiteSpace(customNote.ErrorMessage))
+            {
+                noteDescription.SetText($"{customNote.Descriptor.NoteName}:\n\n{Utils.SafeUnescape(customNote.Descriptor.Description)}");
+            }
+            else
+            {
+                noteDescription.SetText(string.Empty);
+            }
         }
     }
 }
