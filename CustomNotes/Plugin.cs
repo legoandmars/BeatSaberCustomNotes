@@ -8,22 +8,23 @@ using IPA.Config;
 using IPA.Loader;
 using IPA.Utilities;
 using System.IO;
-using UnityEngine;
 using UnityEngine.SceneManagement;
 using IPALogger = IPA.Logging.Logger;
 
 namespace CustomNotes
 {
-    public class Plugin : IBeatSaberPlugin, IDisablablePlugin
+    [Plugin(RuntimeOptions.DynamicInit)]
+    public class Plugin
     {
         public static string PluginName => "CustomNotes";
         public static SemVer.Version PluginVersion { get; private set; } = new SemVer.Version("0.0.0"); // Default
-        public static string PluginAssetPath => Path.Combine(BeatSaber.InstallPath, "CustomNotes");
+        public static string PluginAssetPath => Path.Combine(UnityGame.InstallPath, "CustomNotes");
 
-        public void Init(IPALogger logger, [Config.Prefer("json")] IConfigProvider cfgProvider, PluginLoader.PluginMetadata metadata)
+        [Init]
+        public void Init(IPALogger logger, Config config, PluginMetadata metadata)
         {
             Logger.log = logger;
-            Configuration.Init(cfgProvider);
+            Configuration.Init(config);
 
             if (metadata?.Version != null)
             {
@@ -31,70 +32,42 @@ namespace CustomNotes
             }
         }
 
+        [OnEnable]
         public void OnEnable() => Load();
+        [OnDisable]
         public void OnDisable() => Unload();
-        public void OnApplicationQuit() => Unload();
 
-        public void OnUpdate()
+        public void OnGameSceneLoaded()
         {
-            if (Input.GetKeyDown(KeyCode.N))
+            CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
+            if (activeNote.FileName != "DefaultNotes")
             {
-                int noteCount = NoteAssetLoader.CustomNoteObjects.Count;
-                if (noteCount != 1)
+                MaterialSwapper.GetMaterials();
+                MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteLeft);
+                MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteRight);
+
+                if (activeNote.NoteDotLeft != null)
                 {
-                    if (NoteAssetLoader.SelectedNote >= noteCount - 1)
-                    {
-                        NoteAssetLoader.SelectedNote = -1;
-                    }
-
-                    NoteAssetLoader.SelectedNote++;
-                    string noteName = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote].Descriptor.NoteName;
-
-                    Logger.log.Info($"Switched to note '{noteName}'");
-                    CheckCustomNotesScoreDisable();
+                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteDotLeft);
                 }
+
+                if (activeNote.NoteDotRight != null)
+                {
+                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteDotRight);
+                }
+
+                if (activeNote.NoteBomb != null)
+                {
+                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
+                }
+
+                CheckCustomNotesScoreDisable();
+            }
+            else if (ScoreUtility.ScoreIsBlocked)
+            {
+                ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
             }
         }
-
-        public void OnActiveSceneChanged(Scene prevScene, Scene nextScene)
-        {
-            if (nextScene.name == "GameCore")
-            {
-                CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
-                if (activeNote.FileName != "DefaultNotes")
-                {
-                    MaterialSwapper.GetMaterials();
-                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteLeft);
-                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteRight);
-
-                    if (activeNote.NoteDotLeft != null)
-                    {
-                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteDotLeft);
-                    }
-
-                    if (activeNote.NoteDotRight != null)
-                    {
-                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteDotRight);
-                    }
-
-                    if (activeNote.NoteBomb != null)
-                    {
-                        MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
-                    }
-
-                    CheckCustomNotesScoreDisable();
-                }
-                else if (ScoreUtility.ScoreIsBlocked)
-                {
-                    ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
-                }
-            }
-        }
-
-        public void OnApplicationStart() { }
-        public void OnSceneLoaded(Scene scene, LoadSceneMode sceneMode) { }
-        public void OnSceneUnloaded(Scene scene) { }
-        public void OnFixedUpdate() { }
 
         private void Load()
         {
@@ -102,19 +75,32 @@ namespace CustomNotes
             NoteAssetLoader.Load();
             CustomNotesPatches.ApplyHarmonyPatches();
             SettingsUI.CreateMenu();
+            AddEvents();
 
             Logger.log.Info($"{PluginName} v.{PluginVersion} has started.");
         }
 
         private void Unload()
         {
+            RemoveEvents();
             CustomNotesPatches.RemoveHarmonyPatches();
             ScoreUtility.Cleanup();
             Configuration.Save();
             NoteAssetLoader.Clear();
         }
 
-        private void CheckCustomNotesScoreDisable()
+        private void AddEvents()
+        {
+            RemoveEvents();
+            BS_Utils.Utilities.BSEvents.gameSceneLoaded += OnGameSceneLoaded;
+        }
+
+        private void RemoveEvents()
+        {
+            BS_Utils.Utilities.BSEvents.gameSceneLoaded -= OnGameSceneLoaded;
+        }
+
+        internal static void CheckCustomNotesScoreDisable()
         {
             if (SceneManager.GetActiveScene().name == "GameCore")
             {

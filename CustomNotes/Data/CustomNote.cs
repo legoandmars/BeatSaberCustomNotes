@@ -15,6 +15,7 @@ namespace CustomNotes.Data
         public GameObject NoteDotLeft { get; }
         public GameObject NoteDotRight { get; }
         public GameObject NoteBomb { get; }
+        public string ErrorMessage { get; } = string.Empty;
 
         public CustomNote(string fileName)
         {
@@ -45,13 +46,14 @@ namespace CustomNotes.Data
                     {
                         NoteName = "Invalid Note (Delete it!)",
                         AuthorName = FileName,
-                        Description = $"File: '{fileName}'" +
+                        Icon = Utils.GetErrorIcon()
+                    };
+
+                    ErrorMessage = $"File: '{fileName}'" +
                                     "\n\nThis file failed to load." +
                                     "\n\nThis may have been caused by having duplicated files," +
                                     " another note with the same name already exists or that the custom note is simply just broken." +
-                                    "\n\nThe best thing is probably just to delete it!",
-                        Icon = Utils.GetErrorIcon()
-                    };
+                                    "\n\nThe best thing is probably just to delete it!";
 
                     FileName = "DefaultNotes";
                 }
@@ -96,12 +98,12 @@ namespace CustomNotes.Data
                     {
                         NoteName = "Internal Error (Report it!)",
                         AuthorName = FileName,
-                        Description = $@"File: 'internalResource\\{name}'" +
-                                    "\n\nAn internal asset has failed to load." +
-                                    "\n\nThis shouldn't have happened and should be reported!" +
-                                    " Remember to include the log related to this incident.",
                         Icon = Utils.GetErrorIcon()
                     };
+                    ErrorMessage = $@"File: 'internalResource\\{name}'" +
+                                    "\n\nAn internal asset has failed to load." +
+                                    "\n\nThis shouldn't have happened and should be reported!" +
+                                    " Remember to include the log related to this incident.";
 
                     FileName = "DefaultNotes";
                 }

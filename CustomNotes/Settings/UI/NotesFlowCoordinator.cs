@@ -26,6 +26,7 @@ namespace CustomNotes.Settings.UI
             {
                 noteListView = BeatSaberUI.CreateViewController<NoteListViewController>();
                 noteListView.customNoteChanged += noteDetailsView.OnNoteWasChanged;
+                noteListView.customNoteChanged += notePreviewView.OnNoteWasChanged;
             }
         }
 

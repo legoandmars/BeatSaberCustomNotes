@@ -1,6 +1,6 @@
 ﻿using CustomNotes.Data;
 using CustomNotes.Utilities;
-using Harmony;
+using HarmonyLib;
 using System;
 using UnityEngine;
 
