@@ -45,6 +45,7 @@ namespace CustomNotes.HarmonyPatches
                         fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
                         fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
                         fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
+                        fakeMesh.transform.localRotation = fakeMesh.transform.localRotation * child.parent.localRotation; // correct for 360 levels
 
                         if (activeNote.Descriptor.UsesNoteColor)
                         {
