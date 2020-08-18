@@ -5,6 +5,8 @@ namespace CustomNotes.Settings.UI
 {
     internal class SettingsUI
     {
+        private static readonly MenuButton menuButton = new MenuButton("Custom Notes", "Change Custom Notes Here!", NotesMenuButtonPressed, true);
+
         public static NotesFlowCoordinator notesFlowCoordinator;
         public static bool created = false;
 
@@ -12,10 +14,17 @@ namespace CustomNotes.Settings.UI
         {
             if (!created)
             {
-                MenuButton menuButton = new MenuButton("Custom Notes", "Change Custom Notes Here!", NotesMenuButtonPressed, true);
                 MenuButtons.instance.RegisterButton(menuButton);
-
                 created = true;
+            }
+        }
+
+        public static void RemoveMenu()
+        {
+            if (created)
+            {
+                MenuButtons.instance.UnregisterButton(menuButton);
+                created = false;
             }
         }
 

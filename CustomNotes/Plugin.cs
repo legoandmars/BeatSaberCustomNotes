@@ -87,6 +87,7 @@ namespace CustomNotes
             ScoreUtility.Cleanup();
             Configuration.Save();
             NoteAssetLoader.Clear();
+            SettingsUI.RemoveMenu();
         }
 
         private void AddEvents()
