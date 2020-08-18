@@ -5,11 +5,11 @@
     "#![CustomNotes.Resources.description.md]",
     "Adds support for custom notes in beat saber"
   ],
-  "gameVersion": "1.8.0",
+  "gameVersion": "1.11.0",
   "icon": "CustomNotes.Resources.Icons.icon.png",
   "id": "Custom Notes",
   "name": "CustomNotes",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "dependsOn": {
     "BeatSaberMarkupLanguage": "^1.1.0",
     "BS Utils": "^1.4.0"
