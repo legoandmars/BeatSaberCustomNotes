@@ -30,13 +30,13 @@ namespace CustomNotes.Settings.UI
             }
         }
 
-        protected override void DidActivate(bool firstActivation, ActivationType activationType)
+        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             try
             {
                 if (firstActivation)
                 {
-                    title = "Custom Notes";
+                    SetTitle("Custom Notes");
                     showBackButton = true;
                     ProvideInitialViewControllers(noteListView, noteDetailsView, notePreviewView);
                 }
@@ -50,7 +50,7 @@ namespace CustomNotes.Settings.UI
         protected override void BackButtonWasPressed(ViewController topViewController)
         {
             // Dismiss ourselves
-            BeatSaberUI.MainFlowCoordinator.DismissFlowCoordinator(this, null, false);
+            BeatSaberUI.MainFlowCoordinator.DismissFlowCoordinator(this, null);
         }
     }
 }

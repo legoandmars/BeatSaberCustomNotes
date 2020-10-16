@@ -35,7 +35,7 @@ namespace CustomNotes.Settings.UI
                 notesFlowCoordinator = BeatSaberUI.CreateFlowCoordinator<NotesFlowCoordinator>();
             }
 
-            BeatSaberUI.MainFlowCoordinator.PresentFlowCoordinator(notesFlowCoordinator, null, false, false);
+            BeatSaberUI.MainFlowCoordinator.PresentFlowCoordinator(notesFlowCoordinator, null);
         }
 
         private static void NotesMenuButtonPressed() => ShowNotesFlow();

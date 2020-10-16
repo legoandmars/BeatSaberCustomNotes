@@ -67,7 +67,8 @@ namespace CustomNotes.Settings.UI
 
             foreach (CustomNote note in NoteAssetLoader.CustomNoteObjects)
             {
-                CustomListTableData.CustomCellInfo customCellInfo = new CustomListTableData.CustomCellInfo(note.Descriptor.NoteName, note.Descriptor.AuthorName, note.Descriptor.Icon);
+                Sprite sprite = Sprite.Create(note.Descriptor.Icon, new Rect(0, 0, note.Descriptor.Icon.width, note.Descriptor.Icon.height), new Vector2(0.5f, 0.5f));
+                CustomListTableData.CustomCellInfo customCellInfo = new CustomListTableData.CustomCellInfo(note.Descriptor.NoteName, note.Descriptor.AuthorName, sprite);
                 customListTableData.data.Add(customCellInfo);
             }
 
@@ -78,9 +79,9 @@ namespace CustomNotes.Settings.UI
             customListTableData.tableView.SelectCellWithIdx(selectedNote);
         }
 
-        protected override void DidActivate(bool firstActivation, ActivationType type)
+        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
-            base.DidActivate(firstActivation, type);
+            base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
 
             if (fakeNoteArrows == null)
             {
@@ -98,9 +99,9 @@ namespace CustomNotes.Settings.UI
             Select(customListTableData.tableView, NoteAssetLoader.SelectedNote);
         }
 
-        protected override void DidDeactivate(DeactivationType deactivationType)
+        protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
         {
-            base.DidDeactivate(deactivationType);
+            base.DidDeactivate(removedFromHierarchy, screenSystemDisabling);
             ClearPreview();
         }
 
@@ -167,8 +168,8 @@ namespace CustomNotes.Settings.UI
                 if (colorManager)
                 {
                     float colorStrength = customNote.Descriptor.NoteColorStrength;
-                    Color noteAColor = colorManager.ColorForNoteType(NoteType.NoteA);
-                    Color noteBColor  = colorManager.ColorForNoteType(NoteType.NoteB);
+                    Color noteAColor = colorManager.ColorForType(ColorType.ColorA);
+                    Color noteBColor  = colorManager.ColorForType(ColorType.ColorB);
 
                     Utils.ColorizeCustomNote(noteAColor, colorStrength, noteLeft);
                     Utils.ColorizeCustomNote(noteBColor, colorStrength, noteRight);
