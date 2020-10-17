@@ -11,6 +11,7 @@
   "name": "CustomNotes",
   "version": "1.6.2",
   "dependsOn": {
+    "BSIPA": "^4.0.5",
     "BeatSaberMarkupLanguage": "^1.1.0",
     "BS Utils": "^1.4.0"
   },

@@ -7,7 +7,7 @@ using UnityEngine;
 namespace CustomNotes.HarmonyPatches
 {
     [HarmonyPatch(typeof(ColorNoteVisuals))]
-    [HarmonyPatch("HandleNoteControllerDidInitEvent", MethodType.Normal)]
+    [HarmonyPatch("HandleNoteControllerDidInit", MethodType.Normal)]
     internal class ColorNoteVisualsPatch
     {
         private static void Prefix(NoteController noteController, ref ColorManager ____colorManager)
@@ -22,15 +22,16 @@ namespace CustomNotes.HarmonyPatches
                     Transform child = noteController.gameObject.transform.Find("NoteCube");
 
                     GameObject customNote = null;
+                    GameObject recolorizeCustomNote = null;
                     string name = string.Empty;
 
-                    switch (noteController.noteData.noteType)
+                    switch (noteController.noteData.colorType)
                     {
-                        case NoteType.NoteA:
-                            customNote = GetCustomNote(child, activeNote.NoteLeft, activeNote.NoteDotLeft, noteController.noteData.cutDirection, out name);
+                        case ColorType.ColorA:
+                            customNote = GetCustomNote(child, activeNote.NoteLeft, activeNote.NoteDotLeft, noteController.noteData.cutDirection, out name, out recolorizeCustomNote);
                             break;
-                        case NoteType.NoteB:
-                            customNote = GetCustomNote(child, activeNote.NoteRight, activeNote.NoteDotRight, noteController.noteData.cutDirection, out name);
+                        case ColorType.ColorB:
+                            customNote = GetCustomNote(child, activeNote.NoteRight, activeNote.NoteDotRight, noteController.noteData.cutDirection, out name, out recolorizeCustomNote);
                             break;
                         default:
                             break;
@@ -49,9 +50,11 @@ namespace CustomNotes.HarmonyPatches
 
                         if (activeNote.Descriptor.UsesNoteColor)
                         {
-                            Utils.ColorizeCustomNote(____colorManager.ColorForNoteType(noteController.noteData.noteType), activeNote.Descriptor.NoteColorStrength, fakeMesh);
+                            Utils.ColorizeCustomNote(____colorManager.ColorForType(noteController.noteData.colorType), activeNote.Descriptor.NoteColorStrength, fakeMesh);
                         }
                     }
+                    else if(activeNote.Descriptor.UsesNoteColor && recolorizeCustomNote != null)
+                        Utils.ColorizeCustomNote(____colorManager.ColorForType(noteController.noteData.colorType), activeNote.Descriptor.NoteColorStrength, recolorizeCustomNote);
                 }
             }
             catch (Exception ex)
@@ -69,8 +72,8 @@ namespace CustomNotes.HarmonyPatches
                 if (activeNote.FileName != "DefaultNotes")
                 {
                     // Check and activate/deactivate custom note objects attached to a pooled note object
-                    if (noteController.noteData.noteType == NoteType.NoteA
-                        || noteController.noteData.noteType == NoteType.NoteB)
+                    if (noteController.noteData.colorType == ColorType.ColorA
+                        || noteController.noteData.colorType == ColorType.ColorB)
                     {
                         Transform child = noteController.gameObject.transform.Find("NoteCube");
                         GameObject oldCustomNote = child.Find("customNoteArrow")?.gameObject;
@@ -88,7 +91,8 @@ namespace CustomNotes.HarmonyPatches
 
                     // Hide certain parts of the default note which is not required
                     MeshRenderer noteMesh = noteController.gameObject.GetComponentInChildren<MeshRenderer>();
-                    noteMesh.enabled = false;
+                    //noteMesh.enabled = false;
+                    noteMesh.forceRenderingOff = true;
 
                     if (activeNote.Descriptor.DisableBaseNoteArrows)
                     {
@@ -113,23 +117,37 @@ namespace CustomNotes.HarmonyPatches
         /// <param name="noteCutDirection">The cut direction of the noteChild</param>
         /// <param name="name">Custom Note name</param>
         /// <returns></returns>
-        private static GameObject GetCustomNote(Transform noteChild, GameObject noteArrow, GameObject noteDot, NoteCutDirection noteCutDirection, out string name)
+        private static GameObject GetCustomNote(Transform noteChild, GameObject noteArrow, GameObject noteDot, NoteCutDirection noteCutDirection, out string name, out GameObject recolorizeBlock)
         {
-            name = "DuplicateOrInvalid";
+            name            = "DuplicateOrInvalid";
+            recolorizeBlock = null;
+
             GameObject customNote = null;
 
-            if (noteCutDirection == NoteCutDirection.Any
-                && !noteChild.Find("customNoteDot")?.gameObject)
+            Transform dotObject = noteCutDirection == NoteCutDirection.Any ? noteChild.Find("customNoteDot") : null;
+            Transform arrObject = dotObject == null ? noteChild.Find("customNoteArrow") : null;
+
+            if (noteCutDirection == NoteCutDirection.Any)
             {
                 // CustomNote Dot not attached to childNote
-                name = "customNoteDot";
-                customNote = noteDot ?? noteArrow;
+                if (dotObject == null || dotObject.gameObject == null)
+                {
+                    name        = "customNoteDot";
+                    customNote  = noteDot ?? noteArrow;
+                }
+                else
+                    recolorizeBlock = dotObject.gameObject;
             }
-            else if (!noteChild.Find("customNoteArrow")?.gameObject)
+            else
             {
                 // CustomNote Arrow not attached to childNote
-                name = "customNoteArrow";
-                customNote = noteArrow;
+                if (arrObject == null || arrObject.gameObject == null)
+                {
+                    name = "customNoteArrow";
+                    customNote = noteArrow;
+                }
+                else
+                    recolorizeBlock = arrObject.gameObject;
             }
 
             return customNote;
