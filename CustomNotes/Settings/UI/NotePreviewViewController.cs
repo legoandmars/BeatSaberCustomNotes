@@ -11,7 +11,7 @@ namespace CustomNotes.Settings.UI
         public override string ResourceName => "CustomNotes.Settings.UI.Views.notePreview.bsml";
 
         [UIComponent("error-description")]
-        public TextPageScrollView errorDescription;
+        public TextPageScrollView errorDescription = null;
 
         public void OnNoteWasChanged(CustomNote customNote)
         {

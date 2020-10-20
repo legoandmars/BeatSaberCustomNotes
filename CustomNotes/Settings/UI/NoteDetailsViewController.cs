@@ -11,7 +11,7 @@ namespace CustomNotes.Settings
         public override string ResourceName => "CustomNotes.Settings.UI.Views.noteDetails.bsml";
 
         [UIComponent("note-description")]
-        public TextPageScrollView noteDescription;
+        public TextPageScrollView noteDescription = null;
 
         public void OnNoteWasChanged(CustomNote customNote)
         {
