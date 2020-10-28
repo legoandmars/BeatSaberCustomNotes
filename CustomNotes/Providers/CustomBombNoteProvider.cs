@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using SiraUtil.Interfaces;
+using CustomNotes.Managers;
 
 namespace CustomNotes.Providers
 {
@@ -16,8 +17,7 @@ namespace CustomNotes.Providers
 
             public BombNoteController Modify(BombNoteController original)
             {
-                var obj = new GameObject("Custom Bomb Note");
-                obj.transform.SetParent(original.transform);
+                original.gameObject.AddComponent<CustomBombController>();
                 return original;
             }
         }

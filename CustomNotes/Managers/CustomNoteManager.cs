@@ -1,5 +1,7 @@
 ﻿using Zenject;
+using CustomNotes.Data;
 using SiraUtil.Services;
+using CustomNotes.Utilities;
 
 namespace CustomNotes.Managers
 {
@@ -20,6 +22,10 @@ namespace CustomNotes.Managers
         {
             if (_noteAssetLoader.SelectedNote != 0)
             {
+                CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
+                MaterialSwapper.GetMaterials();
+                MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteLeft);
+                MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteRight);
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes)
                 {
                     _submission.DisableScoreSubmission("Custom Notes", "Ghost Notes");
