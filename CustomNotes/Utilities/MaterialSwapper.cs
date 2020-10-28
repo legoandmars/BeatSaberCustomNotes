@@ -26,13 +26,6 @@ namespace CustomNotes.Utilities
                 string materialName = currentMaterial.name.ToLower() + "_replace (Instance)";
                 ReplaceAllMaterialsForGameObjectChildren(gameObject, currentMaterial, materialName);
             }
-
-            //ReplaceAllMaterialsForGameObjectChildren(gameObject, note, noteReplaceMatName);
-            //ReplaceAllMaterialsForGameObjectChildren(gameObject, arrow, arrowReplaceMatName);
-            //if (bomb != null)
-            //{
-            //    ReplaceAllMaterialsForGameObjectChildren(gameObject, bomb, bombReplaceMatName);
-            //}
         }
 
         public static void ReplaceAllMaterialsForGameObjectChildren(GameObject gameObject, Material material, string materialToReplaceName = "")

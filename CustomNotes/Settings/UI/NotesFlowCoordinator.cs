@@ -1,56 +1,48 @@
-﻿using BeatSaberMarkupLanguage;
-using HMUI;
-using System;
+﻿using HMUI;
+using Zenject;
+using BeatSaberMarkupLanguage;
 
 namespace CustomNotes.Settings.UI
 {
     internal class NotesFlowCoordinator : FlowCoordinator
     {
-        private NoteListViewController noteListView;
-        private NotePreviewViewController notePreviewView;
-        private NoteDetailsViewController noteDetailsView;
+        private MainFlowCoordinator _mainFlow;
+        private NoteListViewController _noteListView;
+        private NoteDetailsViewController _noteDetailsView;
+        private NotePreviewViewController _notePreviewView;
 
-        public void Awake()
+        [Inject]
+        public void Construct(MainFlowCoordinator mainFlow, NoteListViewController noteListView, NoteDetailsViewController noteDetailsView, NotePreviewViewController notePreviewView)
         {
-            if (!notePreviewView)
-            {
-                notePreviewView = BeatSaberUI.CreateViewController<NotePreviewViewController>();
-            }
-
-            if (!noteDetailsView)
-            {
-                noteDetailsView = BeatSaberUI.CreateViewController<NoteDetailsViewController>();
-            }
-
-            if (!noteListView)
-            {
-                noteListView = BeatSaberUI.CreateViewController<NoteListViewController>();
-                noteListView.customNoteChanged += noteDetailsView.OnNoteWasChanged;
-                noteListView.customNoteChanged += notePreviewView.OnNoteWasChanged;
-            }
+            _mainFlow = mainFlow;
+            _noteListView = noteListView;
+            _noteDetailsView = noteDetailsView;
+            _notePreviewView = notePreviewView;
         }
 
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
-            try
+            if (firstActivation)
             {
-                if (firstActivation)
-                {
-                    SetTitle("Custom Notes");
-                    showBackButton = true;
-                    ProvideInitialViewControllers(noteListView, noteDetailsView, notePreviewView);
-                }
+                SetTitle("Custom Notes");
+                showBackButton = true;
             }
-            catch (Exception ex)
-            {
-                Logger.log.Error(ex);
-            }
+            ProvideInitialViewControllers(_noteListView, _noteDetailsView, _notePreviewView);
+            _noteListView.customNoteChanged += _noteDetailsView.OnNoteWasChanged;
+            _noteListView.customNoteChanged += _notePreviewView.OnNoteWasChanged;
+        }
+
+        protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
+        {
+            _noteListView.customNoteChanged -= _noteDetailsView.OnNoteWasChanged;
+            _noteListView.customNoteChanged -= _notePreviewView.OnNoteWasChanged;
+            base.DidDeactivate(removedFromHierarchy, screenSystemDisabling);
         }
 
         protected override void BackButtonWasPressed(ViewController topViewController)
         {
             // Dismiss ourselves
-            BeatSaberUI.MainFlowCoordinator.DismissFlowCoordinator(this, null);
+            _mainFlow.DismissFlowCoordinator(this, null);
         }
     }
 }

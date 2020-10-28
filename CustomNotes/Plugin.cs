@@ -1,17 +1,12 @@
 ﻿using IPA;
 using System.IO;
-using IPA.Loader;
 using IPA.Config;
 using HarmonyLib;
 using IPA.Utilities;
 using SiraUtil.Zenject;
-using CustomNotes.Data;
 using IPA.Config.Stores;
 using System.Reflection;
-using CustomNotes.Utilities;
 using CustomNotes.Installers;
-using CustomNotes.Settings.UI;
-using UnityEngine.SceneManagement;
 using CustomNotes.Settings.Utilities;
 using IPALogger = IPA.Logging.Logger;
 
@@ -32,25 +27,25 @@ namespace CustomNotes
             Logger.log = logger;
             _harmony = new Harmony(InstanceId);
             zenjector.OnApp<CustomNotesCoreInstaller>().WithParameters(config.Generated<PluginConfig>());
+            zenjector.OnMenu<CustomNotesMenuInstaller>();
+            zenjector.OnGame<CustomNotesGameInstaller>();
         }
 
         [OnEnable]
         public void OnEnable()
         {
-            NoteAssetLoader.Load();
             _harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
         [OnDisable]
         public void OnDisable()
         {
-            NoteAssetLoader.Clear();
             _harmony.UnpatchAll(InstanceId);
         }
 
         public void OnGameSceneLoaded()
         {
-            CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
+            /*CustomNote activeNote = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote];
             if (activeNote.FileName != "DefaultNotes")
             {
                 MaterialSwapper.GetMaterials();
@@ -77,21 +72,17 @@ namespace CustomNotes
             else if (ScoreUtility.ScoreIsBlocked)
             {
                 ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
-            }
+            }*/
         }
 
         private void Load()
         {
-            NoteAssetLoader.Load();
-            SettingsUI.CreateMenu();
             AddEvents();
         }
 
         private void Unload()
         {
             RemoveEvents();
-            ScoreUtility.Cleanup();
-            SettingsUI.RemoveMenu();
         }
 
         private void AddEvents()
@@ -107,7 +98,7 @@ namespace CustomNotes
 
         internal static void CheckCustomNotesScoreDisable()
         {
-            if (SceneManager.GetActiveScene().name == "GameCore")
+            /*if (SceneManager.GetActiveScene().name == "GameCore")
             {
                 string fileName = NoteAssetLoader.CustomNoteObjects[NoteAssetLoader.SelectedNote].FileName;
                 if (fileName != "DefaultNotes")
@@ -122,7 +113,7 @@ namespace CustomNotes
                         ScoreUtility.EnableScoreSubmission("ModifiersEnabled");
                     }
                 }
-            }
+            }*/
         }
     }
 }

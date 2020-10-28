@@ -6,7 +6,7 @@ using CustomNotes.Utilities;
 
 namespace CustomNotes.HarmonyPatches
 {
-    [HarmonyPatch(typeof(ColorNoteVisuals))]
+    /*[HarmonyPatch(typeof(ColorNoteVisuals))]
     [HarmonyPatch("HandleNoteControllerDidInit", MethodType.Normal)]
     internal class ColorNoteVisualsPatch
     {
@@ -204,5 +204,5 @@ namespace CustomNotes.HarmonyPatches
                 Logger.log.Error(ex);
             }
         }
-    }
+    }*/
 }

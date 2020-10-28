@@ -1,8 +1,8 @@
-﻿using BeatSaberMarkupLanguage.Attributes;
-using BeatSaberMarkupLanguage.ViewControllers;
+﻿using HMUI;
 using CustomNotes.Data;
 using CustomNotes.Utilities;
-using HMUI;
+using BeatSaberMarkupLanguage.Attributes;
+using BeatSaberMarkupLanguage.ViewControllers;
 
 namespace CustomNotes.Settings
 {

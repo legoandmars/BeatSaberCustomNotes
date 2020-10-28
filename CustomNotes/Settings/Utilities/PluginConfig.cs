@@ -2,8 +2,6 @@
 {
     public class PluginConfig
     {
-        public static PluginConfig Instance;
-
-        public string lastNote;
+        public virtual string LastNote { get; set; }
     }
 }
