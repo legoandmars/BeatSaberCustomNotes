@@ -30,7 +30,7 @@ namespace CustomNotes.Utilities
                 CustomNoteObjects = LoadCustomNotes(CustomNoteFiles);
                 Logger.log.Debug($"{CustomNoteObjects.Count} total note(s) loaded.");
 
-                if (Configuration.CurrentlySelectedNote != null)
+                /*if (Configuration.CurrentlySelectedNote != null)
                 {
                     int numberOfNotes = CustomNoteObjects.Count;
                     for (int i = 0; i < numberOfNotes; i++)
@@ -41,7 +41,7 @@ namespace CustomNotes.Utilities
                             break;
                         }
                     }
-                }
+                }*/
 
                 IsLoaded = true;
             }
@@ -69,7 +69,6 @@ namespace CustomNotes.Utilities
                 CustomNoteObjects[i].Destroy();
                 CustomNoteObjects[i] = null;
             }
-
             IsLoaded = false;
             SelectedNote = 0;
             CustomNoteObjects = new List<CustomNote>();
@@ -99,7 +98,6 @@ namespace CustomNotes.Utilities
                     Logger.log.Warn(ex);
                 }
             }
-
             return customNotes;
         }
     }

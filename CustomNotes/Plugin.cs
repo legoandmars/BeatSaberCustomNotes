@@ -1,14 +1,18 @@
-﻿using CustomNotes.Data;
-using CustomNotes.HarmonyPatches;
-using CustomNotes.Settings;
-using CustomNotes.Settings.UI;
-using CustomNotes.Utilities;
-using IPA;
-using IPA.Config;
-using IPA.Loader;
-using IPA.Utilities;
+﻿using IPA;
 using System.IO;
+using IPA.Loader;
+using IPA.Config;
+using HarmonyLib;
+using IPA.Utilities;
+using SiraUtil.Zenject;
+using CustomNotes.Data;
+using IPA.Config.Stores;
+using System.Reflection;
+using CustomNotes.Utilities;
+using CustomNotes.Installers;
+using CustomNotes.Settings.UI;
 using UnityEngine.SceneManagement;
+using CustomNotes.Settings.Utilities;
 using IPALogger = IPA.Logging.Logger;
 
 namespace CustomNotes
@@ -17,25 +21,32 @@ namespace CustomNotes
     public class Plugin
     {
         public static string PluginName => "CustomNotes";
-        public static SemVer.Version PluginVersion { get; private set; } = new SemVer.Version("0.0.0"); // Default
+        public const string InstanceId = "com.legoandmars.beatsaber.customnotes";
         public static string PluginAssetPath => Path.Combine(UnityGame.InstallPath, "CustomNotes");
 
+        private readonly Harmony _harmony;
+
         [Init]
-        public void Init(IPALogger logger, Config config, PluginMetadata metadata)
+        public Plugin(IPALogger logger, Config config, Zenjector zenjector)
         {
             Logger.log = logger;
-            Configuration.Init(config);
-
-            if (metadata?.Version != null)
-            {
-                PluginVersion = metadata.Version;
-            }
+            _harmony = new Harmony(InstanceId);
+            zenjector.OnApp<CustomNotesCoreInstaller>().WithParameters(config.Generated<PluginConfig>());
         }
 
         [OnEnable]
-        public void OnEnable() => Load();
+        public void OnEnable()
+        {
+            NoteAssetLoader.Load();
+            _harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
+
         [OnDisable]
-        public void OnDisable() => Unload();
+        public void OnDisable()
+        {
+            NoteAssetLoader.Clear();
+            _harmony.UnpatchAll(InstanceId);
+        }
 
         public void OnGameSceneLoaded()
         {
@@ -71,22 +82,15 @@ namespace CustomNotes
 
         private void Load()
         {
-            Configuration.Load();
             NoteAssetLoader.Load();
-            CustomNotesPatches.ApplyHarmonyPatches();
             SettingsUI.CreateMenu();
             AddEvents();
-
-            Logger.log.Info($"{PluginName} v.{PluginVersion} has started.");
         }
 
         private void Unload()
         {
             RemoveEvents();
-            CustomNotesPatches.RemoveHarmonyPatches();
             ScoreUtility.Cleanup();
-            Configuration.Save();
-            NoteAssetLoader.Clear();
             SettingsUI.RemoveMenu();
         }
 

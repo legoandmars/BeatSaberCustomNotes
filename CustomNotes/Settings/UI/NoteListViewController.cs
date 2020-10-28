@@ -1,12 +1,12 @@
-﻿using BeatSaberMarkupLanguage.Attributes;
-using BeatSaberMarkupLanguage.Components;
-using BeatSaberMarkupLanguage.ViewControllers;
-using CustomNotes.Data;
-using CustomNotes.Utilities;
-using HMUI;
+﻿using HMUI;
 using System;
 using System.Linq;
 using UnityEngine;
+using CustomNotes.Data;
+using CustomNotes.Utilities;
+using BeatSaberMarkupLanguage.Attributes;
+using BeatSaberMarkupLanguage.Components;
+using BeatSaberMarkupLanguage.ViewControllers;
 
 namespace CustomNotes.Settings.UI
 {
@@ -47,7 +47,7 @@ namespace CustomNotes.Settings.UI
         public void Select(TableView _, int row)
         {
             NoteAssetLoader.SelectedNote = row;
-            Configuration.CurrentlySelectedNote = NoteAssetLoader.CustomNoteObjects[row].FileName;
+            //Configuration.CurrentlySelectedNote = NoteAssetLoader.CustomNoteObjects[row].FileName;
 
             GenerateNotePreview(row);
         }

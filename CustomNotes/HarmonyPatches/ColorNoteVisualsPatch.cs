@@ -1,8 +1,8 @@
-﻿using CustomNotes.Data;
-using CustomNotes.Utilities;
+﻿using System;
 using HarmonyLib;
-using System;
 using UnityEngine;
+using CustomNotes.Data;
+using CustomNotes.Utilities;
 
 namespace CustomNotes.HarmonyPatches
 {
