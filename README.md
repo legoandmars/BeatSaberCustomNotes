@@ -31,8 +31,8 @@ If you plan on adding any new dependencies which are located in the Beat Saber d
 
 ```xml
 ...
-<Reference Include="BS_Utils">
-  <HintPath>$(BeatSaberDir)\Plugins\BS_Utils.dll</HintPath>
+<Reference Include="SiraUtil">
+  <HintPath>$(BeatSaberDir)\Plugins\SiraUtil.dll</HintPath>
 </Reference>
 <Reference Include="IPA.Loader">
   <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\IPA.Loader.dll</HintPath>
