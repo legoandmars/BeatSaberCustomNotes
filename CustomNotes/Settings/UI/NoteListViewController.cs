@@ -41,7 +41,7 @@ namespace CustomNotes.Settings.UI
         public Action<CustomNote> customNoteChanged;
 
         [UIComponent("noteList")]
-        public CustomListTableData customListTableData;
+        public CustomListTableData customListTableData = null;
 
         [UIAction("noteSelect")]
         public void Select(TableView _, int row)
@@ -135,7 +135,7 @@ namespace CustomNotes.Settings.UI
         private void InitializePreviewNotes(CustomNote customNote, Transform transform)
         {
             // Position previewer based on the CustomNote having a NoteBomb
-            preview.transform.position = customNote.NoteBomb ? new Vector3(1.8f, 1.2f, 1.8f) : new Vector3(1.9f, 1.2f, 1.6f);
+            preview.transform.position = customNote.NoteBomb ? new Vector3(2.1f, 0.9f, 1.60f) : new Vector3(2.25f, 0.9f, 1.45f);
 
             noteLeft = CreatePreviewNote(customNote.NoteLeft, transform, leftArrowPos);
             noteDotLeft = CreatePreviewNote(customNote.NoteDotLeft, transform, leftDotPos);
@@ -169,7 +169,7 @@ namespace CustomNotes.Settings.UI
                 {
                     float colorStrength = customNote.Descriptor.NoteColorStrength;
                     Color noteAColor = colorManager.ColorForType(ColorType.ColorA);
-                    Color noteBColor  = colorManager.ColorForType(ColorType.ColorB);
+                    Color noteBColor = colorManager.ColorForType(ColorType.ColorB);
 
                     Utils.ColorizeCustomNote(noteAColor, colorStrength, noteLeft);
                     Utils.ColorizeCustomNote(noteBColor, colorStrength, noteRight);
@@ -218,8 +218,8 @@ namespace CustomNotes.Settings.UI
 
         private void ClearPreview()
         {
-            DestroyGameObject(ref preview);
             ClearNotes();
+            DestroyGameObject(ref preview);
         }
 
         private void ClearNotes()
