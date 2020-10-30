@@ -11,7 +11,7 @@ namespace CustomNotes.Managers
         private readonly NoteAssetLoader _noteAssetLoader;
         private readonly GameplayCoreSceneSetupData _gameplayCoreSceneSetupData;
 
-        internal CustomNoteManager(Submission submission, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData)
+        internal CustomNoteManager([InjectOptional] Submission submission, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData)
         {
             _submission = submission;
             _noteAssetLoader = noteAssetLoader;
@@ -28,11 +28,11 @@ namespace CustomNotes.Managers
                 MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteRight);
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes)
                 {
-                    _submission.DisableScoreSubmission("Custom Notes", "Ghost Notes");
+                    _submission?.DisableScoreSubmission("Custom Notes", "Ghost Notes");
                 }
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows)
                 {
-                    _submission.DisableScoreSubmission("Custom Notes", "Disappearing Arrows");
+                    _submission?.DisableScoreSubmission("Custom Notes", "Disappearing Arrows");
                 }
             }
         }
