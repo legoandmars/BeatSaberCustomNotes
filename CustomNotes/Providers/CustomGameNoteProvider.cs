@@ -4,6 +4,7 @@ using UnityEngine;
 using SiraUtil.Objects;
 using SiraUtil.Interfaces;
 using CustomNotes.Managers;
+using CustomNotes.Utilities;
 
 namespace CustomNotes.Providers
 {
@@ -22,8 +23,11 @@ namespace CustomNotes.Providers
                 if (_noteAssetLoader.SelectedNote != 0)
                 {
                     var note = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
-                    var go = new GameObject("CustomNotesInitialPrefabs");
-
+                    MaterialSwapper.GetMaterials();
+                    MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteLeft);
+                    MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteRight);
+                    MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteDotLeft);
+                    MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteDotRight);
                     Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.left.arrow").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteLeft));
                     Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.left.dot").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteDotLeft));
                     Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.right.arrow").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteRight));

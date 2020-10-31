@@ -23,9 +23,12 @@ namespace CustomNotes.Managers
             if (_noteAssetLoader.SelectedNote != 0)
             {
                 CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
-                MaterialSwapper.GetMaterials();
-                MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteLeft);
-                MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteRight);
+
+                
+                if (activeNote.NoteBomb != null)
+                {
+                    MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
+                }
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes)
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Ghost Notes");

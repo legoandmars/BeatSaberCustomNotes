@@ -10,6 +10,8 @@ namespace CustomNotes.Installers
     {
         public override void InstallBindings()
         {
+
+
             Container.BindViewController<NotePreviewViewController>();
             Container.BindViewController<NoteDetailsViewController>();
             Container.BindViewController<NoteListViewController>();
