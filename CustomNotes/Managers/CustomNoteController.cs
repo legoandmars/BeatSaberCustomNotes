@@ -1,5 +1,6 @@
 ﻿using Zenject;
 using UnityEngine;
+using SiraUtil.Objects;
 using CustomNotes.Data;
 using CustomNotes.Overrides;
 using CustomNotes.Utilities;
@@ -13,19 +14,34 @@ namespace CustomNotes.Managers
         private GameNoteController _gameNoteController;
         private CustomNoteColorNoteVisuals _customNoteColorNoteVisuals;
 
-        protected GameObject noteA;
-        protected GameObject noteB;
-        protected GameObject noteADot;
-        protected GameObject noteBDot;
+        protected GameObject activeNote;
+        protected SiraPrefabContainer container;
+        protected SiraPrefabContainer.Pool activePool;
+
+        private SiraPrefabContainer.Pool _leftDotNotePool;
+        private SiraPrefabContainer.Pool _rightDotNotePool;
+        private SiraPrefabContainer.Pool _leftArrowNotePool;
+        private SiraPrefabContainer.Pool _rightArrowNotePool;
 
         [Inject]
-        internal void Init(NoteAssetLoader noteAssetLoader)
+        internal void Init(NoteAssetLoader noteAssetLoader,
+            [Inject(Id = "cn.left.dot")] SiraPrefabContainer.Pool leftDotNotePool,
+            [Inject(Id = "cn.left.arrow")] SiraPrefabContainer.Pool leftArrowNotePool,
+            [Inject(Id = "cn.right.dot")] SiraPrefabContainer.Pool rightDotNotePool,
+            [Inject(Id = "cn.right.arrow")] SiraPrefabContainer.Pool rightArrowNotePool)
         {
+            _leftDotNotePool = leftDotNotePool;
+            _rightDotNotePool = rightDotNotePool;
+            _leftArrowNotePool = leftArrowNotePool;
+            _rightArrowNotePool = rightArrowNotePool;
+
             _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
 
             _gameNoteController = GetComponent<GameNoteController>();
             _customNoteColorNoteVisuals = gameObject.AddComponent<CustomNoteColorNoteVisuals>();
 
+            _gameNoteController.noteWasCutEvent += WasCut;
+            _gameNoteController.noteWasMissedEvent += DidFinish;
             _gameNoteController.didInitEvent += Controller_DidInit;
             _customNoteColorNoteVisuals.didInitEvent += Visuals_DidInit;
 
@@ -35,39 +51,47 @@ namespace CustomNotes.Managers
             noteMesh.forceRenderingOff = true;
         }
 
-        private void Controller_DidInit(NoteController noteController)
+        private void DidFinish(NoteController nc)
         {
-            switch (noteController.noteData.colorType)
+            container.transform.SetParent(null);
+            switch (nc.noteData.colorType)
             {
                 case ColorType.ColorA:
-                    if (noteController.noteData.cutDirection == NoteCutDirection.Any) InstantiateThenParent(_customNote.NoteDotLeft, ref noteADot);
-                    else InstantiateThenParent(_customNote.NoteLeft, ref noteA);
-                    break;
                 case ColorType.ColorB:
-                    if (noteController.noteData.cutDirection == NoteCutDirection.Any) InstantiateThenParent(_customNote.NoteDotRight, ref noteBDot);
-                    else InstantiateThenParent(_customNote.NoteRight, ref noteB);
+                    activePool?.Despawn(container);
                     break;
                 default:
                     break;
             }
         }
 
-        private void ParentNote(GameObject fakeMesh)
+        private void WasCut(NoteController nc, NoteCutInfo _)
         {
-            fakeMesh.transform.SetParent(noteCube);
-            fakeMesh.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
-            fakeMesh.transform.Rotate(new Vector3(0, 0, 0), Space.Self);
-            fakeMesh.transform.localRotation = fakeMesh.transform.localRotation * transform.localRotation;
+            DidFinish(nc);
         }
 
-        private void InstantiateThenParent(GameObject note, ref GameObject to)
+        private void Controller_DidInit(NoteController noteController)
         {
-            if (to == null)
-            {
-                to = Instantiate(note);
-                ParentNote(to);
-            }
+            var data = noteController.noteData;
+            SpawnThenParent(data.colorType == ColorType.ColorA
+                ? data.cutDirection == NoteCutDirection.Any ? _leftDotNotePool : _leftArrowNotePool
+                : data.cutDirection == NoteCutDirection.Any ? _rightDotNotePool : _rightArrowNotePool);
+        }
+
+        private void ParentNote(GameObject fakeMesh)
+        {
+            container.transform.SetParent(noteCube);
+            fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
+            container.transform.localRotation = Quaternion.identity;
+            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+        }
+
+        private void SpawnThenParent(SiraPrefabContainer.Pool noteModelPool)
+        {
+            container = noteModelPool.Spawn();
+            activeNote = container.Prefab;
+            activePool = noteModelPool;
+            ParentNote(activeNote);
         }
 
         protected void SetActiveThenColor(GameObject note, Color color)
@@ -78,23 +102,7 @@ namespace CustomNotes.Managers
 
         private void Visuals_DidInit(ColorNoteVisuals visuals, NoteController noteController)
         {
-            noteA?.SetActive(false);
-            noteB?.SetActive(false);
-            noteADot?.SetActive(false);
-            noteBDot?.SetActive(false);
-
-            // Check and activate/deactivate custom note objects attached to a pooled note object
-            var noteData = noteController.noteData;
-            if (noteData.colorType == ColorType.ColorA)
-            {
-                if (noteData.cutDirection == NoteCutDirection.Any) SetActiveThenColor(noteADot, visuals.noteColor);
-                else SetActiveThenColor(noteA, visuals.noteColor);
-            }
-            else if (noteData.colorType == ColorType.ColorB)
-            {
-                if (noteData.cutDirection == NoteCutDirection.Any) SetActiveThenColor(noteBDot, visuals.noteColor);
-                else SetActiveThenColor(noteB, visuals.noteColor);
-            }
+            SetActiveThenColor(activeNote, visuals.noteColor);
 
             // Hide certain parts of the default note which is not required
             if (_customNote.Descriptor.DisableBaseNoteArrows)
@@ -107,6 +115,8 @@ namespace CustomNotes.Managers
         {
             if (_gameNoteController != null)
             {
+                _gameNoteController.noteWasCutEvent -= WasCut;
+                _gameNoteController.noteWasMissedEvent -= DidFinish;
                 _gameNoteController.didInitEvent -= Controller_DidInit;
             }
             if (_customNoteColorNoteVisuals != null)
