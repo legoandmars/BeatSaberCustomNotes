@@ -25,15 +25,16 @@ namespace CustomNotes.Managers
 
         [Inject]
         internal void Init(NoteAssetLoader noteAssetLoader,
-            [Inject(Id = "cn.left.dot")] SiraPrefabContainer.Pool leftDotNotePool,
             [Inject(Id = "cn.left.arrow")] SiraPrefabContainer.Pool leftArrowNotePool,
-            [Inject(Id = "cn.right.dot")] SiraPrefabContainer.Pool rightDotNotePool,
-            [Inject(Id = "cn.right.arrow")] SiraPrefabContainer.Pool rightArrowNotePool)
-        {
-            _leftDotNotePool = leftDotNotePool;
-            _rightDotNotePool = rightDotNotePool;
+            [Inject(Id = "cn.right.arrow")] SiraPrefabContainer.Pool rightArrowNotePool,
+            [InjectOptional(Id = "cn.left.dot")] SiraPrefabContainer.Pool leftDotNotePool,
+            [InjectOptional(Id = "cn.right.dot")] SiraPrefabContainer.Pool rightDotNotePool)
+        {            
             _leftArrowNotePool = leftArrowNotePool;
             _rightArrowNotePool = rightArrowNotePool;
+
+            _leftDotNotePool = leftDotNotePool ?? _leftArrowNotePool;
+            _rightDotNotePool = rightDotNotePool ?? _rightArrowNotePool;
 
             _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
 
