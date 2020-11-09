@@ -50,6 +50,7 @@ namespace CustomNotes.Managers
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             container.transform.localRotation = Quaternion.identity;
             fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+            container.transform.localScale = Vector3.one;
         }
 
         private void SpawnThenParent(SiraPrefabContainer.Pool bombModelPool)

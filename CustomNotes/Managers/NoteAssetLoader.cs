@@ -65,6 +65,7 @@ namespace CustomNotes.Managers
                 CustomNoteObjects = LoadCustomNotes(CustomNoteFiles);
                 Logger.log.Debug($"{CustomNoteObjects.Count} total note(s) loaded.");
 
+                SelectedNote = 0;
                 if (_pluginConfig.LastNote != null)
                 {
                     int numberOfNotes = CustomNoteObjects.Count;
@@ -77,7 +78,6 @@ namespace CustomNotes.Managers
                         }
                     }
                 }
-
                 IsLoaded = true;
             }
         }

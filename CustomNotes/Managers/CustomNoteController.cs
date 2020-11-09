@@ -2,12 +2,13 @@
 using UnityEngine;
 using SiraUtil.Objects;
 using CustomNotes.Data;
+using SiraUtil.Interfaces;
 using CustomNotes.Overrides;
 using CustomNotes.Utilities;
 
 namespace CustomNotes.Managers
 {
-    public class CustomNoteController : MonoBehaviour
+    public class CustomNoteController : MonoBehaviour, IColorable
     {
         protected Transform noteCube;
         private CustomNote _customNote;
@@ -22,6 +23,8 @@ namespace CustomNotes.Managers
         private SiraPrefabContainer.Pool _rightDotNotePool;
         private SiraPrefabContainer.Pool _leftArrowNotePool;
         private SiraPrefabContainer.Pool _rightArrowNotePool;
+
+        public Color Color => _customNoteColorNoteVisuals != null ? _customNoteColorNoteVisuals.noteColor : Color.white;
 
         [Inject]
         internal void Init(NoteAssetLoader noteAssetLoader,
@@ -85,6 +88,7 @@ namespace CustomNotes.Managers
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             container.transform.localRotation = Quaternion.identity;
             fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+            container.transform.localScale = Vector3.one;
         }
 
         private void SpawnThenParent(SiraPrefabContainer.Pool noteModelPool)
@@ -98,13 +102,12 @@ namespace CustomNotes.Managers
         protected void SetActiveThenColor(GameObject note, Color color)
         {
             note.SetActive(true);
-            Utils.ColorizeCustomNote(color, _customNote.Descriptor.NoteColorStrength, note);
+            SetColor(color, true);
         }
 
         private void Visuals_DidInit(ColorNoteVisuals visuals, NoteController noteController)
         {
             SetActiveThenColor(activeNote, visuals.noteColor);
-
             // Hide certain parts of the default note which is not required
             if (_customNote.Descriptor.DisableBaseNoteArrows)
             {
@@ -123,6 +126,20 @@ namespace CustomNotes.Managers
             if (_customNoteColorNoteVisuals != null)
             {
                 _customNoteColorNoteVisuals.didInitEvent -= Visuals_DidInit;
+            }
+        }
+
+        public void SetColor(Color color)
+        {
+            SetColor(color, false);
+        }
+
+        public void SetColor(Color color, bool updateMatBlocks)
+        {
+            if (activeNote != null)
+            {
+                _customNoteColorNoteVisuals.SetColor(color, updateMatBlocks);
+                Utils.ColorizeCustomNote(color, _customNote.Descriptor.NoteColorStrength, activeNote);
             }
         }
     }
