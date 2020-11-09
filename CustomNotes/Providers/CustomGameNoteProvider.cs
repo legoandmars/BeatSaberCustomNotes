@@ -16,10 +16,12 @@ namespace CustomNotes.Providers
         private class CustomGameNoteDecorator : IPrefabProvider<GameNoteController>
         {
             public bool Chain => true;
+            public bool CanSetup { get; private set; }
 
             [Inject]
-            public void Construct(NoteAssetLoader _noteAssetLoader, DiContainer Container)
+            public void Construct(NoteAssetLoader _noteAssetLoader, DiContainer Container, GameplayCoreSceneSetupData sceneSetupData)
             {
+                CanSetup = !(sceneSetupData.gameplayModifiers.ghostNotes || sceneSetupData.gameplayModifiers.disappearingArrows) || !Container.HasBinding<MultiplayerLevelSceneSetupData>();
                 if (_noteAssetLoader.SelectedNote != 0)
                 {
                     var note = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
@@ -43,6 +45,7 @@ namespace CustomNotes.Providers
 
             public GameNoteController Modify(GameNoteController original)
             {
+                if (!CanSetup) return original;
                 original.gameObject.AddComponent<CustomNoteController>();
                 return original;
             }

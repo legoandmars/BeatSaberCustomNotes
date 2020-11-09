@@ -17,11 +17,13 @@ namespace CustomNotes.Providers
         private class CustomBombNoteDecorator : IPrefabProvider<BombNoteController>
         {
             public bool Chain => true;
+            public bool CanSetup { get; private set; }
 
             [Inject]
-            public void Construct(NoteAssetLoader _noteAssetLoader, DiContainer Container)
+            public void Construct(NoteAssetLoader _noteAssetLoader, DiContainer Container, GameplayCoreSceneSetupData sceneSetupData)
             {
-                if (_noteAssetLoader.SelectedNote != 0)
+                CanSetup = !(sceneSetupData.gameplayModifiers.ghostNotes || sceneSetupData.gameplayModifiers.disappearingArrows) || !Container.HasBinding<MultiplayerLevelSceneSetupData>();
+                if (_noteAssetLoader.SelectedNote != 0 && CanSetup)
                 {
                     var note = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
                     MaterialSwapper.GetMaterials();
@@ -32,6 +34,7 @@ namespace CustomNotes.Providers
 
             public BombNoteController Modify(BombNoteController original)
             {
+                if (!CanSetup) return original;
                 original.gameObject.AddComponent<CustomBombController>();
                 return original;
             }
