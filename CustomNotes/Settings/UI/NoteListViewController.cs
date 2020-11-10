@@ -1,18 +1,24 @@
-﻿using BeatSaberMarkupLanguage.Attributes;
+﻿using HMUI;
+using System;
+using Zenject;
+using UnityEngine;
+using CustomNotes.Data;
+using CustomNotes.Managers;
+using CustomNotes.Utilities;
+using CustomNotes.Settings.Utilities;
+using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
-using CustomNotes.Data;
-using CustomNotes.Utilities;
-using HMUI;
-using System;
-using System.Linq;
-using UnityEngine;
 
 namespace CustomNotes.Settings.UI
 {
     internal class NoteListViewController : BSMLResourceViewController
     {
         public override string ResourceName => "CustomNotes.Settings.UI.Views.noteList.bsml";
+
+        private PluginConfig _pluginConfig;
+        private NoteAssetLoader _noteAssetLoader;
+        private GameplaySetupViewController _gameplaySetupViewController;
 
         private bool isGeneratingPreview = false;
         private GameObject preview;
@@ -40,14 +46,22 @@ namespace CustomNotes.Settings.UI
 
         public Action<CustomNote> customNoteChanged;
 
+        [Inject]
+        public void Construct(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, GameplaySetupViewController gameplaySetupViewController)
+        {
+            _pluginConfig = pluginConfig;
+            _noteAssetLoader = noteAssetLoader;
+            _gameplaySetupViewController = gameplaySetupViewController;
+        }
+
         [UIComponent("noteList")]
         public CustomListTableData customListTableData = null;
 
         [UIAction("noteSelect")]
         public void Select(TableView _, int row)
         {
-            NoteAssetLoader.SelectedNote = row;
-            Configuration.CurrentlySelectedNote = NoteAssetLoader.CustomNoteObjects[row].FileName;
+            _noteAssetLoader.SelectedNote = row;
+            _pluginConfig.LastNote = _noteAssetLoader.CustomNoteObjects[row].FileName;
 
             GenerateNotePreview(row);
         }
@@ -55,9 +69,9 @@ namespace CustomNotes.Settings.UI
         [UIAction("reloadNotes")]
         public void ReloadNotes()
         {
-            NoteAssetLoader.Reload();
+            _noteAssetLoader.Reload();
             SetupList();
-            Select(customListTableData.tableView, NoteAssetLoader.SelectedNote);
+            Select(customListTableData.tableView, _noteAssetLoader.SelectedNote);
         }
 
         [UIAction("#post-parse")]
@@ -65,7 +79,7 @@ namespace CustomNotes.Settings.UI
         {
             customListTableData.data.Clear();
 
-            foreach (CustomNote note in NoteAssetLoader.CustomNoteObjects)
+            foreach (CustomNote note in _noteAssetLoader.CustomNoteObjects)
             {
                 Sprite sprite = Sprite.Create(note.Descriptor.Icon, new Rect(0, 0, note.Descriptor.Icon.width, note.Descriptor.Icon.height), new Vector2(0.5f, 0.5f));
                 CustomListTableData.CustomCellInfo customCellInfo = new CustomListTableData.CustomCellInfo(note.Descriptor.NoteName, note.Descriptor.AuthorName, sprite);
@@ -73,7 +87,7 @@ namespace CustomNotes.Settings.UI
             }
 
             customListTableData.tableView.ReloadData();
-            int selectedNote = NoteAssetLoader.SelectedNote;
+            int selectedNote = _noteAssetLoader.SelectedNote;
 
             customListTableData.tableView.ScrollToCellWithIdx(selectedNote, TableViewScroller.ScrollPositionType.Beginning, false);
             customListTableData.tableView.SelectCellWithIdx(selectedNote);
@@ -96,7 +110,7 @@ namespace CustomNotes.Settings.UI
                 preview.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
             }
 
-            Select(customListTableData.tableView, NoteAssetLoader.SelectedNote);
+            Select(customListTableData.tableView, _noteAssetLoader.SelectedNote);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
@@ -114,7 +128,7 @@ namespace CustomNotes.Settings.UI
                     isGeneratingPreview = true;
                     ClearNotes();
 
-                    CustomNote currentNote = NoteAssetLoader.CustomNoteObjects[selectedNote];
+                    CustomNote currentNote = _noteAssetLoader.CustomNoteObjects[selectedNote];
                     if (currentNote != null)
                     {
                         customNoteChanged?.Invoke(currentNote);
@@ -164,22 +178,14 @@ namespace CustomNotes.Settings.UI
 
             if (customNote.Descriptor.UsesNoteColor)
             {
-                ColorManager colorManager = Resources.FindObjectsOfTypeAll<ColorManager>().First();
-                if (colorManager)
-                {
-                    float colorStrength = customNote.Descriptor.NoteColorStrength;
-                    Color noteAColor = colorManager.ColorForType(ColorType.ColorA);
-                    Color noteBColor = colorManager.ColorForType(ColorType.ColorB);
+                float colorStrength = customNote.Descriptor.NoteColorStrength;
+                Color noteAColor = _gameplaySetupViewController.colorSchemesSettings.GetSelectedColorScheme().saberAColor;
+                Color noteBColor = _gameplaySetupViewController.colorSchemesSettings.GetSelectedColorScheme().saberBColor;
 
-                    Utils.ColorizeCustomNote(noteAColor, colorStrength, noteLeft);
-                    Utils.ColorizeCustomNote(noteBColor, colorStrength, noteRight);
-                    Utils.ColorizeCustomNote(noteBColor, colorStrength, noteDotRight);
-                    Utils.ColorizeCustomNote(noteAColor, colorStrength, noteDotLeft);
-                }
-                else
-                {
-                    Logger.log.Warn("Failed to locate a suitable ColorManager for the CustomNote preview");
-                }
+                Utils.ColorizeCustomNote(noteAColor, colorStrength, noteLeft);
+                Utils.ColorizeCustomNote(noteBColor, colorStrength, noteRight);
+                Utils.ColorizeCustomNote(noteBColor, colorStrength, noteDotRight);
+                Utils.ColorizeCustomNote(noteAColor, colorStrength, noteDotLeft);
             }
         }
 
@@ -204,7 +210,6 @@ namespace CustomNotes.Settings.UI
             {
                 return transform ? Instantiate(gameObject, transform) : Instantiate(gameObject);
             }
-
             return null;
         }
 
