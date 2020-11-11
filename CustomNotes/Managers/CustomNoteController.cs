@@ -102,7 +102,10 @@ namespace CustomNotes.Managers
         protected void SetActiveThenColor(GameObject note, Color color)
         {
             note.SetActive(true);
-            SetColor(color, true);
+            if (_customNote.Descriptor.UsesNoteColor)
+            {
+                SetColor(color, true);
+            }
         }
 
         private void Visuals_DidInit(ColorNoteVisuals visuals, NoteController noteController)
