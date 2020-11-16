@@ -264,6 +264,7 @@ namespace CustomNotes.Settings.UI
             ScalePreviewNote(noteDotLeft, scale);
             ScalePreviewNote(noteRight, scale);
             ScalePreviewNote(noteDotRight, scale);
+            ScalePreviewNote(noteBomb, scale);
 
             ScalePreviewNote(fakeLeftArrow, scale);
             ScalePreviewNote(fakeLeftDot, scale);
