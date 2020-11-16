@@ -4,12 +4,15 @@ using SiraUtil.Objects;
 using CustomNotes.Data;
 using SiraUtil.Interfaces;
 using CustomNotes.Overrides;
+using CustomNotes.Settings.Utilities;
 using CustomNotes.Utilities;
 
 namespace CustomNotes.Managers
 {
     public class CustomNoteController : MonoBehaviour, IColorable
     {
+        private PluginConfig _pluginConfig;
+
         protected Transform noteCube;
         private CustomNote _customNote;
         private GameNoteController _gameNoteController;
@@ -27,12 +30,14 @@ namespace CustomNotes.Managers
         public Color Color => _customNoteColorNoteVisuals != null ? _customNoteColorNoteVisuals.noteColor : Color.white;
 
         [Inject]
-        internal void Init(NoteAssetLoader noteAssetLoader,
+        internal void Init(PluginConfig pluginConfig,
+            NoteAssetLoader noteAssetLoader,
             [Inject(Id = "cn.left.arrow")] SiraPrefabContainer.Pool leftArrowNotePool,
             [Inject(Id = "cn.right.arrow")] SiraPrefabContainer.Pool rightArrowNotePool,
             [InjectOptional(Id = "cn.left.dot")] SiraPrefabContainer.Pool leftDotNotePool,
             [InjectOptional(Id = "cn.right.dot")] SiraPrefabContainer.Pool rightDotNotePool)
-        {            
+        {
+            _pluginConfig = pluginConfig;
             _leftArrowNotePool = leftArrowNotePool;
             _rightArrowNotePool = rightArrowNotePool;
 
@@ -87,7 +92,7 @@ namespace CustomNotes.Managers
             container.transform.SetParent(noteCube);
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             container.transform.localRotation = Quaternion.identity;
-            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
             container.transform.localScale = Vector3.one;
         }
 
@@ -115,6 +120,10 @@ namespace CustomNotes.Managers
             if (_customNote.Descriptor.DisableBaseNoteArrows)
             {
                 _customNoteColorNoteVisuals.TurnOffVisuals();
+            }
+            else if(_pluginConfig.NoteSize != 1)
+            {
+                _customNoteColorNoteVisuals.ScaleVisuals(_pluginConfig.NoteSize);
             }
         }
 
