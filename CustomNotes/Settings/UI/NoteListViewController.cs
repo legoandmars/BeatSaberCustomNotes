@@ -218,6 +218,7 @@ namespace CustomNotes.Settings.UI
             if (noteObject && vector != null)
             {
                 noteObject.transform.localPosition = vector;
+                noteObject.transform.localScale *= _pluginConfig.NoteSize;
             }
         }
 
@@ -248,6 +249,27 @@ namespace CustomNotes.Settings.UI
                 Destroy(gameObject);
                 gameObject = null;
             }
+        }
+        
+        private void ScalePreviewNote(GameObject note, float scale)
+        {
+            if (note)
+            {
+                note.transform.localScale = new Vector3(1,1,1) * scale;
+            }
+        }
+        public void ScalePreviewNotes(float scale)
+        {
+            ScalePreviewNote(noteLeft, scale);
+            ScalePreviewNote(noteDotLeft, scale);
+            ScalePreviewNote(noteRight, scale);
+            ScalePreviewNote(noteDotRight, scale);
+            ScalePreviewNote(noteBomb, scale);
+
+            ScalePreviewNote(fakeLeftArrow, scale);
+            ScalePreviewNote(fakeLeftDot, scale);
+            ScalePreviewNote(fakeRightArrow, scale);
+            ScalePreviewNote(fakeRightDot, scale);
         }
     }
 }

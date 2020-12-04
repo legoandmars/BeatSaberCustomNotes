@@ -36,5 +36,17 @@ namespace CustomNotes.Overrides
             _arrowGlowSpriteRenderer.enabled = false;
             _circleGlowSpriteRenderer.enabled = false;
         }
+
+        public void ScaleVisuals(float scale)
+        {
+            Vector3 scaleVector = new Vector3(1, 1, 1) * scale;
+            _arrowMeshRenderer.gameObject.transform.localScale = scaleVector;
+            _arrowGlowSpriteRenderer.gameObject.transform.localScale = scaleVector;
+            _circleGlowSpriteRenderer.gameObject.transform.localScale = scaleVector;
+
+            _arrowMeshRenderer.gameObject.transform.localPosition = new Vector3(0, 0.11f, -0.25f) * scale;
+            _arrowGlowSpriteRenderer.gameObject.transform.localPosition = new Vector3(0, 0.11f, -0.25f) * scale;
+            _circleGlowSpriteRenderer.gameObject.transform.localPosition = new Vector3(0, 0, -0.25f) * scale;
+        }
     }
 }

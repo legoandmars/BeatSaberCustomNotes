@@ -3,6 +3,7 @@ using System.Linq;
 using UnityEngine;
 using System.Reflection;
 using System.Collections.Generic;
+using IPA.Utilities;
 
 namespace CustomNotes.Utilities
 {
@@ -68,6 +69,33 @@ namespace CustomNotes.Utilities
                         childRenderer.material.SetColor("_Color", noteColor);
                     }
                 }
+            }
+            MaterialPropertyBlockController materialPropertyBlockController = noteObject.GetComponent<MaterialPropertyBlockController>(); // Set the color of material property block controllers, for the replaced note shader
+            if (materialPropertyBlockController != null)
+            {
+                materialPropertyBlockController.materialPropertyBlock.SetColor("_Color", noteColor);
+                materialPropertyBlockController.ApplyChanges();
+            }
+        }
+
+        /// <summary>
+        /// Adds a MaterialPropertyBlockController to the root of the gameObject. Only selects renderers with specific shaders.
+        /// </summary>
+        /// <param name="gameObject"></param>
+        public static void AddMaterialPropertyBlockController(GameObject gameObject)
+        {
+            List<Renderer> rendererList = new List<Renderer>();
+            foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
+            {
+                if (renderer.material.shader.name.ToLower() == "custom/notehd") // only get the replaced note shader
+                {
+                    rendererList.Add(renderer);
+                }
+            }
+            if (rendererList.Count > 0)
+            {
+                MaterialPropertyBlockController newController = gameObject.AddComponent<MaterialPropertyBlockController>();
+                ReflectionUtil.SetField<MaterialPropertyBlockController, Renderer[]>(newController, "_renderers", rendererList.ToArray());
             }
         }
 

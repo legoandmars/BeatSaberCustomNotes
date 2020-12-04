@@ -1,12 +1,15 @@
 ﻿using Zenject;
 using UnityEngine;
 using CustomNotes.Data;
+using CustomNotes.Settings.Utilities;
 using SiraUtil.Objects;
 
 namespace CustomNotes.Managers
 {
     internal class CustomBombController : MonoBehaviour
     {
+        private PluginConfig _pluginConfig;
+
         private CustomNote _customNote;
         private NoteMovement _noteMovement;
         private BombNoteController _bombNoteController;
@@ -18,8 +21,10 @@ namespace CustomNotes.Managers
         protected SiraPrefabContainer.Pool bombPool;
 
         [Inject]
-        internal void Init(NoteAssetLoader noteAssetLoader, [Inject(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
+        internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [Inject(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
         {
+            _pluginConfig = pluginConfig;
+
             _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
             _bombNoteController = GetComponent<BombNoteController>();
             _noteMovement = GetComponent<NoteMovement>();
@@ -49,7 +54,7 @@ namespace CustomNotes.Managers
             container.transform.SetParent(bombMesh);
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             container.transform.localRotation = Quaternion.identity;
-            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f);
+            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
             container.transform.localScale = Vector3.one;
         }
 
