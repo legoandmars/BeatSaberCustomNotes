@@ -2,8 +2,8 @@
   <horizontal bg='panel-top' pad-left='10' pad-right='10' horizontal-fit='PreferredSize'>
     <text text='Note Description' align='Center' font-size='10' />
   </horizontal>
-  <horizontal pref-width='100' pref-height='45'>
+  <horizontal pref-width='100' pref-height='30'>
     <text-page id='note-description' />
   </horizontal>
-  <slider-setting text='Note Scale' min='0.5' max='2' increment='0.01' value='note-size' apply-on-change='true'/>
+  <slider-setting text='Note Scale' min='0.4' max='2' increment='0.05' value='note-size' apply-on-change='true'/>
 </vertical>
