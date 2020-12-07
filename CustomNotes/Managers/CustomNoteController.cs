@@ -87,6 +87,14 @@ namespace CustomNotes.Managers
                 : data.cutDirection == NoteCutDirection.Any ? _rightDotNotePool : _rightArrowNotePool);
         }
 
+        private void SetNoteLayer(GameObject fakeMesh) {
+            if (fakeMesh.layer == noteCube.gameObject.layer) return;
+            fakeMesh.layer = noteCube.gameObject.layer;
+            foreach (Transform t in fakeMesh.GetComponentsInChildren<Transform>()) {
+                t.gameObject.layer = noteCube.gameObject.layer;
+            }
+        }
+
         private void ParentNote(GameObject fakeMesh)
         {
             container.transform.SetParent(noteCube);
@@ -101,6 +109,8 @@ namespace CustomNotes.Managers
             container = noteModelPool.Spawn();
             activeNote = container.Prefab;
             activePool = noteModelPool;
+            if (_pluginConfig.NoteMirrorReflection)
+                SetNoteLayer(activeNote);
             ParentNote(activeNote);
         }
 

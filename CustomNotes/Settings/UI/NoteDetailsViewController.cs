@@ -51,5 +51,11 @@ namespace CustomNotes.Settings
                 _listViewController.ScalePreviewNotes(value);
             }
         }
+
+        [UIValue("note-mirror-reflection")]
+        public bool noteMirrorReflection {
+            get { return _pluginConfig.NoteMirrorReflection; }
+            set { _pluginConfig.NoteMirrorReflection = value; }
+        }
     }
 }
