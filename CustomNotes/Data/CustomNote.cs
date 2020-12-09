@@ -33,8 +33,10 @@ namespace CustomNotes.Data
 
                     NoteLeft = note.transform.Find("NoteLeft").gameObject;
                     NoteRight = note.transform.Find("NoteRight").gameObject;
-                    NoteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
-                    NoteDotRight = note.transform.Find("NoteDotRight")?.gameObject;
+                    Transform NoteDotLeftTransform = note.transform.Find("NoteDotLeft");
+                    Transform NoteDotRightTransform = note.transform.Find("NoteDotRight");
+                    NoteDotLeft = NoteDotLeftTransform != null ? NoteDotLeftTransform.gameObject : NoteLeft;
+                    NoteDotRight = NoteDotRightTransform != null ? NoteDotRightTransform.gameObject : NoteRight;
                     NoteBomb = note.transform.Find("NoteBomb")?.gameObject;
                 }
                 catch (Exception ex)

@@ -2,8 +2,8 @@
 {
     public class PluginConfig
     {
-        public static PluginConfig Instance;
+        public virtual string LastNote { get; set; }
 
-        public string lastNote;
+        public virtual float NoteSize { get; set; } = 1;
     }
 }
