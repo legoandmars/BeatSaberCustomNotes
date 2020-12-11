@@ -71,7 +71,7 @@ namespace CustomNotes.Managers
             container = bombModelPool.Spawn();
             activeNote = container.Prefab;
             bombPool = bombModelPool;
-            if (_pluginConfig.NoteMirrorReflection)
+            if (!_pluginConfig.PerformanceMode)
                 SetNoteLayer(activeNote);
             ParentNote(activeNote);
         }

@@ -109,7 +109,7 @@ namespace CustomNotes.Managers
             container = noteModelPool.Spawn();
             activeNote = container.Prefab;
             activePool = noteModelPool;
-            if (_pluginConfig.NoteMirrorReflection)
+            if (!_pluginConfig.PerformanceMode)
                 SetNoteLayer(activeNote);
             ParentNote(activeNote);
         }

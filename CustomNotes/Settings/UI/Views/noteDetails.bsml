@@ -12,7 +12,7 @@
       <vertical spacing='1' horizontal-fit='PreferredSize' pad='5'>
     
         <slider-setting text='Note Scale' min='0.4' max='2' increment='0.05' value='note-size' apply-on-change='true'/>
-        <checkbox-setting text='Note Mirror Reflection' value='note-mirror-reflection' apply-on-change='true' hover-hint='If Custom Notes should be reflected by the platform mirror'/>
+        <checkbox-setting text='High Performance Mode' value='performance-mode' apply-on-change='true' hover-hint='Disables:&#xA;* Notes mirror reflection'/>
         
       </vertical>
     </horizontal>

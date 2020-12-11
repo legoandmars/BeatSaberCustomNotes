@@ -6,6 +6,6 @@
 
         public virtual float NoteSize { get; set; } = 1;
 
-        public virtual bool NoteMirrorReflection { get; set; } = true;
+        public virtual bool PerformanceMode { get; set; } = false;
     }
 }

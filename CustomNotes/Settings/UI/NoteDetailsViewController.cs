@@ -52,10 +52,10 @@ namespace CustomNotes.Settings
             }
         }
 
-        [UIValue("note-mirror-reflection")]
-        public bool noteMirrorReflection {
-            get { return _pluginConfig.NoteMirrorReflection; }
-            set { _pluginConfig.NoteMirrorReflection = value; }
+        [UIValue("performance-mode")]
+        public bool performanceMode {
+            get { return _pluginConfig.PerformanceMode; }
+            set { _pluginConfig.PerformanceMode = value; }
         }
     }
 }
