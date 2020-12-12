@@ -107,5 +107,17 @@ namespace CustomNotes.Utilities
                 SetLayer(customNote.NoteBomb, layer);
             }
         }
+
+        /// <summary>
+        /// Set the global watermark to show that the player has hmd only custom notes.
+        /// </summary>
+        public static void SetWatermark()
+        {
+            // temporarily just a big cube for now. find an actual watermark later.
+            GameObject tempWatermark = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            tempWatermark.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
+            tempWatermark.transform.position = new Vector3(0, -0.75f, 0);
+            SetLayer(tempWatermark, NoteLayer.ThirdPerson);
+        }
     }
 }

@@ -112,7 +112,11 @@ namespace CustomNotes.Managers
             if (_pluginConfig.HMDOnly == true)
             {
                 LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.FirstPerson);
-                if(LayerUtils.CameraSet == false) LayerUtils.SetCamera(Camera.main, LayerUtils.CameraView.FirstPerson);
+                if (LayerUtils.CameraSet == false)
+                {
+                    LayerUtils.SetCamera(Camera.main, LayerUtils.CameraView.FirstPerson);
+                    LayerUtils.SetWatermark();
+                }
             }
             else
             {
