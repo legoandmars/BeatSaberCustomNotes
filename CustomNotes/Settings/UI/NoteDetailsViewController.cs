@@ -51,5 +51,11 @@ namespace CustomNotes.Settings
                 _listViewController.ScalePreviewNotes(value);
             }
         }
+
+        [UIValue("performance-mode")]
+        public bool performanceMode {
+            get { return _pluginConfig.PerformanceMode; }
+            set { _pluginConfig.PerformanceMode = value; }
+        }
     }
 }

@@ -48,6 +48,14 @@ namespace CustomNotes.Managers
             SpawnThenParent(bombPool);
         }
 
+        private void SetNoteLayer(GameObject fakeMesh) {
+            if (fakeMesh.layer == bombMesh.gameObject.layer) return;
+            fakeMesh.layer = bombMesh.gameObject.layer;
+            foreach (Transform t in fakeMesh.GetComponentsInChildren<Transform>()) {
+                t.gameObject.layer = bombMesh.gameObject.layer;
+            }
+        }
+
         private void ParentNote(GameObject fakeMesh)
         {
             fakeMesh.SetActive(true);
@@ -63,6 +71,8 @@ namespace CustomNotes.Managers
             container = bombModelPool.Spawn();
             activeNote = container.Prefab;
             bombPool = bombModelPool;
+            if (!_pluginConfig.PerformanceMode)
+                SetNoteLayer(activeNote);
             ParentNote(activeNote);
         }
 
