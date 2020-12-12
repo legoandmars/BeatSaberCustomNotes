@@ -2,6 +2,7 @@
 using UnityEngine;
 using CustomNotes.Data;
 using CustomNotes.Settings.Utilities;
+using CustomNotes.Utilities;
 using SiraUtil.Objects;
 
 namespace CustomNotes.Managers
@@ -48,14 +49,6 @@ namespace CustomNotes.Managers
             SpawnThenParent(bombPool);
         }
 
-        private void SetNoteLayer(GameObject fakeMesh) {
-            if (fakeMesh.layer == bombMesh.gameObject.layer) return;
-            fakeMesh.layer = bombMesh.gameObject.layer;
-            foreach (Transform t in fakeMesh.GetComponentsInChildren<Transform>()) {
-                t.gameObject.layer = bombMesh.gameObject.layer;
-            }
-        }
-
         private void ParentNote(GameObject fakeMesh)
         {
             fakeMesh.SetActive(true);
@@ -72,7 +65,7 @@ namespace CustomNotes.Managers
             activeNote = container.Prefab;
             bombPool = bombModelPool;
             if (!_pluginConfig.PerformanceMode)
-                SetNoteLayer(activeNote);
+                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.Note);
             ParentNote(activeNote);
         }
 
