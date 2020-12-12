@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using CameraPlus;
-using UnityEngine;
-using Zenject;
-using CustomNotes.Settings.Utilities;
+﻿using CameraPlus;
 using CustomNotes.Utilities;
+using HarmonyLib;
+using UnityEngine;
 
 namespace CustomNotes.HarmonyPatches
 {
