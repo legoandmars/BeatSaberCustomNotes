@@ -74,7 +74,7 @@ namespace CustomNotes.Managers
             }
             else
             {
-                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.Note);
+                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.ThirdPerson);
             }
             ParentNote(activeNote);
         }

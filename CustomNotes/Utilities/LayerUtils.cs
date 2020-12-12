@@ -18,19 +18,45 @@ namespace CustomNotes.Utilities
         public enum NoteLayer : int
         {
             Note = 8,
-            FirstPerson = 23
+            FirstPerson = 23,
+            ThirdPerson = 8
         }
 
-        public static void SetCamera()
+        /// <summary>
+        /// Camera type. Determines culling mask.
+        /// </summary>
+        public enum CameraView
         {
-            if(CameraSet == false)
+            Default,
+            FirstPerson,
+            ThirdPerson
+        }
+
+        /// <summary>
+        /// Sets the type of a camera to first/third person.
+        /// </summary>
+        /// <param name="cam">Camera</param>
+        /// <param name="view">Type to set the camera to.</param>
+        /// <param name="overrideCheck">Unrequired boolean to override the camera cooldown check.</param>
+        public static void SetCamera(Camera cam, CameraView view, bool overrideCheck = false)
+        {
+            if(view == CameraView.FirstPerson)
             {
-                Logger.log.Info("I am setting the culling mask");
-                Camera.main.cullingMask &= ~(1 << (int)NoteLayer.Note);
-                Camera.main.cullingMask |= 1 << (int)NoteLayer.FirstPerson;
+                cam.cullingMask &= ~(1 << (int)NoteLayer.ThirdPerson);
+                cam.cullingMask |= 1 << (int)NoteLayer.FirstPerson;
+            }
+            else if(view == CameraView.ThirdPerson || view == CameraView.Default)
+            {
+                cam.cullingMask &= ~(1 << (int)NoteLayer.FirstPerson);
+                cam.cullingMask |= 1 << (int)NoteLayer.ThirdPerson;
+            }
+
+            if (!overrideCheck)
+            {
                 CameraSet = true;
             }
         }
+
 
         /// <summary>
         /// Recursively sets the layer of a GameObject.

@@ -1,4 +1,5 @@
 ﻿using CustomNotes.Utilities;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
@@ -6,6 +7,7 @@ namespace CustomNotes.Overrides
 {
     public class CustomNoteColorNoteVisuals : ColorNoteVisuals
     {
+        public List<GameObject> duplicatedArrows = new List<GameObject>();
         public CustomNoteColorNoteVisuals()
         {
             ColorNoteVisuals original = GetComponent<ColorNoteVisuals>();
@@ -40,6 +42,7 @@ namespace CustomNotes.Overrides
 
         public void CreateFakeVisuals(int layer)
         {
+            ClearDuplicatedArrows();
             DuplicateIfExists(_arrowMeshRenderer.gameObject, layer);
             DuplicateIfExists(_arrowGlowSpriteRenderer.gameObject, layer);
             DuplicateIfExists(_circleGlowSpriteRenderer.gameObject, layer);
@@ -47,6 +50,7 @@ namespace CustomNotes.Overrides
 
         public void CreateAndScaleFakeVisuals(int layer, float scale)
         {
+            ClearDuplicatedArrows();
             ScaleIfExists(_arrowMeshRenderer.gameObject, layer, scale, new Vector3(0, 0.11f, -0.25f));
             ScaleIfExists(_arrowGlowSpriteRenderer.gameObject, layer, scale, new Vector3(0, 0.11f, -0.25f));
             ScaleIfExists(_circleGlowSpriteRenderer.gameObject, layer, scale, new Vector3(0, 0, -0.25f));
@@ -64,13 +68,26 @@ namespace CustomNotes.Overrides
             _circleGlowSpriteRenderer.gameObject.transform.localPosition = new Vector3(0, 0, -0.25f) * scale;
         }
 
+        private void ClearDuplicatedArrows()
+        {
+            for(int i = 0; i < duplicatedArrows.Count; i++)
+            {
+                duplicatedArrows[i].SetActive(false);
+                Destroy(duplicatedArrows[i]);
+            }
+            duplicatedArrows.Clear();
+        }
+
         private GameObject DuplicateIfExists(GameObject gameObject, int layer)
         {
             if (gameObject.activeInHierarchy)
             {
                 GameObject tempObject = Instantiate(gameObject);
                 tempObject.transform.parent = gameObject.transform.parent;
+                tempObject.transform.localScale = gameObject.transform.localScale;
+                tempObject.transform.localPosition = gameObject.transform.localPosition;
                 LayerUtils.SetLayer(tempObject, layer);
+                duplicatedArrows.Add(tempObject);
                 return tempObject;
             }
             else return null;
