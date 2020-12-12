@@ -6,6 +6,6 @@
 
         public virtual float NoteSize { get; set; } = 1;
 
-        public virtual bool PerformanceMode { get; set; } = false;
+        public virtual bool HMDOnly { get; set; } = false;
     }
 }

@@ -52,10 +52,10 @@ namespace CustomNotes.Settings
             }
         }
 
-        [UIValue("performance-mode")]
-        public bool performanceMode {
-            get { return _pluginConfig.PerformanceMode; }
-            set { _pluginConfig.PerformanceMode = value; }
+        [UIValue("hmd-only")]
+        public bool hmdOnly {
+            get { return _pluginConfig.HMDOnly; }
+            set { _pluginConfig.HMDOnly = value; }
         }
     }
 }

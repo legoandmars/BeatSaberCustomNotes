@@ -22,6 +22,7 @@ namespace CustomNotes.Managers
         {
             if (_noteAssetLoader.SelectedNote != 0)
             {
+                LayerUtils.CameraSet = false;
                 CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
 
                 
