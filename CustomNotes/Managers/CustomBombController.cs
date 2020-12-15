@@ -35,7 +35,7 @@ namespace CustomNotes.Managers
             bombPool = bombContainerPool;
 
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
-            if (_pluginConfig.HMDOnly == false)
+            if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
                 // only disable if custom bombs display on both hmd and display
                 bm.enabled = false;
@@ -68,7 +68,7 @@ namespace CustomNotes.Managers
             container = bombModelPool.Spawn();
             activeNote = container.Prefab;
             bombPool = bombModelPool;
-            if (_pluginConfig.HMDOnly == true)
+            if (_pluginConfig.HMDOnly == true || LayerUtils.HMDOverride == true)
             {
                 LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.FirstPerson);
             }

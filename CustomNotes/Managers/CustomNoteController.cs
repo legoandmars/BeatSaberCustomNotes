@@ -57,7 +57,7 @@ namespace CustomNotes.Managers
             noteCube = _gameNoteController.gameObject.transform.Find("NoteCube");
 
             MeshRenderer noteMesh = GetComponentInChildren<MeshRenderer>();
-            if (_pluginConfig.HMDOnly == false)
+            if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
                 // only disable if custom notes display on both hmd and display
                 noteMesh.forceRenderingOff = true;
@@ -109,7 +109,7 @@ namespace CustomNotes.Managers
             container = noteModelPool.Spawn();
             activeNote = container.Prefab;
             activePool = noteModelPool;
-            if (_pluginConfig.HMDOnly == true)
+            if (_pluginConfig.HMDOnly == true || LayerUtils.HMDOverride == true)
             {
                 LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.FirstPerson);
                 if (LayerUtils.CameraSet == false)
@@ -139,7 +139,7 @@ namespace CustomNotes.Managers
         {
             SetActiveThenColor(activeNote, visuals.noteColor);
             // Hide certain parts of the default note which is not required
-            if(_pluginConfig.HMDOnly == false)
+            if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
                 if (_customNote.Descriptor.DisableBaseNoteArrows)
                 {

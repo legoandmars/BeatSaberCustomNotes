@@ -10,6 +10,7 @@ namespace CustomNotes.Utilities
 {
     public class LayerUtils
     {
+        public static bool HMDOverride = false;
         public static bool CameraSet = false;
 
         /// <summary>
@@ -118,6 +119,22 @@ namespace CustomNotes.Utilities
             tempWatermark.transform.localScale = new Vector3(1.5f, 1.5f, 1.5f);
             tempWatermark.transform.position = new Vector3(0, -0.75f, 0);
             SetLayer(tempWatermark, NoteLayer.ThirdPerson);
+        }
+
+        /// <summary>
+        /// Force custom notes to only be visible in-headset, regardless of the player's settings.
+        /// </summary>
+        public static void EnableHMDOnly()
+        {
+            HMDOverride = true;
+        }
+
+        /// <summary>
+        /// Disabling forcing custom notes to only be visible in-headset.
+        /// </summary>
+        public static void DisableHMDOnly()
+        {
+            HMDOverride = false;
         }
     }
 }
