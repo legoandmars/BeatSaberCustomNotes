@@ -5,6 +5,7 @@ using SiraUtil.Objects;
 using SiraUtil.Interfaces;
 using CustomNotes.Managers;
 using CustomNotes.Utilities;
+using System.Collections.Generic;
 
 namespace CustomNotes.Providers
 {
@@ -50,7 +51,7 @@ namespace CustomNotes.Providers
             public GameNoteController Modify(GameNoteController original)
             {
                 if (!CanSetup) return original;
-                original.gameObject.AddComponent<CustomNoteController>();
+                original.gameObject.AddComponent<CustomGameNoteController>();
                 return original;
             }
 

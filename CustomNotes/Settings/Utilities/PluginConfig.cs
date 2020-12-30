@@ -5,5 +5,11 @@
         public virtual string LastNote { get; set; }
 
         public virtual float NoteSize { get; set; } = 1;
+
+        public virtual bool OtherPlayerMultiplayerNotes { get; set; } = true;
+
+        public virtual bool RandomMultiplayerNotes { get; set; } = true;
+
+        public virtual bool RandomnessIsConsistentPerPlayer { get; set; } = true;
     }
 }

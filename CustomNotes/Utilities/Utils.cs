@@ -84,6 +84,8 @@ namespace CustomNotes.Utilities
         /// <param name="gameObject"></param>
         public static void AddMaterialPropertyBlockController(GameObject gameObject)
         {
+            if (gameObject.GetComponent<MaterialPropertyBlockController>() != null) return;
+
             List<Renderer> rendererList = new List<Renderer>();
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
             {

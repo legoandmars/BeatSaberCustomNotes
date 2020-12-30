@@ -1,6 +1,7 @@
 ﻿using CustomNotes.Utilities;
 using System;
 using System.IO;
+using System.Security.Cryptography;
 using UnityEngine;
 
 namespace CustomNotes.Data
@@ -15,6 +16,7 @@ namespace CustomNotes.Data
         public GameObject NoteDotLeft { get; }
         public GameObject NoteDotRight { get; }
         public GameObject NoteBomb { get; }
+        public string MD5Hash { get; } = string.Empty;
         public string ErrorMessage { get; } = string.Empty;
 
         public CustomNote(string fileName)
@@ -25,7 +27,17 @@ namespace CustomNotes.Data
             {
                 try
                 {
-                    AssetBundle = AssetBundle.LoadFromFile(Path.Combine(Plugin.PluginAssetPath, fileName));
+                    string path = Path.Combine(Plugin.PluginAssetPath, fileName);
+
+                    using (var stream = File.OpenRead(path)) {
+                        using (var md5 = MD5.Create()) {
+                            var hash = md5.ComputeHash(stream);
+                            // https://modelsaber.com/api/v2/get.php?type=bloq&filter=hash:<md5_hash_of_assetbundle_here>
+                            MD5Hash = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+                            AssetBundle = AssetBundle.LoadFromStream(stream);
+                        }
+                    }
+                    
                     GameObject note = AssetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
 
                     Descriptor = note.GetComponent<NoteDescriptor>();

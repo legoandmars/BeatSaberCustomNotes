@@ -26,11 +26,15 @@ namespace CustomNotes.Managers
                 {
                     _customGameNoteProvider.Priority = -1;
                     _customBombNoteProvider.Priority = -1;
+                    _customMultiplayerConnectedPlayerGameNoteProvider.Priority = -1;
+                    _customMultiplayerConnectedPlayerBombNoteProvider.Priority = -1;
                 }
                 else
                 {
                     _customGameNoteProvider.Priority = 300;
                     _customBombNoteProvider.Priority = CustomNoteObjects[_selectedNote].NoteBomb != null ? 300 : -1;
+                    _customMultiplayerConnectedPlayerGameNoteProvider.Priority = 300;
+                    _customMultiplayerConnectedPlayerBombNoteProvider.Priority = 300;
                 }
             }
         }
@@ -42,11 +46,21 @@ namespace CustomNotes.Managers
         private readonly CustomGameNoteProvider _customGameNoteProvider;
         private readonly CustomBombNoteProvider _customBombNoteProvider;
 
-        internal NoteAssetLoader(PluginConfig pluginConfig, CustomGameNoteProvider customGameNoteProvider, CustomBombNoteProvider customBombNoteProvider)
+        private readonly CustomMultiplayerConnectedPlayerGameNoteProvider _customMultiplayerConnectedPlayerGameNoteProvider;
+        private readonly CustomMultiplayerConnectedPlayerBombNoteProvider _customMultiplayerConnectedPlayerBombNoteProvider;
+
+
+        internal NoteAssetLoader(PluginConfig pluginConfig,
+            CustomGameNoteProvider customGameNoteProvider,
+            CustomBombNoteProvider customBombNoteProvider,
+            CustomMultiplayerConnectedPlayerGameNoteProvider customMultiplayerConnectedPlayerGameNoteProvider,
+            CustomMultiplayerConnectedPlayerBombNoteProvider customMultiplayerConnectedPlayerBombNoteProvider)
         {
             _pluginConfig = pluginConfig;
             _customGameNoteProvider = customGameNoteProvider;
             _customBombNoteProvider = customBombNoteProvider;
+            _customMultiplayerConnectedPlayerGameNoteProvider = customMultiplayerConnectedPlayerGameNoteProvider;
+            _customMultiplayerConnectedPlayerBombNoteProvider = customMultiplayerConnectedPlayerBombNoteProvider;
         }
 
         /// <summary>

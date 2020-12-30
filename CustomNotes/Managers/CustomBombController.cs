@@ -6,20 +6,8 @@ using SiraUtil.Objects;
 
 namespace CustomNotes.Managers
 {
-    internal class CustomBombController : MonoBehaviour
+    internal class CustomBombNoteController : CustomBombControllerBase
     {
-        private PluginConfig _pluginConfig;
-
-        private CustomNote _customNote;
-        private NoteMovement _noteMovement;
-        private BombNoteController _bombNoteController;
-
-        protected Transform bombMesh;
-
-        protected GameObject activeNote;
-        protected SiraPrefabContainer container;
-        protected SiraPrefabContainer.Pool bombPool;
-
         [Inject]
         internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [Inject(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
         {
@@ -36,19 +24,39 @@ namespace CustomNotes.Managers
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
             bm.enabled = false;
         }
+    }
 
-        private void DidFinish()
+    internal abstract class CustomBombControllerBase : MonoBehaviour
+    {
+        protected PluginConfig _pluginConfig;
+
+        protected CustomNote _customNote;
+        protected NoteMovement _noteMovement;
+        protected NoteController _bombNoteController;
+
+        protected Transform bombMesh;
+
+        protected GameObject activeNote;
+        protected SiraPrefabContainer container;
+        protected SiraPrefabContainer.Pool bombPool;
+
+        protected virtual void DidFinish()
         {
             container.transform.SetParent(null);
             bombPool.Despawn(container);
         }
 
-        private void Controller_Init(NoteController noteController)
+        protected virtual void Controller_Init(NoteController noteController)
         {
             SpawnThenParent(bombPool);
         }
 
-        private void ParentNote(GameObject fakeMesh)
+        protected virtual void SetNoteLayer(GameObject activeNote)
+        {
+            // Layer code here
+        }
+
+        protected virtual void ParentNote(GameObject fakeMesh)
         {
             fakeMesh.SetActive(true);
             container.transform.SetParent(bombMesh);
@@ -58,15 +66,16 @@ namespace CustomNotes.Managers
             container.transform.localScale = Vector3.one;
         }
 
-        private void SpawnThenParent(SiraPrefabContainer.Pool bombModelPool)
+        protected virtual void SpawnThenParent(SiraPrefabContainer.Pool bombModelPool)
         {
             container = bombModelPool.Spawn();
             activeNote = container.Prefab;
             bombPool = bombModelPool;
+            SetNoteLayer(activeNote);
             ParentNote(activeNote);
         }
 
-        protected void OnDestroy()
+        protected virtual void OnDestroy()
         {
             if (_bombNoteController != null)
             {

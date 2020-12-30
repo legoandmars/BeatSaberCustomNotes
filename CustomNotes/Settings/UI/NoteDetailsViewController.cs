@@ -8,6 +8,10 @@ using BeatSaberMarkupLanguage.ViewControllers;
 using Zenject;
 using System;
 using CustomNotes.Settings.UI;
+using System.Collections.Generic;
+using System.Linq;
+using CustomNotes.Utilities.MultiplayerCustomNoteModeExtensions;
+using BeatSaberMarkupLanguage.Parser;
 
 namespace CustomNotes.Settings
 {
@@ -17,6 +21,9 @@ namespace CustomNotes.Settings
 
         private PluginConfig _pluginConfig;
         private NoteListViewController _listViewController;
+
+        [UIParams]
+        BSMLParserParams parserParams = null;
 
         [UIComponent("note-description")]
         public TextPageScrollView noteDescription = null;
@@ -50,6 +57,75 @@ namespace CustomNotes.Settings
                 _pluginConfig.NoteSize = value;
                 _listViewController.ScalePreviewNotes(value);
             }
+        }
+
+        [UIValue("multi-note-mode-list-options")]
+        private List<object> options = new object[]
+        {
+            MultiplayerCustomNoteMode.None.ToSettingsString(),
+            MultiplayerCustomNoteMode.SameAsLocalPlayer.ToSettingsString(),
+            MultiplayerCustomNoteMode.Random.ToSettingsString(),
+            MultiplayerCustomNoteMode.RandomConsistent.ToSettingsString()
+        }.ToList();
+
+        [UIValue("multi-note-mode-list-choice")]
+        private string listChoice = null;
+
+        [UIAction("on-multi-note-mode-change")]
+        public void OnMultiNoteModeChange(string choice)
+        {
+            MultiplayerCustomNoteMode mode = choice.GetMultiplayerCustomNoteMode();
+            
+            switch(mode)
+            {
+                case MultiplayerCustomNoteMode.None:
+                default:
+                    _pluginConfig.OtherPlayerMultiplayerNotes = false;
+                    _pluginConfig.RandomMultiplayerNotes = false;
+                    _pluginConfig.RandomnessIsConsistentPerPlayer = false;
+                    break;
+                case MultiplayerCustomNoteMode.SameAsLocalPlayer:
+                    _pluginConfig.OtherPlayerMultiplayerNotes = true;
+                    _pluginConfig.RandomMultiplayerNotes = false;
+                    _pluginConfig.RandomnessIsConsistentPerPlayer = false;
+                    break;
+                case MultiplayerCustomNoteMode.Random:
+                    _pluginConfig.OtherPlayerMultiplayerNotes = true;
+                    _pluginConfig.RandomMultiplayerNotes = true;
+                    _pluginConfig.RandomnessIsConsistentPerPlayer = false;
+                    break;
+                case MultiplayerCustomNoteMode.RandomConsistent:
+                    _pluginConfig.OtherPlayerMultiplayerNotes = true;
+                    _pluginConfig.RandomMultiplayerNotes = true;
+                    _pluginConfig.RandomnessIsConsistentPerPlayer = true;
+                    break;
+            }
+        }
+
+        public void SetMultiplayerNoteListOption()
+        {
+            if(!_pluginConfig.OtherPlayerMultiplayerNotes)
+            {
+                listChoice = MultiplayerCustomNoteMode.None.ToSettingsString();
+                return;
+            }
+            if(!_pluginConfig.RandomMultiplayerNotes)
+            {
+                listChoice = MultiplayerCustomNoteMode.SameAsLocalPlayer.ToSettingsString();
+                return;
+            }
+            if(!_pluginConfig.RandomnessIsConsistentPerPlayer) {
+                listChoice = MultiplayerCustomNoteMode.Random.ToSettingsString();
+                return;
+            }
+
+            listChoice = MultiplayerCustomNoteMode.RandomConsistent.ToSettingsString();
+        }
+
+        [UIAction("#post-parse")]
+        public void PostParse() {
+            SetMultiplayerNoteListOption();
+            parserParams.EmitEvent("multi-note-mode-update");
         }
     }
 }
