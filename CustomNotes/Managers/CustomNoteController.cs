@@ -9,7 +9,7 @@ using CustomNotes.Utilities;
 
 namespace CustomNotes.Managers
 {
-    public class CustomGameNoteController : CustomNoteControllerBase
+    public class CustomNoteController : CustomNoteControllerBase
     {
         [Inject]
         internal void Init(PluginConfig pluginConfig,

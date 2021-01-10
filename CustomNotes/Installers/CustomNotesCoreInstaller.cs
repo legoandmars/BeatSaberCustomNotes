@@ -23,8 +23,8 @@ namespace CustomNotes.Installers
             Container.Bind(typeof(IModelProvider), typeof(CustomGameNoteProvider)).To<CustomGameNoteProvider>().AsSingle();
             Container.Bind(typeof(IModelProvider), typeof(CustomBombNoteProvider)).To<CustomBombNoteProvider>().AsSingle();
 
-            Container.Bind(typeof(IModelProvider), typeof(CustomMultiplayerConnectedPlayerGameNoteProvider)).To<CustomMultiplayerConnectedPlayerGameNoteProvider>().AsSingle();
-            Container.Bind(typeof(IModelProvider), typeof(CustomMultiplayerConnectedPlayerBombNoteProvider)).To<CustomMultiplayerConnectedPlayerBombNoteProvider>().AsSingle();
+            Container.Bind(typeof(IModelProvider), typeof(CustomMultiplayerNoteProvider)).To<CustomMultiplayerNoteProvider>().AsSingle();
+            Container.Bind(typeof(IModelProvider), typeof(CustomMultiplayerBombProvider)).To<CustomMultiplayerBombProvider>().AsSingle();
         }
     }
 }

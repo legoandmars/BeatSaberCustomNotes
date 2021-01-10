@@ -13,12 +13,12 @@ using CustomNotes.Settings.Utilities;
 
 namespace CustomNotes.Providers
 {
-    internal class CustomMultiplayerConnectedPlayerBombNoteProvider : IModelProvider
+    internal class CustomMultiplayerBombProvider : IModelProvider
     {
-        public Type Type => typeof(CustomMultiplayerConnectedPlayerBombNoteDecorator);
+        public Type Type => typeof(CustomMultiplayerBombDecorator);
         public int Priority { get; set; } = 300;
 
-        private class CustomMultiplayerConnectedPlayerBombNoteDecorator : IPrefabProvider<MultiplayerConnectedPlayerBombNoteController>
+        private class CustomMultiplayerBombDecorator : IPrefabProvider<MultiplayerConnectedPlayerBombNoteController>
         {
             private static MD5 _staticMd5Hasher = MD5.Create();
 
@@ -58,7 +58,7 @@ namespace CustomNotes.Providers
             public MultiplayerConnectedPlayerBombNoteController Modify(MultiplayerConnectedPlayerBombNoteController original)
             {
                 if (!CanSetup) return original;
-                original.gameObject.AddComponent<CustomMultiplayerConnectedPlayerBombNoteController>();
+                original.gameObject.AddComponent<CustomMultiplayerBombController>();
                 return original;
             }
 

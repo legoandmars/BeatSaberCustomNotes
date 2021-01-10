@@ -6,7 +6,7 @@ using SiraUtil.Objects;
 
 namespace CustomNotes.Managers
 {
-    internal class CustomBombNoteController : CustomBombControllerBase
+    internal class CustomBombController : CustomBombControllerBase
     {
         [Inject]
         internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [Inject(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)

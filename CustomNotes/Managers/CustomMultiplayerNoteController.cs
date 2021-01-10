@@ -9,7 +9,7 @@ using CustomNotes.Utilities;
 
 namespace CustomNotes.Managers
 {
-    public class CustomMultiplayerConnectedPlayerGameNoteController : CustomNoteControllerBase
+    public class CustomMultiplayerNoteController : CustomNoteControllerBase
     {
 
         [Inject]

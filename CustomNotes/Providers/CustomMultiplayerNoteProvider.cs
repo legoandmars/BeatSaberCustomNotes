@@ -13,12 +13,12 @@ using CustomNotes.Settings.Utilities;
 
 namespace CustomNotes.Providers
 {
-    internal class CustomMultiplayerConnectedPlayerGameNoteProvider : IModelProvider
+    internal class CustomMultiplayerNoteProvider : IModelProvider
     {
-        public Type Type => typeof(CustomMultiplayerConnectedPlayerGameNoteDecorator);
+        public Type Type => typeof(CustomMultiplayerNoteDecorator);
         public int Priority { get; set; } = 300;
 
-        private class CustomMultiplayerConnectedPlayerGameNoteDecorator : IPrefabProvider<MultiplayerConnectedPlayerGameNoteController>
+        private class CustomMultiplayerNoteDecorator : IPrefabProvider<MultiplayerConnectedPlayerGameNoteController>
         {
 
             private static readonly IPA.Utilities.FieldAccessor<MultiplayerSessionManager, List<IConnectedPlayer>>.Accessor _connectedPlayersAccessor = IPA.Utilities.FieldAccessor<MultiplayerSessionManager, List<IConnectedPlayer>>.GetAccessor("_connectedPlayers");
@@ -76,7 +76,7 @@ namespace CustomNotes.Providers
             public MultiplayerConnectedPlayerGameNoteController Modify(MultiplayerConnectedPlayerGameNoteController original)
             {
                 if (!CanSetup) return original;
-                original.gameObject.AddComponent<CustomMultiplayerConnectedPlayerGameNoteController>();
+                original.gameObject.AddComponent<CustomMultiplayerNoteController>();
                 return original;
             }
 

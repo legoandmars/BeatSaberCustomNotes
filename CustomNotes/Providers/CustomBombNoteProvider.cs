@@ -35,7 +35,7 @@ namespace CustomNotes.Providers
             public BombNoteController Modify(BombNoteController original)
             {
                 if (!CanSetup) return original;
-                original.gameObject.AddComponent<CustomBombNoteController>();
+                original.gameObject.AddComponent<CustomBombController>();
                 return original;
             }
 

@@ -51,7 +51,7 @@ namespace CustomNotes.Providers
             public GameNoteController Modify(GameNoteController original)
             {
                 if (!CanSetup) return original;
-                original.gameObject.AddComponent<CustomGameNoteController>();
+                original.gameObject.AddComponent<CustomNoteController>();
                 return original;
             }
 

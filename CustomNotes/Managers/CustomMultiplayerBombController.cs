@@ -11,7 +11,7 @@ using Zenject;
 
 namespace CustomNotes.Managers
 {
-    class CustomMultiplayerConnectedPlayerBombNoteController : CustomBombControllerBase
+    class CustomMultiplayerBombController : CustomBombControllerBase
     {
         [Inject]
         internal void Init(PluginConfig pluginConfig,
