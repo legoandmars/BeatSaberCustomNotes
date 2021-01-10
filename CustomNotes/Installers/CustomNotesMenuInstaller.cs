@@ -12,9 +12,9 @@ namespace CustomNotes.Installers
         {
 
 
-            Container.BindViewController<NotePreviewViewController>();
-            Container.BindViewController<NoteDetailsViewController>();
-            Container.BindViewController<NoteListViewController>();
+            Container.Bind<NotePreviewViewController>().FromNewComponentAsViewController().AsSingle();
+            Container.Bind<NoteDetailsViewController>().FromNewComponentAsViewController().AsSingle();
+            Container.Bind<NoteListViewController>().FromNewComponentAsViewController().AsSingle();
             Container.BindFlowCoordinator<NotesFlowCoordinator>();
 
             Container.BindInterfacesTo<MenuButtonManager>().AsSingle();

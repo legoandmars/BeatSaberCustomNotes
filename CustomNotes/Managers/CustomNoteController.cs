@@ -71,7 +71,11 @@ namespace CustomNotes.Managers
             {
                 case ColorType.ColorA:
                 case ColorType.ColorB:
-                    activePool?.Despawn(container);
+                    if(container != null)
+                    {
+                        activePool?.Despawn(container);
+                        container = null;
+                    }
                     break;
                 default:
                     break;
