@@ -69,62 +69,18 @@ namespace CustomNotes.Settings
         }.ToList();
 
         [UIValue("multi-note-mode-list-choice")]
-        private string listChoice = null;
+        protected string listChoice = null;
 
         [UIAction("on-multi-note-mode-change")]
-        public void OnMultiNoteModeChange(string choice)
+        protected void OnMultiNoteModeChange(string choice)
         {
-            MultiplayerCustomNoteMode mode = choice.GetMultiplayerCustomNoteMode();
-            
-            switch(mode)
-            {
-                case MultiplayerCustomNoteMode.None:
-                default:
-                    _pluginConfig.OtherPlayerMultiplayerNotes = false;
-                    _pluginConfig.RandomMultiplayerNotes = false;
-                    _pluginConfig.RandomnessIsConsistentPerPlayer = false;
-                    break;
-                case MultiplayerCustomNoteMode.SameAsLocalPlayer:
-                    _pluginConfig.OtherPlayerMultiplayerNotes = true;
-                    _pluginConfig.RandomMultiplayerNotes = false;
-                    _pluginConfig.RandomnessIsConsistentPerPlayer = false;
-                    break;
-                case MultiplayerCustomNoteMode.Random:
-                    _pluginConfig.OtherPlayerMultiplayerNotes = true;
-                    _pluginConfig.RandomMultiplayerNotes = true;
-                    _pluginConfig.RandomnessIsConsistentPerPlayer = false;
-                    break;
-                case MultiplayerCustomNoteMode.RandomConsistent:
-                    _pluginConfig.OtherPlayerMultiplayerNotes = true;
-                    _pluginConfig.RandomMultiplayerNotes = true;
-                    _pluginConfig.RandomnessIsConsistentPerPlayer = true;
-                    break;
-            }
-        }
-
-        public void SetMultiplayerNoteListOption()
-        {
-            if(!_pluginConfig.OtherPlayerMultiplayerNotes)
-            {
-                listChoice = MultiplayerCustomNoteMode.None.ToSettingsString();
-                return;
-            }
-            if(!_pluginConfig.RandomMultiplayerNotes)
-            {
-                listChoice = MultiplayerCustomNoteMode.SameAsLocalPlayer.ToSettingsString();
-                return;
-            }
-            if(!_pluginConfig.RandomnessIsConsistentPerPlayer) {
-                listChoice = MultiplayerCustomNoteMode.Random.ToSettingsString();
-                return;
-            }
-
-            listChoice = MultiplayerCustomNoteMode.RandomConsistent.ToSettingsString();
+            MultiplayerCustomNoteModeExtensions.SetMultiNoteSettingFromString(_pluginConfig, choice);
         }
 
         [UIAction("#post-parse")]
-        public void PostParse() {
-            SetMultiplayerNoteListOption();
+        public void PostParse()
+        {
+            listChoice = MultiplayerCustomNoteModeExtensions.GetMultiNoteSettingString(_pluginConfig);
             parserParams.EmitEvent("multi-note-mode-update");
         }
     }

@@ -4,6 +4,8 @@ using UnityEngine;
 using System.Reflection;
 using System.Collections.Generic;
 using IPA.Utilities;
+using System;
+using HMUI;
 
 namespace CustomNotes.Utilities
 {
@@ -99,6 +101,78 @@ namespace CustomNotes.Utilities
                 MaterialPropertyBlockController newController = gameObject.AddComponent<MaterialPropertyBlockController>();
                 ReflectionUtil.SetField<MaterialPropertyBlockController, Renderer[]>(newController, "_renderers", rendererList.ToArray());
             }
+        }
+
+        /// <summary>
+        /// Animates a Scroll Indicator
+        /// </summary>
+        /// <param name="startValue"></param>
+        /// <param name="endValue"></param>
+        /// <param name="verticalScrollIndicator"></param>
+        /// <param name="lerpDuration"></param>
+        /// <param name="onDone">Method to execute after it's done animating.</param>
+        /// <returns></returns>
+        public static System.Collections.IEnumerator ScrollIndicatorAnimator(float startValue, float endValue, VerticalScrollIndicator verticalScrollIndicator, float lerpDuration = 0.3f, Action onDone = null) {
+            float timeElapsed = 0f;
+            while (timeElapsed < lerpDuration) {
+                verticalScrollIndicator.progress = Mathf.Lerp(startValue, endValue, Easing.OutCubic(timeElapsed / lerpDuration));
+                timeElapsed += Time.deltaTime;
+                yield return null;
+            }
+            verticalScrollIndicator.progress = endValue;
+            onDone?.Invoke();
+        }
+
+        /// <summary>
+        /// Scroll a ScrollIndicator
+        /// </summary>
+        /// <param name="up"></param>
+        /// <param name="tableView"></param>
+        /// <param name="verticalScrollIndicator"></param>
+        /// <param name="coroutine"></param>
+        public static void ScrollTheScrollIndicator(bool up, TableView tableView, VerticalScrollIndicator verticalScrollIndicator, Coroutine coroutine) {
+            Tuple<int, int> range = tableView.GetVisibleCellsIdRange();
+
+            float rangeUpper;
+            float pageSize = range.Item2 - range.Item1;
+            float numOfCells = tableView.numberOfCells;
+
+            if (up) {
+                rangeUpper = Mathf.Max(0, range.Item2 - pageSize);
+            } else {
+                rangeUpper = Mathf.Min(numOfCells, range.Item2 + pageSize);
+            }
+
+            float progress = (rangeUpper - pageSize) / (numOfCells - pageSize);
+
+            if (coroutine != null) {
+                tableView.StopCoroutine(coroutine);
+            }
+
+            coroutine = tableView.StartCoroutine(ScrollIndicatorAnimator(verticalScrollIndicator.progress, progress, verticalScrollIndicator, 0.3f, () => {
+                tableView.StopCoroutine(coroutine);
+                coroutine = null;
+            }));
+        }
+
+        /// <summary>
+        /// Update the Scroll Indicators Graphics
+        /// </summary>
+        /// <param name="tableView"></param>
+        /// <param name="verticalScrollIndicator"></param>
+        /// <param name="doTheWaitThing">if it should wait for 100 ms (for bsml to initialize things)</param>
+        public static async void UpdateScrollIndicator(TableView tableView, VerticalScrollIndicator verticalScrollIndicator, int waitTime = 0) {
+
+            if (waitTime > 0)
+                await SiraUtil.Utilities.AwaitSleep(waitTime);
+
+            Tuple<int, int> range = tableView.GetVisibleCellsIdRange();
+
+            float pageSize = range.Item2 - range.Item1;
+            float numOfCells = tableView.numberOfCells;
+
+            verticalScrollIndicator.normalizedPageHeight = pageSize / numOfCells;
+            verticalScrollIndicator.progress = (range.Item2 - pageSize) / (numOfCells - pageSize);
         }
 
         /// <summary>

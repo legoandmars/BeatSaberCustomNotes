@@ -1,0 +1,17 @@
+﻿<vertical horizontal-fit='PreferredSize' vertical-fit='PreferredSize' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+  <vertical pref-height='20' size-delta-y='20'>
+    <dropdown-list-setting text='Multiplayer: Custom Note Behavior' value='multi-note-mode-list-choice' choices='multi-note-mode-list-options' on-change='on-multi-note-mode-change' get-event='multi-note-mode-update' />
+  </vertical>
+  <horizontal>
+    
+    <list id='note-list' expand-cell='true' select-cell='note-select' visible-cells='5' />
+    
+    <vertical preferred-width='10' size-delta-x='10'>
+      <page-button event-click='note-list#PageUp' on-click='update-scroll-indicator-up' direction='Up' />
+      <vertical pref-width='1.5' size-delta-x='1.5' pref-height='30' size-delta-y='30'>
+        <vertical-scroll-indicator id='scroll-indicator' handle-color='white' size-delta-x='1.5' size-delta-y='30' />
+      </vertical>
+      <page-button event-click='note-list#PageDown' on-click='update-scroll-indicator-down' direction='Down' />
+    </vertical>
+  </horizontal>
+</vertical>

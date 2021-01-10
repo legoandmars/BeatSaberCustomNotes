@@ -3,6 +3,7 @@ using Zenject;
 using BeatSaberMarkupLanguage;
 using CustomNotes.Settings.UI;
 using BeatSaberMarkupLanguage.MenuButtons;
+using BeatSaberMarkupLanguage.GameplaySetup;
 
 namespace CustomNotes.Managers
 {
@@ -12,16 +13,20 @@ namespace CustomNotes.Managers
         private readonly MainFlowCoordinator _mainFlowCoordinator;
         private readonly NotesFlowCoordinator _notesFlowCoordinator;
 
-        public MenuButtonManager(MainFlowCoordinator mainFlowCoordinator, NotesFlowCoordinator notesFlowCoordinator)
+        private NoteQuickAccessController _noteQuickAccessController;
+
+        public MenuButtonManager(MainFlowCoordinator mainFlowCoordinator, NotesFlowCoordinator notesFlowCoordinator, NoteQuickAccessController noteQuickAccessController)
         {
             _mainFlowCoordinator = mainFlowCoordinator;
             _notesFlowCoordinator = notesFlowCoordinator;
             _menuButton = new MenuButton("Custom Notes", "Change Custom Notes Here!", ShowNotesFlow, true);
+            _noteQuickAccessController = noteQuickAccessController;
         }
 
         public void Initialize()
         {
             MenuButtons.instance.RegisterButton(_menuButton);
+            GameplaySetup.instance.AddTab("Custom Notes", "CustomNotes.Settings.UI.Views.quickAccess.bsml", _noteQuickAccessController);
         }
 
         public void Dispose()
@@ -29,6 +34,10 @@ namespace CustomNotes.Managers
             if (MenuButtons.IsSingletonAvailable)
             {
                 MenuButtons.instance.UnregisterButton(_menuButton);
+            }
+            if(GameplaySetup.IsSingletonAvailable)
+            {
+                GameplaySetup.instance.RemoveTab("Custom Notes");
             }
         }
 

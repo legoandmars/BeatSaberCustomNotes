@@ -1,4 +1,4 @@
-﻿<bg child-control-height='false' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
   <tab-selector tab-tag='new-tab'/>
   <tab tags='new-tab' tab-name='Note Description'>
     <horizontal horizontal-fit='Unconstrained'>
@@ -12,7 +12,7 @@
       <vertical spacing='1' horizontal-fit='PreferredSize' pad='5'>
     
         <slider-setting text='Note Scale' min='0.4' max='2' increment='0.05' value='note-size' apply-on-change='true'/>
-        <dropdown-list-setting text='Multiplayer: Custom Notes for others' value='multi-note-mode-list-choice' choices='multi-note-mode-list-options' on-change='on-multi-note-mode-change' get-event='multi-note-mode-update' />
+        <dropdown-list-setting text='Multiplayer: Custom Note Behavior' value='multi-note-mode-list-choice' choices='multi-note-mode-list-options' on-change='on-multi-note-mode-change' get-event='multi-note-mode-update' />
 
       </vertical>
     </horizontal>

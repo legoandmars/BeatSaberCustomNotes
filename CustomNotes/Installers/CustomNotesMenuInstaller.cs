@@ -17,6 +17,7 @@ namespace CustomNotes.Installers
             Container.Bind<NoteListViewController>().FromNewComponentAsViewController().AsSingle();
             Container.BindFlowCoordinator<NotesFlowCoordinator>();
 
+            Container.BindInterfacesAndSelfTo<NoteQuickAccessController>().AsSingle();
             Container.BindInterfacesTo<MenuButtonManager>().AsSingle();
         }
     }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CustomNotes.Settings.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,6 +47,51 @@ namespace CustomNotes.Utilities.MultiplayerCustomNoteModeExtensions
                 case MultiplayerCustomNoteMode.RandomConsistent:
                     return _randomConsistent;
             }
+        }
+
+        public static void SetMultiNoteSettingFromString(PluginConfig pluginConfig, string modeString) {
+            MultiplayerCustomNoteMode mode = modeString.GetMultiplayerCustomNoteMode();
+
+            SetMultiNoteSetting(pluginConfig, mode);
+        }
+
+        public static void SetMultiNoteSetting(PluginConfig pluginConfig, MultiplayerCustomNoteMode mode) {
+            switch (mode) {
+                case MultiplayerCustomNoteMode.None:
+                default:
+                    pluginConfig.OtherPlayerMultiplayerNotes = false;
+                    pluginConfig.RandomMultiplayerNotes = false;
+                    pluginConfig.RandomnessIsConsistentPerPlayer = false;
+                    break;
+                case MultiplayerCustomNoteMode.SameAsLocalPlayer:
+                    pluginConfig.OtherPlayerMultiplayerNotes = true;
+                    pluginConfig.RandomMultiplayerNotes = false;
+                    pluginConfig.RandomnessIsConsistentPerPlayer = false;
+                    break;
+                case MultiplayerCustomNoteMode.Random:
+                    pluginConfig.OtherPlayerMultiplayerNotes = true;
+                    pluginConfig.RandomMultiplayerNotes = true;
+                    pluginConfig.RandomnessIsConsistentPerPlayer = false;
+                    break;
+                case MultiplayerCustomNoteMode.RandomConsistent:
+                    pluginConfig.OtherPlayerMultiplayerNotes = true;
+                    pluginConfig.RandomMultiplayerNotes = true;
+                    pluginConfig.RandomnessIsConsistentPerPlayer = true;
+                    break;
+            }
+        }
+
+        public static string GetMultiNoteSettingString(PluginConfig pluginConfig) {
+            if (!pluginConfig.OtherPlayerMultiplayerNotes)
+                return MultiplayerCustomNoteMode.None.ToSettingsString();
+
+            if (!pluginConfig.RandomMultiplayerNotes)
+                return MultiplayerCustomNoteMode.SameAsLocalPlayer.ToSettingsString();
+
+            if (!pluginConfig.RandomnessIsConsistentPerPlayer)
+                return MultiplayerCustomNoteMode.Random.ToSettingsString();
+
+            return MultiplayerCustomNoteMode.RandomConsistent.ToSettingsString();
         }
     }
 }

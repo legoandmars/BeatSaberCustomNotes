@@ -16,9 +16,11 @@ namespace CustomNotes.Settings.UI
     {
         public override string ResourceName => "CustomNotes.Settings.UI.Views.noteList.bsml";
 
+        private DiContainer _diContainer;
         private PluginConfig _pluginConfig;
         private NoteAssetLoader _noteAssetLoader;
         private GameplaySetupViewController _gameplaySetupViewController;
+        private NoteQuickAccessController _noteQuickAccessController = null;
 
         private bool isGeneratingPreview = false;
         private GameObject preview;
@@ -47,8 +49,9 @@ namespace CustomNotes.Settings.UI
         public Action<CustomNote> customNoteChanged;
 
         [Inject]
-        public void Construct(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, GameplaySetupViewController gameplaySetupViewController)
+        public void Construct(DiContainer diContainer, PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, GameplaySetupViewController gameplaySetupViewController)
         {
+            _diContainer = diContainer;
             _pluginConfig = pluginConfig;
             _noteAssetLoader = noteAssetLoader;
             _gameplaySetupViewController = gameplaySetupViewController;
@@ -57,9 +60,24 @@ namespace CustomNotes.Settings.UI
         [UIComponent("noteList")]
         public CustomListTableData customListTableData = null;
 
+        [UIComponent("scroll-indicator")]
+        protected BSMLScrollIndicator scrollIndicator = null;
+
+        private Coroutine _scrollIndicatorCoroutine = null;
+
+        [UIAction("update-scroll-indicator-up")]
+        protected void ScrollUp() => Utils.ScrollTheScrollIndicator(true, customListTableData.tableView, scrollIndicator, _scrollIndicatorCoroutine);
+
+        [UIAction("update-scroll-indicator-down")]
+        protected void ScrollDown() => Utils.ScrollTheScrollIndicator(false, customListTableData.tableView, scrollIndicator, _scrollIndicatorCoroutine);
+
         [UIAction("noteSelect")]
         public void Select(TableView _, int row)
         {
+            if(_noteQuickAccessController == null) {
+                _noteQuickAccessController = _diContainer.Resolve<NoteQuickAccessController>();
+            }
+            _noteQuickAccessController?.ExternalNoteSelect(row);
             _noteAssetLoader.SelectedNote = row;
             _pluginConfig.LastNote = _noteAssetLoader.CustomNoteObjects[row].FileName;
 
@@ -72,6 +90,11 @@ namespace CustomNotes.Settings.UI
             _noteAssetLoader.Reload();
             SetupList();
             Select(customListTableData.tableView, _noteAssetLoader.SelectedNote);
+            if (_noteQuickAccessController == null) {
+                _noteQuickAccessController = _diContainer.Resolve<NoteQuickAccessController>();
+            }
+            _noteQuickAccessController?.ExternalReload();
+            Utils.UpdateScrollIndicator(customListTableData.tableView, scrollIndicator, 10);
         }
 
         [UIAction("#post-parse")]
@@ -111,6 +134,9 @@ namespace CustomNotes.Settings.UI
             }
 
             Select(customListTableData.tableView, _noteAssetLoader.SelectedNote);
+            customListTableData.tableView.ScrollToCellWithIdx(_noteAssetLoader.SelectedNote, TableViewScroller.ScrollPositionType.Beginning, false);
+            customListTableData.tableView.SelectCellWithIdx(_noteAssetLoader.SelectedNote);
+            Utils.UpdateScrollIndicator(customListTableData.tableView, scrollIndicator, 10);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
