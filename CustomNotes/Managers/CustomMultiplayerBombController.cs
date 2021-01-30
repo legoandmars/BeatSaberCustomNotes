@@ -1,11 +1,7 @@
 ﻿using CustomNotes.Data;
+using CustomNotes.Providers;
 using CustomNotes.Settings.Utilities;
 using SiraUtil.Objects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Zenject;
 
@@ -14,19 +10,30 @@ namespace CustomNotes.Managers
     class CustomMultiplayerBombController : CustomBombControllerBase
     {
         [Inject]
-        internal void Init(PluginConfig pluginConfig,
-            NoteAssetLoader noteAssetLoader,
-            [Inject(Id = "cn.multi.bomb")] SiraPrefabContainer.Pool bombContainerPool,
-            [Inject(Id = "cn.multi.note")] CustomNote selectedNote) {
+        internal void Init(DiContainer Container,
+            PluginConfig pluginConfig,
+            ConnectedPlayerNotePoolProvider connectedPlayerNotePoolProvider,
+            IConnectedPlayer connectedPlayer)
+        {
             _pluginConfig = pluginConfig;
 
-            _customNote = selectedNote ?? noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
+            Logger.log.Debug($"IConnectedPlayer injected: {connectedPlayer?.userName}");
+
+            string id = connectedPlayerNotePoolProvider.GetPoolIDForPlayer(connectedPlayer);
+
+            bombPool = Container.TryResolveId<SiraPrefabContainer.Pool>($"cn.multi.{id}.bomb");
+
+            _customNote = Container.TryResolveId<CustomNote>($"cn.multi.{id}.note");
+
+            if (bombPool == null) {
+                return;
+            }
+
             _bombNoteController = GetComponent<MultiplayerConnectedPlayerBombNoteController>();
             _noteMovement = GetComponent<NoteMovement>();
             _bombNoteController.didInitEvent += Controller_Init;
             _noteMovement.noteDidFinishJumpEvent += DidFinish;
             bombMesh = gameObject.transform.Find("Mesh");
-            bombPool = bombContainerPool;
 
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
             bm.enabled = false;
@@ -42,6 +49,5 @@ namespace CustomNotes.Managers
             SpawnThenParent(bombPool);
             Logger.log.Debug("Bomb initialized!");
         }
-
     }
 }

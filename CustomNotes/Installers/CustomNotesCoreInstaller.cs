@@ -25,6 +25,8 @@ namespace CustomNotes.Installers
 
             Container.Bind(typeof(IModelProvider), typeof(CustomMultiplayerNoteProvider)).To<CustomMultiplayerNoteProvider>().AsSingle();
             Container.Bind(typeof(IModelProvider), typeof(CustomMultiplayerBombProvider)).To<CustomMultiplayerBombProvider>().AsSingle();
+
+            Container.BindInterfacesAndSelfTo<DummyNoteHashPacketManager>().AsSingle(); // TODO
         }
     }
 }

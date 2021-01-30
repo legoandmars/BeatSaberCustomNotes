@@ -160,7 +160,7 @@ namespace CustomNotes.Utilities
         /// </summary>
         /// <param name="tableView"></param>
         /// <param name="verticalScrollIndicator"></param>
-        /// <param name="doTheWaitThing">if it should wait for 100 ms (for bsml to initialize things)</param>
+        /// <param name="waitTime">time in ms it should wait</param>
         public static async void UpdateScrollIndicator(TableView tableView, VerticalScrollIndicator verticalScrollIndicator, int waitTime = 0) {
 
             if (waitTime > 0)

@@ -13,7 +13,8 @@
     
         <slider-setting text='Note Scale' min='0.4' max='2' increment='0.05' value='note-size' apply-on-change='true'/>
         <dropdown-list-setting text='Multiplayer: Custom Note Behavior' value='multi-note-mode-list-choice' choices='multi-note-mode-list-options' on-change='on-multi-note-mode-change' get-event='multi-note-mode-update' />
-
+        <checkbox-setting text='Sync Notes in Multiplayer' value='multi-note-sync' apply-on-change='true' />
+        
       </vertical>
     </horizontal>
   </tab>

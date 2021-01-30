@@ -77,6 +77,13 @@ namespace CustomNotes.Settings
             MultiplayerCustomNoteModeExtensions.SetMultiNoteSettingFromString(_pluginConfig, choice);
         }
 
+        [UIValue("multi-note-sync")]
+        protected bool syncMultiNotes
+        {
+            get => _pluginConfig.SyncNotesInMultiplayer;
+            set => _pluginConfig.SyncNotesInMultiplayer = value;
+        }
+
         [UIAction("#post-parse")]
         public void PostParse()
         {

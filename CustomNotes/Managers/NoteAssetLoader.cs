@@ -124,6 +124,21 @@ namespace CustomNotes.Managers
             CustomNoteFiles = Enumerable.Empty<string>();
         }
 
+        /// <summary>
+        /// Returns the CustomNote with hash hash or null if it's not found
+        /// </summary>
+        /// <param name="hash">The hash to look for</param>
+        /// <returns>CustomNote</returns>
+        public CustomNote GetNoteByHash(string hash)
+        {
+            foreach(CustomNote note in CustomNoteObjects)
+            {
+                if (note.MD5Hash.Equals(hash))
+                    return note;
+            }
+            return null;
+        }
+
         private IList<CustomNote> LoadCustomNotes(IEnumerable<string> customNoteFiles)
         {
             IList<CustomNote> customNotes = new List<CustomNote>

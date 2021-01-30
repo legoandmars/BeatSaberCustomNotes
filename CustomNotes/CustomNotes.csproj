@@ -123,6 +123,7 @@
     <Compile Include="Installers\CustomNotesCoreInstaller.cs" />
     <Compile Include="Installers\CustomNotesGameInstaller.cs" />
     <Compile Include="Installers\CustomNotesMenuInstaller.cs" />
+    <Compile Include="Interfaces\INoteHashPacketManager.cs" />
     <Compile Include="Managers\CustomBombController.cs" />
     <Compile Include="Managers\CustomMultiplayerBombController.cs" />
     <Compile Include="Managers\CustomMultiplayerNoteController.cs" />
@@ -130,7 +131,9 @@
     <Compile Include="Managers\CustomMultiplayerNoteEventManager.cs" />
     <Compile Include="Managers\MenuButtonManager.cs" />
     <Compile Include="Managers\CustomNoteManager.cs" />
+    <Compile Include="Managers\NoteHashPacketManager.cs" />
     <Compile Include="Overrides\CustomNoteColorNoteVisuals.cs" />
+    <Compile Include="Providers\ConnectedPlayerNotePoolProvider.cs" />
     <Compile Include="Providers\CustomBombNoteProvider.cs" />
     <Compile Include="Providers\CustomMultiplayerBombProvider.cs" />
     <Compile Include="Providers\CustomMultiplayerNoteProvider.cs" />

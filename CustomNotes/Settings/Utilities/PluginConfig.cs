@@ -11,5 +11,7 @@
         public virtual bool RandomMultiplayerNotes { get; set; } = true;
 
         public virtual bool RandomnessIsConsistentPerPlayer { get; set; } = true;
+
+        public virtual bool SyncNotesInMultiplayer { get; set; } = true;
     }
 }

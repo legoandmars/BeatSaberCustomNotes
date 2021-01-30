@@ -2,10 +2,9 @@
 using UnityEngine;
 using SiraUtil.Objects;
 using CustomNotes.Data;
-using SiraUtil.Interfaces;
 using CustomNotes.Overrides;
 using CustomNotes.Settings.Utilities;
-using CustomNotes.Utilities;
+using CustomNotes.Providers;
 
 namespace CustomNotes.Managers
 {
@@ -16,22 +15,27 @@ namespace CustomNotes.Managers
         private CustomMultiplayerNoteEventManager _customMultiplayerNoteEventManager;
 
         [Inject]
-        internal void Init(PluginConfig pluginConfig,
-            NoteAssetLoader noteAssetLoader,
-            DiContainer diContainer,
-            [Inject(Id = "cn.multi.left.arrow")] SiraPrefabContainer.Pool leftArrowNotePool,
-            [Inject(Id = "cn.multi.right.arrow")] SiraPrefabContainer.Pool rightArrowNotePool,
-            [InjectOptional(Id = "cn.multi.left.dot")] SiraPrefabContainer.Pool leftDotNotePool,
-            [InjectOptional(Id = "cn.multi.right.dot")] SiraPrefabContainer.Pool rightDotNotePool,
-            [Inject(Id = "cn.multi.note")] CustomNote selectedNote,
-            CustomMultiplayerNoteEventManager customMultiplayerNoteEventManager)
+        internal void Init(DiContainer Container, 
+            PluginConfig pluginConfig,
+            ConnectedPlayerNotePoolProvider connectedPlayerNotePoolProvider,
+            CustomMultiplayerNoteEventManager customMultiplayerNoteEventManager,
+            IConnectedPlayer connectedPlayer)
         {
-            _leftArrowNotePool = leftArrowNotePool;
-            _rightArrowNotePool = rightArrowNotePool;
-            _leftDotNotePool = leftDotNotePool;
-            _rightDotNotePool = rightDotNotePool;
 
-            _customNote = selectedNote ?? noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
+            Logger.log.Debug($"IConnectedPlayer injected: {connectedPlayer?.userName}");
+
+            string id = connectedPlayerNotePoolProvider.GetPoolIDForPlayer(connectedPlayer);
+
+            _leftArrowNotePool = Container.TryResolveId<SiraPrefabContainer.Pool>($"cn.multi.{id}.left.arrow");
+            _rightArrowNotePool = Container.TryResolveId<SiraPrefabContainer.Pool>($"cn.multi.{id}.right.arrow");
+            _leftDotNotePool = Container.TryResolveId<SiraPrefabContainer.Pool>($"cn.multi.{id}.left.dot") ?? _leftArrowNotePool;
+            _rightDotNotePool = Container.TryResolveId<SiraPrefabContainer.Pool>($"cn.multi.{id}.right.dot") ?? _rightArrowNotePool;
+
+            _customNote = Container.TryResolveId<CustomNote>($"cn.multi.{id}.note");
+
+            if(_leftArrowNotePool == null) {
+                return;
+            }
 
             _pluginConfig = pluginConfig;
 
@@ -81,8 +85,8 @@ namespace CustomNotes.Managers
         {
             container.transform.SetParent(noteCube);
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-            fakeMesh.transform.localRotation = container.transform.localRotation = Quaternion.Euler(0f,0f,0f);
-            fakeMesh.transform.rotation = container.transform.rotation = noteCube.parent.parent.rotation;
+            fakeMesh.transform.rotation = fakeMesh.transform.localRotation = container.transform.rotation = Quaternion.Euler(0f,0f,0f);
+            container.transform.localRotation = noteCube.parent.parent.rotation;
             fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
             container.transform.localScale = Vector3.one;
         }

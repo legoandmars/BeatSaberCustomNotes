@@ -1,5 +1,6 @@
 ﻿using Zenject;
 using CustomNotes.Managers;
+using CustomNotes.Providers;
 
 namespace CustomNotes.Installers
 {
@@ -17,6 +18,7 @@ namespace CustomNotes.Installers
             if (_noteAssetLoader.SelectedNote != 0)
             {
                 Container.Bind<IInitializable>().To<CustomNoteManager>().AsSingle();
+                Container.BindInterfacesAndSelfTo<ConnectedPlayerNotePoolProvider>().AsSingle();
             }
         }
     }
