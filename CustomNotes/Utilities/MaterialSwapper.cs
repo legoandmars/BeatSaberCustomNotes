@@ -16,6 +16,7 @@ namespace CustomNotes.Utilities
 
         public static void ReplaceMaterialsForGameObject(GameObject gameObject)
         {
+            if (gameObject == null) return;
             if (AllMaterials == null)
             {
                 GetMaterials();

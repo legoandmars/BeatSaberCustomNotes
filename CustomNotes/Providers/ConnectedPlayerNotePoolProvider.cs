@@ -13,17 +13,15 @@ using Zenject;
 
 namespace CustomNotes.Providers
 {
-    internal class ConnectedPlayerNotePoolProvider : IDisposable
+    internal class ConnectedPlayerNotePoolProvider : IInitializable, IDisposable
     {
-
-        private MultiplayerController _multiplayerController;
         private IMultiplayerSessionManager _multiplayerSessionManager;
         private DiContainer _container;
         private PluginConfig _pluginConfig;
         private NoteAssetLoader _noteAssetLoader;
         private INoteHashPacketManager _noteHashPacketManager;
 
-        private Dictionary<IConnectedPlayer, string> _connectedPlayerPoolID;
+        private Dictionary<IConnectedPlayer, string> _connectedPlayerPoolIDs;
 
         private static MD5 _staticMd5Hasher = MD5.Create();
 
@@ -32,36 +30,28 @@ namespace CustomNotes.Providers
             PluginConfig pluginConfig,
             NoteAssetLoader noteAssetLoader,
             INoteHashPacketManager noteHashPacketManager,
-            [InjectOptional] MultiplayerController multiplayerController,
             [InjectOptional] IMultiplayerSessionManager multiplayerSessionManager)
         {
-            _multiplayerController = multiplayerController;
             _multiplayerSessionManager = multiplayerSessionManager;
             _container = Container;
             _pluginConfig = pluginConfig;
             _noteAssetLoader = noteAssetLoader;
             _noteHashPacketManager = noteHashPacketManager;
+        }
 
-            if (_multiplayerController == null) return;
+        public void Initialize()
+        {
+            if (_multiplayerSessionManager == null) return;
 
-            _connectedPlayerPoolID = new Dictionary<IConnectedPlayer, string>();
-
-            _multiplayerSessionManager.playerConnectedEvent += HandlePlayerConnectedEventChecked;
+            _connectedPlayerPoolIDs = new Dictionary<IConnectedPlayer, string>();
 
             foreach (IConnectedPlayer connectedPlayer in _multiplayerSessionManager.connectedPlayers)
             {
-                Logger.log.Debug($"Player already connected: \"{connectedPlayer.userName}\" - \"{connectedPlayer.userId}\"");
-                HandlePlayerConnectedEvent(connectedPlayer);
+                CreateNotePoolsForPlayer(connectedPlayer);
             }
         }
 
-        private void HandlePlayerConnectedEventChecked(IConnectedPlayer connectedPlayer)
-        {
-            if (_multiplayerController.state != MultiplayerController.State.WaitingForPlayers || _multiplayerController.state != MultiplayerController.State.CheckingLobbyState) return;
-            HandlePlayerConnectedEvent(connectedPlayer);
-        }
-
-        private void HandlePlayerConnectedEvent(IConnectedPlayer connectedPlayer)
+        private void CreateNotePoolsForPlayer(IConnectedPlayer connectedPlayer)
         {
             Logger.log.Debug($"Creating note pools for player \"{connectedPlayer.userName}\" - \"{connectedPlayer.userId}\" ...");
 
@@ -79,7 +69,7 @@ namespace CustomNotes.Providers
 
                 if (_pluginConfig.RandomnessIsConsistentPerPlayer)
                 {
-                    // Set the Random seed based on player ID -> same random number every time for the same player, hashing is probably unnecessary but eh ¯\_(ツ)_/¯
+                    // Set the Random seed based on player ID -> same random number every time for the same player
                     var hashed = _staticMd5Hasher.ComputeHash(Encoding.UTF8.GetBytes(connectedPlayer?.userId));
                     var ivalue = BitConverter.ToInt32(hashed, 0);
                     rng = new System.Random(ivalue);
@@ -93,12 +83,12 @@ namespace CustomNotes.Providers
             }
 
 
-            foreach (KeyValuePair<IConnectedPlayer, string> entry in _connectedPlayerPoolID)
+            foreach (KeyValuePair<IConnectedPlayer, string> entry in _connectedPlayerPoolIDs)
             {
                 if (entry.Value.Equals(note.MD5Hash))
                 {
                     Logger.log.Debug($"Reusing old note pool for \"{note.FileName}\"");
-                    _connectedPlayerPoolID.Add(connectedPlayer, note.MD5Hash);
+                    _connectedPlayerPoolIDs.Add(connectedPlayer, note.MD5Hash);
                     return;
                 }
 
@@ -133,12 +123,12 @@ namespace CustomNotes.Providers
                 _container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId($"cn.multi.{note.MD5Hash}.bomb").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteBomb));
             }
 
-            _connectedPlayerPoolID.Add(connectedPlayer, note.MD5Hash);
+            _connectedPlayerPoolIDs.Add(connectedPlayer, note.MD5Hash);
         }
 
         internal string GetPoolIDForPlayer(IConnectedPlayer connectedPlayer)
         {
-            if (_connectedPlayerPoolID.TryGetValue(connectedPlayer, out string id))
+            if (_connectedPlayerPoolIDs.TryGetValue(connectedPlayer, out string id))
                 return id;
             return string.Empty;
         }
@@ -152,10 +142,7 @@ namespace CustomNotes.Providers
 
         public void Dispose()
         {
-            if(_multiplayerSessionManager != null)
-            {
-                _multiplayerSessionManager.playerConnectedEvent -= HandlePlayerConnectedEventChecked;
-            }
+
         }
     }
 }
