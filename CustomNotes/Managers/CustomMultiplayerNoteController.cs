@@ -85,8 +85,9 @@ namespace CustomNotes.Managers
         {
             container.transform.SetParent(noteCube);
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
-            fakeMesh.transform.rotation = fakeMesh.transform.localRotation = container.transform.rotation = Quaternion.Euler(0f,0f,0f);
-            container.transform.localRotation = noteCube.parent.parent.rotation;
+            fakeMesh.transform.rotation = container.transform.rotation = fakeMesh.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
+            container.transform.localRotation = noteCube.parent.localRotation;
+            container.transform.Rotate(new Vector3(0, -90, 0), Space.Self);
             fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
             container.transform.localScale = Vector3.one;
         }
