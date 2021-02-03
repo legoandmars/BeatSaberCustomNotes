@@ -57,7 +57,11 @@ namespace CustomNotes.Managers
             noteCube = _gameNoteController.gameObject.transform.Find("NoteCube");
 
             MeshRenderer noteMesh = GetComponentInChildren<MeshRenderer>();
-            noteMesh.forceRenderingOff = true;
+            if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
+            {
+                // only disable if custom notes display on both hmd and display
+                noteMesh.forceRenderingOff = true;
+            }
         }
 
         private void DidFinish(NoteController nc)
@@ -105,6 +109,21 @@ namespace CustomNotes.Managers
             container = noteModelPool.Spawn();
             activeNote = container.Prefab;
             activePool = noteModelPool;
+            if (_pluginConfig.HMDOnly == true || LayerUtils.HMDOverride == true)
+            {
+                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.FirstPerson);
+                if (LayerUtils.CameraSet == false)
+                {
+                    LayerUtils.SetCamera(Camera.main, LayerUtils.CameraView.FirstPerson);
+                    LayerUtils.CreateWatermark();
+                }
+            }
+            else
+            {
+                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.Note);
+                if (LayerUtils.CameraSet == false) LayerUtils.SetCamera(Camera.main, LayerUtils.CameraView.Default);
+                if (LayerUtils.watermarkObject != null) LayerUtils.DestroyWatermark();
+            }
             ParentNote(activeNote);
         }
 
@@ -121,13 +140,32 @@ namespace CustomNotes.Managers
         {
             SetActiveThenColor(activeNote, visuals.noteColor);
             // Hide certain parts of the default note which is not required
-            if (_customNote.Descriptor.DisableBaseNoteArrows)
+            if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
-                _customNoteColorNoteVisuals.TurnOffVisuals();
+                if (_customNote.Descriptor.DisableBaseNoteArrows)
+                {
+                    _customNoteColorNoteVisuals.TurnOffVisuals();
+                }
+                else if (_pluginConfig.NoteSize != 1)
+                {
+                    _customNoteColorNoteVisuals.ScaleVisuals(_pluginConfig.NoteSize);
+                }
             }
-            else if(_pluginConfig.NoteSize != 1)
+            else
             {
-                _customNoteColorNoteVisuals.ScaleVisuals(_pluginConfig.NoteSize);
+                if (!_customNote.Descriptor.DisableBaseNoteArrows)
+                {
+                    if (_pluginConfig.NoteSize != 1)
+                    {
+                        // arrows should be enabled in both views, with fake arrows rescaled
+                        _customNoteColorNoteVisuals.CreateAndScaleFakeVisuals((int)LayerUtils.NoteLayer.FirstPerson, _pluginConfig.NoteSize);
+                    }
+                    else
+                    {
+                        // arrows should be enabled in both views
+                        _customNoteColorNoteVisuals.CreateFakeVisuals((int)LayerUtils.NoteLayer.FirstPerson);
+                    }
+                }
             }
         }
 

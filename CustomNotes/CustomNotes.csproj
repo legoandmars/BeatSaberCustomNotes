@@ -32,6 +32,11 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="0Harmony, Version=2.0.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <Private>False</Private>
+      <HintPath>$(BeatSaberDir)\Libs\0Harmony.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="BeatmapCore">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\BeatmapCore.dll</HintPath>
       <Private>False</Private>
@@ -39,6 +44,11 @@
     <Reference Include="BSML">
       <HintPath>$(BeatSaberDir)\Plugins\BSML.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="CameraPlus, Version=4.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <Private>False</Private>
+      <HintPath>$(BeatSaberDir)\Plugins\CameraPlus.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="Colors, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <Private>False</Private>
@@ -78,6 +88,10 @@
       <HintPath>$(BeatSaberDir)\Plugins\SiraUtil.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="SongCore, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Plugins\SongCore.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro">
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Unity.TextMeshPro.dll</HintPath>
       <Private>False</Private>
@@ -102,6 +116,10 @@
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\UnityEngine.UI.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="UnityEngine.UIModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\Beat Saber\Beat Saber_Data\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
     <Reference Include="Zenject, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <Private>False</Private>
       <HintPath>$(BeatSaberDir)\Beat Saber_Data\Managed\Zenject.dll</HintPath>
@@ -114,6 +132,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="HarmonyPatches\CustomNotesPatches.cs" />
+    <Compile Include="HarmonyPatches\Patches\BombLayerPatch.cs" />
+    <Compile Include="HarmonyPatches\Patches\CameraPlusPatch.cs" />
     <Compile Include="Installers\CustomNotesCoreInstaller.cs" />
     <Compile Include="Installers\CustomNotesGameInstaller.cs" />
     <Compile Include="Installers\CustomNotesMenuInstaller.cs" />
@@ -127,6 +148,7 @@
     <Compile Include="Settings\UI\NoteDetailsViewController.cs" />
     <Compile Include="Settings\UI\NotePreviewViewController.cs" />
     <Compile Include="Settings\UI\NotesFlowCoordinator.cs" />
+    <Compile Include="Utilities\LayerUtils.cs" />
     <Compile Include="Utilities\MaterialSwapper.cs" />
     <Compile Include="Data\CustomNote.cs" />
     <Compile Include="Data\NoteExtensions\DisableNoteColorOnGameobject.cs" />
@@ -150,6 +172,9 @@
     <EmbeddedResource Include="Settings\UI\Views\noteDetails.bsml" />
     <EmbeddedResource Include="Settings\UI\Views\noteList.bsml" />
     <EmbeddedResource Include="Settings\UI\Views\notePreview.bsml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Settings\UI\Watermark\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

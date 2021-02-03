@@ -51,5 +51,11 @@ namespace CustomNotes.Settings
                 _listViewController.ScalePreviewNotes(value);
             }
         }
+
+        [UIValue("hmd-only")]
+        public bool hmdOnly {
+            get { return _pluginConfig.HMDOnly; }
+            set { _pluginConfig.HMDOnly = value; }
+        }
     }
 }

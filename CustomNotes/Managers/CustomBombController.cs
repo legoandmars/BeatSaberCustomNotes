@@ -2,6 +2,7 @@
 using UnityEngine;
 using CustomNotes.Data;
 using CustomNotes.Settings.Utilities;
+using CustomNotes.Utilities;
 using SiraUtil.Objects;
 
 namespace CustomNotes.Managers
@@ -34,7 +35,11 @@ namespace CustomNotes.Managers
             bombPool = bombContainerPool;
 
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
-            bm.enabled = false;
+            if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
+            {
+                // only disable if custom bombs display on both hmd and display
+                bm.enabled = false;
+            }
         }
 
         private void DidFinish()
@@ -63,6 +68,14 @@ namespace CustomNotes.Managers
             container = bombModelPool.Spawn();
             activeNote = container.Prefab;
             bombPool = bombModelPool;
+            if (_pluginConfig.HMDOnly == true || LayerUtils.HMDOverride == true)
+            {
+                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.FirstPerson);
+            }
+            else
+            {
+                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.ThirdPerson);
+            }
             ParentNote(activeNote);
         }
 
