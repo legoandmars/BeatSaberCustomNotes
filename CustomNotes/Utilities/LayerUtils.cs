@@ -49,6 +49,7 @@ namespace CustomNotes.Utilities
         /// <param name="overrideCheck">Unrequired boolean to override the camera cooldown check.</param>
         public static void SetCamera(Camera cam, CameraView view, bool overrideCheck = false)
         {
+            if (cam == null) return;
             if(view == CameraView.FirstPerson)
             {
                 cam.cullingMask &= ~(1 << (int)NoteLayer.ThirdPerson);
