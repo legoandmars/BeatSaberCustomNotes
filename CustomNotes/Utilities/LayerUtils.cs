@@ -11,6 +11,7 @@ using BeatSaberMarkupLanguage;
 using TMPro;
 using HMUI;
 using UnityEngine.UI;
+using CustomNotes.Settings.Utilities;
 
 namespace CustomNotes.Utilities
 {
@@ -20,7 +21,14 @@ namespace CustomNotes.Utilities
         public static bool CameraSet = false;
         public static GameObject watermarkObject;
         public static bool BombPatchRequired = false;
-
+        public static PluginConfig pluginConfig;
+        public static bool HMDOnly
+        {
+            get
+            {
+                return (pluginConfig?.HMDOnly == false && HMDOverride == false) ? false : true;
+            }
+        }
         /// <summary>
         /// Note layer type.
         /// </summary>

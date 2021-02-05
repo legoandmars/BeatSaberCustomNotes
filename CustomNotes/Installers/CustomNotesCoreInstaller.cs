@@ -3,6 +3,7 @@ using SiraUtil.Interfaces;
 using CustomNotes.Managers;
 using CustomNotes.Providers;
 using CustomNotes.Settings.Utilities;
+using CustomNotes.Utilities;
 
 namespace CustomNotes.Installers
 {
@@ -13,6 +14,7 @@ namespace CustomNotes.Installers
         public CustomNotesCoreInstaller(PluginConfig pluginConfig)
         {
             _pluginConfig = pluginConfig;
+            LayerUtils.pluginConfig = pluginConfig;
         }
 
         public override void InstallBindings()
