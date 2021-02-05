@@ -45,6 +45,7 @@ namespace CustomNotes.Settings.UI
         private Vector3 bombPos = new Vector3(3.0f, 0.75f, 0.0f);
 
         public Action<CustomNote> customNoteChanged;
+        public Action customNotesReloaded;
 
         [Inject]
         public void Construct(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, GameplaySetupViewController gameplaySetupViewController)
@@ -72,6 +73,7 @@ namespace CustomNotes.Settings.UI
             _noteAssetLoader.Reload();
             SetupList();
             Select(customListTableData.tableView, _noteAssetLoader.SelectedNote);
+            customNotesReloaded?.Invoke();
         }
 
         [UIAction("#post-parse")]
@@ -110,7 +112,9 @@ namespace CustomNotes.Settings.UI
                 preview.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
             }
 
-            Select(customListTableData.tableView, _noteAssetLoader.SelectedNote);
+            int selectedNote = _noteAssetLoader.SelectedNote;
+            customListTableData.tableView.SelectCellWithIdx(selectedNote);
+            Select(customListTableData.tableView, selectedNote);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)

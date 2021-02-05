@@ -140,12 +140,14 @@
     <Compile Include="Installers\CustomNotesMenuInstaller.cs" />
     <Compile Include="Managers\CustomBombController.cs" />
     <Compile Include="Managers\CustomNoteController.cs" />
+    <Compile Include="Managers\CustomNotesViewManager.cs" />
     <Compile Include="Managers\MenuButtonManager.cs" />
     <Compile Include="Managers\CustomNoteManager.cs" />
     <Compile Include="Overrides\CustomNoteColorNoteVisuals.cs" />
     <Compile Include="Providers\CustomBombNoteProvider.cs" />
     <Compile Include="Providers\CustomGameNoteProvider.cs" />
     <Compile Include="Settings\UI\NoteDetailsViewController.cs" />
+    <Compile Include="Settings\UI\NoteModifierViewController.cs" />
     <Compile Include="Settings\UI\NotePreviewViewController.cs" />
     <Compile Include="Settings\UI\NotesFlowCoordinator.cs" />
     <Compile Include="Utilities\LayerUtils.cs" />
@@ -175,6 +177,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Settings\UI\Watermark\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Settings\UI\Views\noteModifier.bsml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
