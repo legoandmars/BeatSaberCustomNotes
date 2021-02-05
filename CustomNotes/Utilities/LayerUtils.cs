@@ -27,7 +27,7 @@ namespace CustomNotes.Utilities
         public enum NoteLayer : int
         {
             Note = 8,
-            FirstPerson = 23,
+            FirstPerson = 24,
             ThirdPerson = 8
         }
 
