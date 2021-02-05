@@ -131,7 +131,7 @@ namespace CustomNotes.Utilities
             if (watermarkObject != null) return;
             watermarkObject = new GameObject("CustomNotes Watermark");
             watermarkObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-            watermarkObject.transform.position = new Vector3(0f, 0.025f, 0.775f);
+            watermarkObject.transform.position = new Vector3(0f, 0.025f, 0.8f);
             watermarkObject.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             Canvas watermarkCanvas = watermarkObject.AddComponent<Canvas>();
@@ -143,6 +143,7 @@ namespace CustomNotes.Utilities
 
             CurvedTextMeshPro text = (CurvedTextMeshPro)BeatSaberUI.CreateText((RectTransform)watermarkCanvas.transform, "Custom Notes Enabled", new Vector2(0, 0));
             text.alignment = TextAlignmentOptions.Center;
+            text.color = new Color(0.95f, 0.95f, 0.95f);
 
             SetLayer(watermarkObject, NoteLayer.ThirdPerson);
         }
