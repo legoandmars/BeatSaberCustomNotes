@@ -7,6 +7,7 @@ using BeatSaberMarkupLanguage.GameplaySetup;
 using HMUI;
 using CustomNotes.Data;
 using System.Collections.Generic;
+using BeatSaberMarkupLanguage.Components.Settings;
 
 namespace CustomNotes.Settings.UI
 {
@@ -18,7 +19,9 @@ namespace CustomNotes.Settings.UI
     {
         private PluginConfig _pluginConfig;
         private NoteAssetLoader _noteAssetLoader;
-        private NoteListViewController _noteListViewController;
+
+        internal event Action<float> noteSizeChanged;
+        internal event Action<bool> hmdOnlyChanged;
 
         [UIValue("notes-list")]
         private List<object> notesList = new List<object>();
@@ -29,11 +32,17 @@ namespace CustomNotes.Settings.UI
         [UIComponent("notes-dropdown")]
         private SimpleTextDropdown notesDropdown;
 
-        public NoteModifierViewController(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, NoteListViewController noteListViewController)
+        [UIComponent("size-slider")]
+        private SliderSetting sizeSlider;
+
+        [UIComponent("hmd-checkbox")]
+        private ToggleSetting hmdCheckbox;
+
+
+        public NoteModifierViewController(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader)
         {
             _pluginConfig = pluginConfig;
             _noteAssetLoader = noteAssetLoader;
-            _noteListViewController = noteListViewController;
         }
 
         public void Initialize()
@@ -67,6 +76,16 @@ namespace CustomNotes.Settings.UI
             notesDropdown.SelectCellWithIdx(_noteAssetLoader.SelectedNote);
         }
 
+        internal void OnNoteSizeChanged(float noteSize)
+        {
+            sizeSlider.slider.value = noteSize;
+        }
+
+        internal void OnHmdOnlyChanged(bool hmdOnly)
+        {
+            hmdCheckbox.Value = hmdOnly;
+        }
+
         public void SetupList()
         {
             notesList = new List<object>();
@@ -75,6 +94,29 @@ namespace CustomNotes.Settings.UI
                 notesList.Add(note.Descriptor.NoteName);
             }
             selectedNote = (string)notesList[_noteAssetLoader.SelectedNote];
+        }
+
+
+        [UIValue("note-size")]
+        public float noteSize
+        {
+            get { return _pluginConfig.NoteSize; }
+            set
+            {
+                _pluginConfig.NoteSize = value;
+                noteSizeChanged?.Invoke(value);
+            }
+        }
+
+        [UIValue("hmd-only")]
+        public bool hmdOnly
+        {
+            get { return _pluginConfig.HMDOnly; }
+            set
+            {
+                _pluginConfig.HMDOnly = value;
+                hmdOnlyChanged?.Invoke(value);
+            }
         }
     }
 }

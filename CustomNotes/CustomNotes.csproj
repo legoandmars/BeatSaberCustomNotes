@@ -45,7 +45,7 @@
       <HintPath>$(BeatSaberDir)\Plugins\BSML.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="CameraPlus, Version=4.4.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="CameraPlus, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
       <Private>False</Private>
       <HintPath>$(BeatSaberDir)\Plugins\CameraPlus.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>

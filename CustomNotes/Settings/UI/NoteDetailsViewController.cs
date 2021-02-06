@@ -1,13 +1,13 @@
 ﻿using HMUI;
 using CustomNotes.Data;
 using CustomNotes.Utilities;
-using CustomNotes.Managers;
 using CustomNotes.Settings.Utilities;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.ViewControllers;
 using Zenject;
 using System;
 using CustomNotes.Settings.UI;
+using BeatSaberMarkupLanguage.Components.Settings;
 
 namespace CustomNotes.Settings
 {
@@ -18,8 +18,17 @@ namespace CustomNotes.Settings
         private PluginConfig _pluginConfig;
         private NoteListViewController _listViewController;
 
+        internal event Action<float> noteSizeChanged;
+        internal event Action<bool> hmdOnlyChanged;
+
         [UIComponent("note-description")]
         public TextPageScrollView noteDescription = null;
+
+        [UIComponent("size-slider")]
+        private SliderSetting sizeSlider;
+
+        [UIComponent("hmd-checkbox")]
+        private ToggleSetting hmdCheckbox;
 
         public void OnNoteWasChanged(CustomNote customNote)
         {
@@ -40,6 +49,22 @@ namespace CustomNotes.Settings
             _listViewController = listViewController;
         }
 
+        internal void OnNoteSizeChanged(float noteSize)
+        {
+            if (sizeSlider != null)
+            {
+                sizeSlider.slider.value = noteSize;
+            }
+        }
+
+        internal void OnHmdOnlyChanged(bool hmdOnly)
+        {
+            if (hmdCheckbox != null)
+            {
+                hmdCheckbox.Value = hmdOnly;
+            }
+        }
+
 
         [UIValue("note-size")]
         public float noteSize
@@ -49,13 +74,18 @@ namespace CustomNotes.Settings
             { 
                 _pluginConfig.NoteSize = value;
                 _listViewController.ScalePreviewNotes(value);
+                noteSizeChanged?.Invoke(value);
             }
         }
 
         [UIValue("hmd-only")]
         public bool hmdOnly {
             get { return _pluginConfig.HMDOnly; }
-            set { _pluginConfig.HMDOnly = value; }
+            set 
+            {
+                _pluginConfig.HMDOnly = value;
+                hmdOnlyChanged?.Invoke(value);
+            }
         }
     }
 }
