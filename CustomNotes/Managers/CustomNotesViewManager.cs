@@ -11,12 +11,14 @@ namespace CustomNotes.Managers
         private NoteListViewController _noteListViewController;
         private NoteDetailsViewController _noteDetailsViewController;
         private NoteModifierViewController _noteModifierViewController;
+        private GameplaySetupViewController _gameplaySetupViewController;
 
-        public CustomNotesViewManager(NoteListViewController noteListViewController, NoteDetailsViewController noteDetailsViewController, NoteModifierViewController noteModifierViewController)
+        public CustomNotesViewManager(NoteListViewController noteListViewController, NoteDetailsViewController noteDetailsViewController, NoteModifierViewController noteModifierViewController, GameplaySetupViewController gameplaySetupViewController)
         {
             _noteListViewController = noteListViewController;
             _noteDetailsViewController = noteDetailsViewController;
             _noteModifierViewController = noteModifierViewController;
+            _gameplaySetupViewController = gameplaySetupViewController;
         }
 
         public void Initialize()
@@ -27,6 +29,8 @@ namespace CustomNotes.Managers
             _noteDetailsViewController.hmdOnlyChanged += NoteDetailsViewController_HmdOnlyChanged;
             _noteModifierViewController.noteSizeChanged += NoteModifierViewController_NoteSizeChanged;
             _noteModifierViewController.hmdOnlyChanged += NoteModifierViewController_HmdOnlyChanged;
+            _gameplaySetupViewController.didActivateEvent += GameplaySetupViewController_DidActivateEvent;
+            _gameplaySetupViewController.didDeactivateEvent += GameplaySetupViewController_DidDeactivateEvent; 
         }
 
         public void Dispose()
@@ -37,6 +41,8 @@ namespace CustomNotes.Managers
             _noteDetailsViewController.hmdOnlyChanged -= NoteDetailsViewController_HmdOnlyChanged;
             _noteModifierViewController.noteSizeChanged -= NoteModifierViewController_NoteSizeChanged;
             _noteModifierViewController.hmdOnlyChanged -= NoteModifierViewController_HmdOnlyChanged;
+            _gameplaySetupViewController.didActivateEvent -= GameplaySetupViewController_DidActivateEvent;
+            _gameplaySetupViewController.didDeactivateEvent -= GameplaySetupViewController_DidDeactivateEvent;
         }
 
         private void NoteListViewController_CustomNoteChanged(CustomNote customNote)
@@ -67,6 +73,16 @@ namespace CustomNotes.Managers
         private void NoteModifierViewController_HmdOnlyChanged(bool hmdOnly)
         {
             _noteDetailsViewController.OnHmdOnlyChanged(hmdOnly);
+        }
+
+        private void GameplaySetupViewController_DidActivateEvent(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+        {
+            _noteModifierViewController.ParentControllerActivated();
+        }
+
+        private void GameplaySetupViewController_DidDeactivateEvent(bool removedFromHierarchy, bool screenSystemDisabling)
+        {
+            _noteModifierViewController.ParentControllerDeactivated();
         }
     }
 }

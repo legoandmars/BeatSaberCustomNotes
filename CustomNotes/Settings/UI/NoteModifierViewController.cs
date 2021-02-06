@@ -8,6 +8,8 @@ using HMUI;
 using CustomNotes.Data;
 using System.Collections.Generic;
 using BeatSaberMarkupLanguage.Components.Settings;
+using System.Linq;
+using UnityEngine;
 
 namespace CustomNotes.Settings.UI
 {
@@ -31,6 +33,11 @@ namespace CustomNotes.Settings.UI
 
         [UIComponent("notes-dropdown")]
         private SimpleTextDropdown notesDropdown;
+
+        [UIComponent("notes-dropdown")]
+        private RectTransform notesDropdownTransform;
+
+        private RectTransform dropdownListTransform;
 
         [UIComponent("size-slider")]
         private SliderSetting sizeSlider;
@@ -56,10 +63,28 @@ namespace CustomNotes.Settings.UI
             GameplaySetup.instance.RemoveTab("Custom Notes");
         }
 
+        internal void ParentControllerActivated()
+        {
+            if (dropdownListTransform == null)
+            {
+                dropdownListTransform = notesDropdownTransform.Find("DropdownTableView").GetComponent<RectTransform>();
+            }
+
+        }
+
+        internal void ParentControllerDeactivated()
+        {
+            if (dropdownListTransform != null && notesDropdown != null)
+            {
+                dropdownListTransform.SetParent(notesDropdownTransform);
+                dropdownListTransform.gameObject.SetActive(false);
+            }
+        }
+
         [UIAction("note-selected")]
         public void OnSelect(string selectedCell)
         {
-            int selectedNote = notesDropdown.selectedIndex;
+            int selectedNote = _noteAssetLoader.CustomNoteObjects.ToList().FindIndex(note => note.Descriptor.NoteName == selectedCell);
             _noteAssetLoader.SelectedNote = selectedNote;
             _pluginConfig.LastNote = _noteAssetLoader.CustomNoteObjects[selectedNote].FileName;
         }
@@ -72,8 +97,11 @@ namespace CustomNotes.Settings.UI
 
         internal void OnNoteListSelected(CustomNote customNote)
         {
-            selectedNote = customNote.Descriptor.name;
-            notesDropdown.SelectCellWithIdx(_noteAssetLoader.SelectedNote);
+            int selectedNote = notesList.FindIndex(note => (string)note == customNote.Descriptor.NoteName);
+            if (selectedNote != -1)
+                notesDropdown.SelectCellWithIdx(selectedNote);
+            else // If it is an invalid bloq, load default
+                notesDropdown.SelectCellWithIdx(0);
         }
 
         internal void OnNoteSizeChanged(float noteSize)
@@ -91,9 +119,11 @@ namespace CustomNotes.Settings.UI
             notesList = new List<object>();
             foreach (CustomNote note in _noteAssetLoader.CustomNoteObjects)
             {
-                notesList.Add(note.Descriptor.NoteName);
+                if (note.ErrorMessage == "") // Exclude all invalid bloqs
+                    notesList.Add(note.Descriptor.NoteName);
             }
-            selectedNote = (string)notesList[_noteAssetLoader.SelectedNote];
+            if (_noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote].ErrorMessage != null) // Only select if valid bloq is loaded
+                selectedNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote].Descriptor.NoteName;
         }
 
 
