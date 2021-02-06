@@ -11,6 +11,7 @@ using BeatSaberMarkupLanguage;
 using TMPro;
 using HMUI;
 using UnityEngine.UI;
+using CustomNotes.Settings.Utilities;
 
 namespace CustomNotes.Utilities
 {
@@ -20,14 +21,21 @@ namespace CustomNotes.Utilities
         public static bool CameraSet = false;
         public static GameObject watermarkObject;
         public static bool BombPatchRequired = false;
-
+        public static PluginConfig pluginConfig;
+        public static bool HMDOnly
+        {
+            get
+            {
+                return (pluginConfig?.HMDOnly == false && HMDOverride == false) ? false : true;
+            }
+        }
         /// <summary>
         /// Note layer type.
         /// </summary>
         public enum NoteLayer : int
         {
             Note = 8,
-            FirstPerson = 23,
+            FirstPerson = 24,
             ThirdPerson = 8
         }
 
@@ -123,7 +131,7 @@ namespace CustomNotes.Utilities
             if (watermarkObject != null) return;
             watermarkObject = new GameObject("CustomNotes Watermark");
             watermarkObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-            watermarkObject.transform.position = new Vector3(0f, 0.025f, 0.775f);
+            watermarkObject.transform.position = new Vector3(0f, 0.025f, 0.8f);
             watermarkObject.transform.rotation = Quaternion.Euler(90, 0, 0);
 
             Canvas watermarkCanvas = watermarkObject.AddComponent<Canvas>();
@@ -135,6 +143,7 @@ namespace CustomNotes.Utilities
 
             CurvedTextMeshPro text = (CurvedTextMeshPro)BeatSaberUI.CreateText((RectTransform)watermarkCanvas.transform, "Custom Notes Enabled", new Vector2(0, 0));
             text.alignment = TextAlignmentOptions.Center;
+            text.color = new Color(0.95f, 0.95f, 0.95f);
 
             SetLayer(watermarkObject, NoteLayer.ThirdPerson);
         }

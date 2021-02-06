@@ -8,6 +8,7 @@ using CustomNotes.HarmonyPatches;
 using CustomNotes.Installers;
 using CustomNotes.Settings.Utilities;
 using IPALogger = IPA.Logging.Logger;
+using System;
 
 namespace CustomNotes
 {
@@ -24,6 +25,11 @@ namespace CustomNotes
             zenjector.OnApp<CustomNotesCoreInstaller>().WithParameters(config.Generated<PluginConfig>());
             zenjector.OnMenu<CustomNotesMenuInstaller>();
             zenjector.OnGame<CustomNotesGameInstaller>().ShortCircuitForTutorial();
+        }
+
+        [OnEnable]
+        public void OnEnable()
+        {
             try
             {
                 CustomNotesPatches.ApplyHarmonyPatches();
@@ -34,10 +40,10 @@ namespace CustomNotes
             }
         }
 
-        [OnEnable, OnDisable]
-        public void OnState()
+        [OnDisable]
+        public void OnDisable()
         {
-            
+            CustomNotesPatches.RemoveHarmonyPatches();
         }
     }
 }
