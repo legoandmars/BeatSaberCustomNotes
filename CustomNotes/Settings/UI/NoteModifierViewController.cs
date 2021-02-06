@@ -4,7 +4,6 @@ using CustomNotes.Settings.Utilities;
 using CustomNotes.Managers;
 using System;
 using BeatSaberMarkupLanguage.GameplaySetup;
-using HMUI;
 using CustomNotes.Data;
 using System.Collections.Generic;
 using BeatSaberMarkupLanguage.Components.Settings;
@@ -22,17 +21,11 @@ namespace CustomNotes.Settings.UI
         private PluginConfig _pluginConfig;
         private NoteAssetLoader _noteAssetLoader;
 
-        internal event Action<float> noteSizeChanged;
-        internal event Action<bool> hmdOnlyChanged;
-
         [UIValue("notes-list")]
         private List<object> notesList = new List<object>();
 
-        [UIValue("selected-note")]
-        private string selectedNote = "Default";
-
         [UIComponent("notes-dropdown")]
-        private SimpleTextDropdown notesDropdown;
+        private DropDownListSetting notesDropdown;
 
         [UIComponent("notes-dropdown")]
         private RectTransform notesDropdownTransform;
@@ -69,15 +62,26 @@ namespace CustomNotes.Settings.UI
             {
                 dropdownListTransform = notesDropdownTransform.Find("DropdownTableView").GetComponent<RectTransform>();
             }
-
+            notesDropdown.ReceiveValue();
+            sizeSlider.ReceiveValue();
+            hmdCheckbox.ReceiveValue();
         }
 
-        internal void ParentControllerDeactivated()
+        internal void ParentControllerDeactivated() // This is for fixing a weird bug with the dropdownlist
         {
             if (dropdownListTransform != null && notesDropdown != null)
             {
                 dropdownListTransform.SetParent(notesDropdownTransform);
                 dropdownListTransform.gameObject.SetActive(false);
+            }
+        }
+
+        public void SetupList()
+        {
+            notesList = new List<object>();
+            foreach (CustomNote note in _noteAssetLoader.CustomNoteObjects)
+            {
+                notesList.Add(note.Descriptor.NoteName);
             }
         }
 
@@ -89,43 +93,19 @@ namespace CustomNotes.Settings.UI
             _pluginConfig.LastNote = _noteAssetLoader.CustomNoteObjects[selectedNote].FileName;
         }
 
-        internal void OnNotesReloaded()
-        {
-            SetupList();
-            notesDropdown.SelectCellWithIdx(_noteAssetLoader.SelectedNote); // Hacky way to get it to read the value of selectedNote
-        }
 
-        internal void OnNoteListSelected(CustomNote customNote)
+        [UIValue("selected-note")]
+        private string selectedNote
         {
-            int selectedNote = notesList.FindIndex(note => (string)note == customNote.Descriptor.NoteName);
-            if (selectedNote != -1)
-                notesDropdown.SelectCellWithIdx(selectedNote);
-            else // If it is an invalid bloq, load default
-                notesDropdown.SelectCellWithIdx(0);
-        }
-
-        internal void OnNoteSizeChanged(float noteSize)
-        {
-            sizeSlider.slider.value = noteSize;
-        }
-
-        internal void OnHmdOnlyChanged(bool hmdOnly)
-        {
-            hmdCheckbox.Value = hmdOnly;
-        }
-
-        public void SetupList()
-        {
-            notesList = new List<object>();
-            foreach (CustomNote note in _noteAssetLoader.CustomNoteObjects)
+            get 
             {
-                if (note.ErrorMessage == "") // Exclude all invalid bloqs
-                    notesList.Add(note.Descriptor.NoteName);
+                if (_noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote].ErrorMessage != null) // Only select if valid bloq is loaded
+                {
+                    return _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote].Descriptor.NoteName;
+                }
+                return "Default";
             }
-            if (_noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote].ErrorMessage != null) // Only select if valid bloq is loaded
-                selectedNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote].Descriptor.NoteName;
         }
-
 
         [UIValue("note-size")]
         public float noteSize
@@ -134,7 +114,6 @@ namespace CustomNotes.Settings.UI
             set
             {
                 _pluginConfig.NoteSize = value;
-                noteSizeChanged?.Invoke(value);
             }
         }
 
@@ -145,7 +124,6 @@ namespace CustomNotes.Settings.UI
             set
             {
                 _pluginConfig.HMDOnly = value;
-                hmdOnlyChanged?.Invoke(value);
             }
         }
     }
