@@ -51,11 +51,12 @@ namespace CustomNotes.Managers
                     // create fake bombs for Custom Notes without Custom Bombs
                     fakeFirstPersonBombMesh = UnityEngine.Object.Instantiate(bombMesh.gameObject);
                     fakeFirstPersonBombMesh.name = "FakeFirstPersonBomb";
-                    fakeFirstPersonBombMesh.transform.parent = bombMesh.parent;
+                    fakeFirstPersonBombMesh.transform.parent = bombMesh;
 
-                    fakeFirstPersonBombMesh.transform.localScale = bombMesh.localScale;
-                    fakeFirstPersonBombMesh.transform.localPosition = bombMesh.localPosition;
-                    fakeFirstPersonBombMesh.layer = (int) LayerUtils.NoteLayer.FirstPerson;
+                    fakeFirstPersonBombMesh.transform.localScale = Vector3.one;
+                    fakeFirstPersonBombMesh.transform.localPosition = Vector3.zero;
+                    fakeFirstPersonBombMesh.transform.rotation = Quaternion.identity;
+                    fakeFirstPersonBombMesh.layer = (int)LayerUtils.NoteLayer.FirstPerson;
                 }
                 
             }
