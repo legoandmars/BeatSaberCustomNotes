@@ -62,6 +62,10 @@ namespace CustomNotes.Managers
                 // only disable if custom notes display on both hmd and display
                 noteMesh.forceRenderingOff = true;
             }
+            else
+            {
+                noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.ThirdPerson;
+            }
         }
 
         private void DidFinish(NoteController nc)
@@ -112,17 +116,10 @@ namespace CustomNotes.Managers
             if (_pluginConfig.HMDOnly == true || LayerUtils.HMDOverride == true)
             {
                 LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.FirstPerson);
-                if (LayerUtils.CameraSet == false)
-                {
-                    LayerUtils.SetCamera(Camera.main, LayerUtils.CameraView.FirstPerson);
-                    LayerUtils.CreateWatermark();
-                }
             }
             else
             {
                 LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.Note);
-                if (LayerUtils.CameraSet == false) LayerUtils.SetCamera(Camera.main, LayerUtils.CameraView.Default);
-                if (LayerUtils.watermarkObject != null) LayerUtils.DestroyWatermark();
             }
             ParentNote(activeNote);
         }
@@ -142,6 +139,7 @@ namespace CustomNotes.Managers
             // Hide certain parts of the default note which is not required
             if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
+                _customNoteColorNoteVisuals.SetBaseGameVisualsLayer((int) LayerUtils.NoteLayer.Note);
                 if (_customNote.Descriptor.DisableBaseNoteArrows)
                 {
                     _customNoteColorNoteVisuals.TurnOffVisuals();
@@ -153,6 +151,8 @@ namespace CustomNotes.Managers
             }
             else
             {
+                // HMDOnly code
+                _customNoteColorNoteVisuals.SetBaseGameVisualsLayer((int) LayerUtils.NoteLayer.ThirdPerson);
                 if (!_customNote.Descriptor.DisableBaseNoteArrows)
                 {
                     if (_pluginConfig.NoteSize != 1)

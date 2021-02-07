@@ -40,6 +40,13 @@ namespace CustomNotes.Overrides
             _circleGlowSpriteRenderer.enabled = false;
         }
 
+        public void SetBaseGameVisualsLayer(int layer)
+        {
+            _arrowMeshRenderer.gameObject.layer = layer;
+            _arrowGlowSpriteRenderer.gameObject.layer = layer;
+            _circleGlowSpriteRenderer.gameObject.layer = layer;
+        }
+
         public void CreateFakeVisuals(int layer)
         {
             ClearDuplicatedArrows();

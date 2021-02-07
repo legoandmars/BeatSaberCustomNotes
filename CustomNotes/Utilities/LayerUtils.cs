@@ -18,10 +18,10 @@ namespace CustomNotes.Utilities
     public class LayerUtils
     {
         public static bool HMDOverride = false;
-        public static bool CameraSet = false;
-        public static GameObject watermarkObject;
-        public static bool BombPatchRequired = false;
         public static PluginConfig pluginConfig;
+
+        private static GameObject _watermarkObject;
+
         public static bool HMDOnly
         {
             get
@@ -29,6 +29,7 @@ namespace CustomNotes.Utilities
                 return (pluginConfig?.HMDOnly == false && HMDOverride == false) ? false : true;
             }
         }
+
         /// <summary>
         /// Note layer type.
         /// </summary>
@@ -36,7 +37,7 @@ namespace CustomNotes.Utilities
         {
             Note = 8,
             FirstPerson = 24,
-            ThirdPerson = 8
+            ThirdPerson = 26
         }
 
         /// <summary>
@@ -54,24 +55,24 @@ namespace CustomNotes.Utilities
         /// </summary>
         /// <param name="cam">Camera</param>
         /// <param name="view">Type to set the camera to.</param>
-        /// <param name="overrideCheck">Unrequired boolean to override the camera cooldown check.</param>
-        public static void SetCamera(Camera cam, CameraView view, bool overrideCheck = false)
+        public static void SetCamera(Camera cam, CameraView view)
         {
             if (cam == null) return;
-            if(view == CameraView.FirstPerson)
+            switch(view)
             {
-                cam.cullingMask &= ~(1 << (int)NoteLayer.ThirdPerson);
-                cam.cullingMask |= 1 << (int)NoteLayer.FirstPerson;
-            }
-            else if(view == CameraView.ThirdPerson || view == CameraView.Default)
-            {
-                cam.cullingMask &= ~(1 << (int)NoteLayer.FirstPerson);
-                cam.cullingMask |= 1 << (int)NoteLayer.ThirdPerson;
-            }
-
-            if (!overrideCheck)
-            {
-                CameraSet = true;
+                default:
+                case CameraView.Default:
+                    cam.cullingMask &= ~(1 << (int) NoteLayer.ThirdPerson);
+                    cam.cullingMask &= ~(1 << (int) NoteLayer.FirstPerson);
+                    break;
+                case CameraView.FirstPerson:
+                    cam.cullingMask &= ~(1 << (int) NoteLayer.ThirdPerson);
+                    cam.cullingMask |= 1 << (int) NoteLayer.FirstPerson;
+                    break;
+                case CameraView.ThirdPerson:
+                    cam.cullingMask &= ~(1 << (int) NoteLayer.FirstPerson);
+                    cam.cullingMask |= 1 << (int) NoteLayer.ThirdPerson;
+                    break;
             }
         }
 
@@ -100,59 +101,36 @@ namespace CustomNotes.Utilities
         }
 
         /// <summary>
-        /// Recursively sets the layer of a CustomNote.
-        /// </summary>
-        /// <param name="customNote">The custom note.</param>
-        /// <param name="layer">The layer to recursively set.</param>
-        public static void SetNoteLayer(CustomNote customNote, NoteLayer layer) => SetNoteLayer(customNote, (int)layer);
-
-        /// <summary>
-        /// Recursively sets the layer of a CustomNote.
-        /// </summary>
-        /// <param name="customNote">The custom note.</param>
-        /// <param name="layer">The layer to recursively set.</param>
-        public static void SetNoteLayer(CustomNote customNote, int layer)
-        {
-            SetLayer(customNote.NoteLeft, layer);
-            SetLayer(customNote.NoteRight, layer);
-            SetLayer(customNote.NoteDotLeft, layer);
-            SetLayer(customNote.NoteDotRight, layer);
-            if (customNote.NoteBomb != null)
-            {
-                SetLayer(customNote.NoteBomb, layer);
-            }
-        }
-
-        /// <summary>
         /// Set the global watermark to show that the player has hmd only custom notes.
         /// </summary>
         public static void CreateWatermark()
         {
-            if (watermarkObject != null) return;
-            watermarkObject = new GameObject("CustomNotes Watermark");
-            watermarkObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-            watermarkObject.transform.position = new Vector3(0f, 0.025f, 0.8f);
-            watermarkObject.transform.rotation = Quaternion.Euler(90, 0, 0);
+            if (_watermarkObject != null) return;
+            _watermarkObject = new GameObject("CustomNotes Watermark");
+            _watermarkObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+            _watermarkObject.transform.position = new Vector3(0f, 0.025f, 0.8f);
+            _watermarkObject.transform.rotation = Quaternion.Euler(90, 0, 0);
 
-            Canvas watermarkCanvas = watermarkObject.AddComponent<Canvas>();
+            Canvas watermarkCanvas = _watermarkObject.AddComponent<Canvas>();
             watermarkCanvas.renderMode = RenderMode.WorldSpace;
             ((RectTransform)watermarkCanvas.transform).sizeDelta = new Vector2(100, 50);
 
-            CurvedCanvasSettings canvasSettings = watermarkObject.AddComponent<CurvedCanvasSettings>();
+            CurvedCanvasSettings canvasSettings = _watermarkObject.AddComponent<CurvedCanvasSettings>();
             canvasSettings.SetRadius(0f);
 
             CurvedTextMeshPro text = (CurvedTextMeshPro)BeatSaberUI.CreateText((RectTransform)watermarkCanvas.transform, "Custom Notes Enabled", new Vector2(0, 0));
             text.alignment = TextAlignmentOptions.Center;
             text.color = new Color(0.95f, 0.95f, 0.95f);
 
-            SetLayer(watermarkObject, NoteLayer.ThirdPerson);
+            SetLayer(_watermarkObject, NoteLayer.ThirdPerson);
         }
 
         public static void DestroyWatermark()
         {
-            watermarkObject.SetActive(false);
-            UnityEngine.Object.Destroy(watermarkObject);
-            watermarkObject = null;
+            if (_watermarkObject == null) return;
+            _watermarkObject.SetActive(false);
+            UnityEngine.Object.Destroy(_watermarkObject);
+            _watermarkObject = null;
         } 
 
         /// <summary>
@@ -169,6 +147,44 @@ namespace CustomNotes.Utilities
         public static void DisableHMDOnly()
         {
             HMDOverride = false;
+        }
+
+        /* // Game Version 1.13.2
+        8  : "Note"
+        9  : "NoteDebris"
+        10 : "Avatar"
+        11 : "Obstacle"
+        12 : "Saber"
+        13 : "NeonLight"
+        14 : "Environment"
+        15 : "GrabPassTexture1"
+        16 : "CutEffectParticles"
+        17 : ""
+        18 : ""
+        19 : "NonReflectedParticles"
+        20 : ""
+        21 : ""
+        22 : ""
+        23 : ""
+        24 : ""
+        25 : "FixMRAlpha"
+        26 : ""
+        27 : "DontShowInExternalMRCamera"
+        28 : "PlayersPlace"
+        29 : "Skybox"
+        30 : ""
+        31 : "Reserved"
+        */
+
+        /// <summary>
+        /// Prints all layer names with their ids
+        /// </summary>
+        public static void PrintLayerNames()
+        {
+            for (int i = 8; i < 32; i++)
+            {
+                Logger.log.Notice($"LayerID:{i} : \"{LayerMask.LayerToName(i)}\"");
+            }
         }
     }
 }

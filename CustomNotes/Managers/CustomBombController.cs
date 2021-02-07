@@ -16,6 +16,7 @@ namespace CustomNotes.Managers
         private BombNoteController _bombNoteController;
 
         protected Transform bombMesh;
+        protected GameObject fakeThidPersonBombMesh;
 
         protected GameObject activeNote;
         protected SiraPrefabContainer container;
@@ -35,11 +36,20 @@ namespace CustomNotes.Managers
             bombPool = bombContainerPool;
 
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
-            if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
+
+            if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
             {
-                // only disable if custom bombs display on both hmd and display
-                bm.enabled = false;
+                // sooo, turns out that changing the bomb meshes layer disables collision for bombs, probably because the collider and the mesh are on the same GameObject...
+                fakeThidPersonBombMesh = UnityEngine.Object.Instantiate(bombMesh.gameObject);
+                fakeThidPersonBombMesh.name = "FakeThirdPersonBomb";
+                fakeThidPersonBombMesh.transform.parent = bombMesh.parent;
+
+                fakeThidPersonBombMesh.transform.localScale = bombMesh.localScale;
+                fakeThidPersonBombMesh.transform.localPosition = bombMesh.localPosition;
+                fakeThidPersonBombMesh.layer = (int) LayerUtils.NoteLayer.ThirdPerson;
             }
+
+            bm.enabled = false;
         }
 
         private void DidFinish()
@@ -74,7 +84,7 @@ namespace CustomNotes.Managers
             }
             else
             {
-                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.ThirdPerson);
+                LayerUtils.SetLayer(activeNote, LayerUtils.NoteLayer.Note);
             }
             ParentNote(activeNote);
         }
@@ -85,6 +95,7 @@ namespace CustomNotes.Managers
             {
                 _bombNoteController.didInitEvent-= Controller_Init;
             }
+            Destroy(fakeThidPersonBombMesh);
         }
     }
 }

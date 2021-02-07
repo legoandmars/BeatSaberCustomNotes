@@ -21,7 +21,7 @@ namespace CustomNotes.HarmonyPatches
 
         private static void Postfix(ref Camera ____cam)
         {
-            LayerUtils.SetCamera(____cam, LayerUtils.CameraView.ThirdPerson, true);
+            LayerUtils.SetCamera(____cam, LayerUtils.CameraView.ThirdPerson);
         }
     }
 }
