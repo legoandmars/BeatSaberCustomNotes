@@ -26,9 +26,12 @@ namespace CustomNotes.Providers
                 if (_noteAssetLoader.SelectedNote != 0 && CanSetup)
                 {
                     var note = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
-                    MaterialSwapper.GetMaterials();
-                    MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteBomb);
-                    Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.bomb").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteBomb));
+                    if(note.NoteBomb != null)
+                    {
+                        MaterialSwapper.GetMaterials();
+                        MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteBomb);
+                        Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.bomb").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteBomb));
+                    }
                 }
             }
 

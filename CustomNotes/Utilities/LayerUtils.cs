@@ -37,7 +37,7 @@ namespace CustomNotes.Utilities
         {
             Note = 8,
             FirstPerson = 24,
-            ThirdPerson = 26
+            ThirdPerson = 8
         }
 
         /// <summary>
@@ -62,16 +62,13 @@ namespace CustomNotes.Utilities
             {
                 default:
                 case CameraView.Default:
-                    cam.cullingMask &= ~(1 << (int) NoteLayer.ThirdPerson);
+                case CameraView.ThirdPerson:
                     cam.cullingMask &= ~(1 << (int) NoteLayer.FirstPerson);
+                    cam.cullingMask |= 1 << (int) NoteLayer.ThirdPerson;
                     break;
                 case CameraView.FirstPerson:
                     cam.cullingMask &= ~(1 << (int) NoteLayer.ThirdPerson);
                     cam.cullingMask |= 1 << (int) NoteLayer.FirstPerson;
-                    break;
-                case CameraView.ThirdPerson:
-                    cam.cullingMask &= ~(1 << (int) NoteLayer.FirstPerson);
-                    cam.cullingMask |= 1 << (int) NoteLayer.ThirdPerson;
                     break;
             }
         }

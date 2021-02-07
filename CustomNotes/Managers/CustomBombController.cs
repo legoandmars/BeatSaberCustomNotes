@@ -16,40 +16,55 @@ namespace CustomNotes.Managers
         private BombNoteController _bombNoteController;
 
         protected Transform bombMesh;
-        protected GameObject fakeThidPersonBombMesh;
+        protected GameObject fakeFirstPersonBombMesh;
 
         protected GameObject activeNote;
         protected SiraPrefabContainer container;
         protected SiraPrefabContainer.Pool bombPool;
 
         [Inject]
-        internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [Inject(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
+        internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [InjectOptional(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
         {
             _pluginConfig = pluginConfig;
 
             _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
+            bombPool = bombContainerPool;
+
             _bombNoteController = GetComponent<BombNoteController>();
             _noteMovement = GetComponent<NoteMovement>();
-            _bombNoteController.didInitEvent += Controller_Init;
-            _noteMovement.noteDidFinishJumpEvent += DidFinish;
+
+            if(bombPool != null)
+            {
+                _bombNoteController.didInitEvent += Controller_Init;
+                _noteMovement.noteDidFinishJumpEvent += DidFinish;
+            }
+            
             bombMesh = gameObject.transform.Find("Mesh");
-            bombPool = bombContainerPool;
+            
 
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
 
-            if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
+            if ((_pluginConfig.HMDOnly || LayerUtils.HMDOverride))
             {
-                // sooo, turns out that changing the bomb meshes layer disables collision for bombs, probably because the collider and the mesh are on the same GameObject...
-                fakeThidPersonBombMesh = UnityEngine.Object.Instantiate(bombMesh.gameObject);
-                fakeThidPersonBombMesh.name = "FakeThirdPersonBomb";
-                fakeThidPersonBombMesh.transform.parent = bombMesh.parent;
+                if(bombPool == null)
+                {
+                    // create fake bombs for Custom Notes without Custom Bombs
+                    fakeFirstPersonBombMesh = UnityEngine.Object.Instantiate(bombMesh.gameObject);
+                    fakeFirstPersonBombMesh.name = "FakeFirstPersonBomb";
+                    fakeFirstPersonBombMesh.transform.parent = bombMesh.parent;
 
-                fakeThidPersonBombMesh.transform.localScale = bombMesh.localScale;
-                fakeThidPersonBombMesh.transform.localPosition = bombMesh.localPosition;
-                fakeThidPersonBombMesh.layer = (int) LayerUtils.NoteLayer.ThirdPerson;
+                    fakeFirstPersonBombMesh.transform.localScale = bombMesh.localScale;
+                    fakeFirstPersonBombMesh.transform.localPosition = bombMesh.localPosition;
+                    fakeFirstPersonBombMesh.layer = (int) LayerUtils.NoteLayer.FirstPerson;
+                }
+                
+            }
+            else if (bombPool != null)
+            {
+                bm.enabled = false;
             }
 
-            bm.enabled = false;
+            
         }
 
         private void DidFinish()
@@ -95,7 +110,7 @@ namespace CustomNotes.Managers
             {
                 _bombNoteController.didInitEvent-= Controller_Init;
             }
-            Destroy(fakeThidPersonBombMesh);
+            Destroy(fakeFirstPersonBombMesh);
         }
     }
 }
