@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Zenject;
 
 namespace CustomNotes.Managers
 {
@@ -17,7 +12,6 @@ namespace CustomNotes.Managers
 
         private class ActiveItemTracker<T> : IDisposable where T : MonoBehaviour
         {
-
             public HashSet<T> activeItems { get; private set; } = new HashSet<T>();
 
             public ActiveItemTracker() {}
@@ -30,12 +24,10 @@ namespace CustomNotes.Managers
             {
                 this.activeItems.Remove(item);
             }
-
             public bool Contains(T item)
             {
                 return this.activeItems.Contains(item);
             }
-
             public void Dispose()
             {
                 this.activeItems = null;

@@ -1,13 +1,7 @@
 ﻿using CustomNotes.Managers;
 using CustomNotes.Settings.Utilities;
-using CustomNotes.Utilities;
 using SiraUtil.Interfaces;
-using SiraUtil.Objects;
 using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
-using UnityEngine;
 using Zenject;
 
 namespace CustomNotes.Providers

@@ -1,7 +1,8 @@
-﻿using System;
-using Zenject;
+﻿using CustomNotes.Managers;
+using CustomNotes.Settings.Utilities;
 using SiraUtil.Interfaces;
-using CustomNotes.Managers;
+using System;
+using Zenject;
 
 namespace CustomNotes.Providers
 {
@@ -16,10 +17,10 @@ namespace CustomNotes.Providers
             public bool CanSetup { get; private set; }
 
             [Inject]
-            public void Construct(DiContainer Container, GameplayCoreSceneSetupData sceneSetupData)
+            public void Construct(DiContainer Container, GameplayCoreSceneSetupData sceneSetupData, PluginConfig pluginConfig)
             {
                 //bool isMultiplayer = Container.HasBinding<MultiplayerLevelSceneSetupData>();
-                CanSetup = !(sceneSetupData.gameplayModifiers.ghostNotes || sceneSetupData.gameplayModifiers.disappearingArrows);
+                CanSetup = !(sceneSetupData.gameplayModifiers.ghostNotes || sceneSetupData.gameplayModifiers.disappearingArrows) && pluginConfig.OtherPlayerMultiplayerNotes;
 
                 Container.BindInterfacesAndSelfTo<CustomMultiplayerNoteEventManager>().AsSingle();
             }

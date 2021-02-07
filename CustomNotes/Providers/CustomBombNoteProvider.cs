@@ -1,10 +1,10 @@
-﻿using System;
-using Zenject;
-using UnityEngine;
-using SiraUtil.Objects;
-using SiraUtil.Interfaces;
-using CustomNotes.Managers;
+﻿using CustomNotes.Managers;
 using CustomNotes.Utilities;
+using SiraUtil.Interfaces;
+using SiraUtil.Objects;
+using System;
+using UnityEngine;
+using Zenject;
 
 namespace CustomNotes.Providers
 {

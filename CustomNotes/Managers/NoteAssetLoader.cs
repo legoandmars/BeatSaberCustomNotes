@@ -1,12 +1,12 @@
-﻿using System;
-using Zenject;
+﻿using CustomNotes.Data;
+using CustomNotes.Providers;
+using CustomNotes.Settings.Utilities;
+using CustomNotes.Utilities;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CustomNotes.Data;
-using CustomNotes.Providers;
-using CustomNotes.Utilities;
-using System.Collections.Generic;
-using CustomNotes.Settings.Utilities;
+using Zenject;
 
 namespace CustomNotes.Managers
 {
@@ -26,18 +26,18 @@ namespace CustomNotes.Managers
                 {
                     _customGameNoteProvider.Priority = -1;
                     _customBombNoteProvider.Priority = -1;
-                    _customMultiplayerNoteProvider.Priority = -1;
-                    _customMultiplayerBombProvider.Priority = -1;
                 }
                 else
                 {
                     _customGameNoteProvider.Priority = 300;
                     _customBombNoteProvider.Priority = CustomNoteObjects[_selectedNote].NoteBomb != null ? 300 : -1;
-                    _customMultiplayerNoteProvider.Priority = 300;
-                    _customMultiplayerBombProvider.Priority = 300;
                 }
+                
+                customNoteSelectionChangedEvent?.Invoke(_selectedNote, CustomNoteObjects[_selectedNote]);
             }
         }
+
+        public event Action<int, CustomNote> customNoteSelectionChangedEvent;
 
         public IList<CustomNote> CustomNoteObjects { get; private set; }
         public IEnumerable<string> CustomNoteFiles { get; private set; } = Enumerable.Empty<string>();
@@ -46,21 +46,13 @@ namespace CustomNotes.Managers
         private readonly CustomGameNoteProvider _customGameNoteProvider;
         private readonly CustomBombNoteProvider _customBombNoteProvider;
 
-        private readonly CustomMultiplayerNoteProvider _customMultiplayerNoteProvider;
-        private readonly CustomMultiplayerBombProvider _customMultiplayerBombProvider;
-
-
         internal NoteAssetLoader(PluginConfig pluginConfig,
             CustomGameNoteProvider customGameNoteProvider,
-            CustomBombNoteProvider customBombNoteProvider,
-            CustomMultiplayerNoteProvider customMultiplayerNoteProvider,
-            CustomMultiplayerBombProvider customMultiplayerBombProvider)
+            CustomBombNoteProvider customBombNoteProvider)
         {
             _pluginConfig = pluginConfig;
             _customGameNoteProvider = customGameNoteProvider;
             _customBombNoteProvider = customBombNoteProvider;
-            _customMultiplayerNoteProvider = customMultiplayerNoteProvider;
-            _customMultiplayerBombProvider = customMultiplayerBombProvider;
         }
 
         /// <summary>

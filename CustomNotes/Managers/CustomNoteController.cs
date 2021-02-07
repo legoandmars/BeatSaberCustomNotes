@@ -1,11 +1,11 @@
-﻿using Zenject;
-using UnityEngine;
-using SiraUtil.Objects;
-using CustomNotes.Data;
-using SiraUtil.Interfaces;
+﻿using CustomNotes.Data;
 using CustomNotes.Overrides;
 using CustomNotes.Settings.Utilities;
 using CustomNotes.Utilities;
+using SiraUtil.Interfaces;
+using SiraUtil.Objects;
+using UnityEngine;
+using Zenject;
 
 namespace CustomNotes.Managers
 {
@@ -20,6 +20,7 @@ namespace CustomNotes.Managers
             [InjectOptional(Id = "cn.right.dot")] SiraPrefabContainer.Pool rightDotNotePool)
         {
             _pluginConfig = pluginConfig;
+            _noteSize = pluginConfig.NoteSize;
             _leftArrowNotePool = leftArrowNotePool;
             _rightArrowNotePool = rightArrowNotePool;
 
@@ -45,13 +46,13 @@ namespace CustomNotes.Managers
 
     public abstract class CustomNoteControllerBase : MonoBehaviour, IColorable
     {
-
-        protected PluginConfig _pluginConfig = null;
+        protected PluginConfig _pluginConfig;
 
         protected Transform noteCube;
         protected CustomNote _customNote;
         protected NoteController _gameNoteController;
         protected CustomNoteColorNoteVisuals _customNoteColorNoteVisuals;
+        protected float _noteSize = 1f;
 
         protected GameObject activeNote;
         protected SiraPrefabContainer container;
@@ -95,17 +96,12 @@ namespace CustomNotes.Managers
                 : data.cutDirection == NoteCutDirection.Any ? _rightDotNotePool : _rightArrowNotePool);
         }
 
-        protected void SetNoteLayer(GameObject activeNote)
-        {
-            // Layer code here
-        }
-
         protected virtual void ParentNote(GameObject fakeMesh)
         {
             container.transform.SetParent(noteCube);
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             container.transform.localRotation = Quaternion.identity;
-            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
+            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _noteSize;
             container.transform.localScale = Vector3.one;
         }
 
@@ -114,7 +110,6 @@ namespace CustomNotes.Managers
             container = noteModelPool.Spawn();
             activeNote = container.Prefab;
             activePool = noteModelPool;
-            SetNoteLayer(activeNote);
             ParentNote(activeNote);
         }
 
@@ -135,9 +130,9 @@ namespace CustomNotes.Managers
             {
                 _customNoteColorNoteVisuals.TurnOffVisuals();
             }
-            else if(_pluginConfig.NoteSize != 1)
+            else if(_noteSize != 1)
             {
-                _customNoteColorNoteVisuals.ScaleVisuals(_pluginConfig.NoteSize);
+                _customNoteColorNoteVisuals.ScaleVisuals(_noteSize);
             }
         }
 

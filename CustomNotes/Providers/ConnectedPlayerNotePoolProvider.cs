@@ -15,11 +15,15 @@ namespace CustomNotes.Providers
 {
     internal class ConnectedPlayerNotePoolProvider : IInitializable, IDisposable
     {
-        private IMultiplayerSessionManager _multiplayerSessionManager;
         private DiContainer _container;
         private PluginConfig _pluginConfig;
         private NoteAssetLoader _noteAssetLoader;
-        private INoteHashPacketManager _noteHashPacketManager;
+        private ICustomNoteNetworkPacketManager _noteHashPacketManager;
+
+        private readonly CustomMultiplayerNoteProvider _customMultiplayerNoteProvider;
+        private readonly CustomMultiplayerBombProvider _customMultiplayerBombProvider;
+
+        private IMultiplayerSessionManager _multiplayerSessionManager;
 
         private Dictionary<IConnectedPlayer, string> _connectedPlayerPoolIDs;
 
@@ -29,14 +33,20 @@ namespace CustomNotes.Providers
         internal ConnectedPlayerNotePoolProvider(DiContainer Container,
             PluginConfig pluginConfig,
             NoteAssetLoader noteAssetLoader,
-            INoteHashPacketManager noteHashPacketManager,
+            ICustomNoteNetworkPacketManager noteHashPacketManager,
+            CustomMultiplayerNoteProvider customMultiplayerNoteProvider,
+            CustomMultiplayerBombProvider customMultiplayerBombProvider,
             [InjectOptional] IMultiplayerSessionManager multiplayerSessionManager)
         {
-            _multiplayerSessionManager = multiplayerSessionManager;
             _container = Container;
             _pluginConfig = pluginConfig;
             _noteAssetLoader = noteAssetLoader;
             _noteHashPacketManager = noteHashPacketManager;
+
+            _customMultiplayerNoteProvider = customMultiplayerNoteProvider;
+            _customMultiplayerBombProvider = customMultiplayerBombProvider;
+
+            _multiplayerSessionManager = multiplayerSessionManager;
         }
 
         public void Initialize()
@@ -44,6 +54,18 @@ namespace CustomNotes.Providers
             if (_multiplayerSessionManager == null) return;
 
             _connectedPlayerPoolIDs = new Dictionary<IConnectedPlayer, string>();
+
+            if (_pluginConfig.OtherPlayerMultiplayerNotes)
+            {
+                _customMultiplayerNoteProvider.Priority = 300;
+                _customMultiplayerBombProvider.Priority = 300;
+            }
+            else
+            {
+                _customMultiplayerNoteProvider.Priority = -1;
+                _customMultiplayerBombProvider.Priority = -1;
+                return;
+            }
 
             foreach (IConnectedPlayer connectedPlayer in _multiplayerSessionManager.connectedPlayers)
             {
@@ -56,14 +78,18 @@ namespace CustomNotes.Providers
             Logger.log.Debug($"Creating note pools for player \"{connectedPlayer.userName}\" - \"{connectedPlayer.userId}\" ...");
 
             CustomNote note = null;
-            if (_pluginConfig.SyncNotesInMultiplayer && _noteHashPacketManager.HasHashFromPlayer(connectedPlayer))
+            float noteScale = 1f;
+            if (_pluginConfig.SyncNotesInMultiplayer && _noteHashPacketManager.HasDataFromPlayer(connectedPlayer))
             {
                 Logger.log.Debug($"Preparing note from hash for player \"{connectedPlayer.userName}\"");
 
-                note = _noteAssetLoader.GetNoteByHash(_noteHashPacketManager.GetHashFromPlayer(connectedPlayer));
+                var multiplayerNoteData = _noteHashPacketManager.GetData(connectedPlayer);
+
+                note = _noteAssetLoader.GetNoteByHash(multiplayerNoteData.NoteHash);
+                noteScale = multiplayerNoteData.NoteScale;
             }
 
-            if (note == null)
+            if (note == null && _pluginConfig.RandomMultiplayerNotes)
             {
                 System.Random rng;
 
@@ -81,7 +107,13 @@ namespace CustomNotes.Providers
 
                 note = _pluginConfig.RandomMultiplayerNotes ? _noteAssetLoader.CustomNoteObjects[rng.Next(1, _noteAssetLoader.CustomNoteObjects.Count)] : _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
             }
+            else if(note == null)
+            {
+                Logger.log.Debug("using same notes as local player ...");
+                note = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
+            }
 
+            _container.Bind<float>().WithId($"cn.multi.{connectedPlayer.userId}.scale").FromInstance(noteScale);
 
             foreach (KeyValuePair<IConnectedPlayer, string> entry in _connectedPlayerPoolIDs)
             {
@@ -126,7 +158,7 @@ namespace CustomNotes.Providers
             _connectedPlayerPoolIDs.Add(connectedPlayer, note.MD5Hash);
         }
 
-        internal string GetPoolIDForPlayer(IConnectedPlayer connectedPlayer)
+        public string GetPoolIDForPlayer(IConnectedPlayer connectedPlayer)
         {
             if (_connectedPlayerPoolIDs.TryGetValue(connectedPlayer, out string id))
                 return id;

@@ -1,9 +1,4 @@
 ﻿using CustomNotes.Settings.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CustomNotes.Utilities.MultiplayerCustomNoteModeExtensions
 {
@@ -16,13 +11,15 @@ namespace CustomNotes.Utilities.MultiplayerCustomNoteModeExtensions
     }
     public static class MultiplayerCustomNoteModeExtensions
     {
-        private const string _none = "None";
+        private const string _none = "Default Notes";
         private const string _local = "Same as you";
         private const string _random = "Random";
         private const string _randomConsistent = "Random consistent";
 
-        public static MultiplayerCustomNoteMode GetMultiplayerCustomNoteMode(this string modeString) {
-            switch(modeString) {
+        public static MultiplayerCustomNoteMode GetMultiplayerCustomNoteMode(this string modeString)
+        {
+            switch(modeString)
+            {
                 case _none:
                 default:
                     return MultiplayerCustomNoteMode.None;
@@ -35,8 +32,10 @@ namespace CustomNotes.Utilities.MultiplayerCustomNoteModeExtensions
             }
         }
 
-        public static string ToSettingsString(this MultiplayerCustomNoteMode mode) {
-            switch(mode) {
+        public static string ToSettingsString(this MultiplayerCustomNoteMode mode)
+        {
+            switch(mode)
+            {
                 case MultiplayerCustomNoteMode.None:
                 default:
                     return _none;
@@ -49,14 +48,17 @@ namespace CustomNotes.Utilities.MultiplayerCustomNoteModeExtensions
             }
         }
 
-        public static void SetMultiNoteSettingFromString(PluginConfig pluginConfig, string modeString) {
+        public static void SetMultiNoteSettingFromString(PluginConfig pluginConfig, string modeString)
+        {
             MultiplayerCustomNoteMode mode = modeString.GetMultiplayerCustomNoteMode();
 
             SetMultiNoteSetting(pluginConfig, mode);
         }
 
-        public static void SetMultiNoteSetting(PluginConfig pluginConfig, MultiplayerCustomNoteMode mode) {
-            switch (mode) {
+        public static void SetMultiNoteSetting(PluginConfig pluginConfig, MultiplayerCustomNoteMode mode)
+        {
+            switch (mode)
+            {
                 case MultiplayerCustomNoteMode.None:
                 default:
                     pluginConfig.OtherPlayerMultiplayerNotes = false;
@@ -81,7 +83,8 @@ namespace CustomNotes.Utilities.MultiplayerCustomNoteModeExtensions
             }
         }
 
-        public static string GetMultiNoteSettingString(PluginConfig pluginConfig) {
+        public static string GetMultiNoteSettingString(PluginConfig pluginConfig)
+        {
             if (!pluginConfig.OtherPlayerMultiplayerNotes)
                 return MultiplayerCustomNoteMode.None.ToSettingsString();
 

@@ -1,8 +1,9 @@
-﻿using Zenject;
-using SiraUtil.Interfaces;
-using CustomNotes.Managers;
+﻿using CustomNotes.Managers;
 using CustomNotes.Providers;
 using CustomNotes.Settings.Utilities;
+using IPA.Loader;
+using SiraUtil.Interfaces;
+using Zenject;
 
 namespace CustomNotes.Installers
 {
@@ -26,7 +27,14 @@ namespace CustomNotes.Installers
             Container.Bind(typeof(IModelProvider), typeof(CustomMultiplayerNoteProvider)).To<CustomMultiplayerNoteProvider>().AsSingle();
             Container.Bind(typeof(IModelProvider), typeof(CustomMultiplayerBombProvider)).To<CustomMultiplayerBombProvider>().AsSingle();
 
-            Container.BindInterfacesAndSelfTo<DummyNoteHashPacketManager>().AsSingle(); // TODO
+            if (PluginManager.GetPluginFromId("MultiplayerExtensions") != null)
+            {
+                Container.BindInterfacesAndSelfTo<CustomNotesNetworkPacketManager>().AsSingle();
+            }
+            else
+            {
+                Container.BindInterfacesAndSelfTo<DummyCustomNotesNetworkPacketManager>().AsSingle();
+            }
         }
     }
 }

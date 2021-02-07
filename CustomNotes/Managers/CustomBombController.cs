@@ -1,8 +1,8 @@
-﻿using Zenject;
-using UnityEngine;
-using CustomNotes.Data;
+﻿using CustomNotes.Data;
 using CustomNotes.Settings.Utilities;
 using SiraUtil.Objects;
+using UnityEngine;
+using Zenject;
 
 namespace CustomNotes.Managers
 {
@@ -12,6 +12,7 @@ namespace CustomNotes.Managers
         internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [Inject(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
         {
             _pluginConfig = pluginConfig;
+            _noteSize = pluginConfig.NoteSize;
 
             _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
             _bombNoteController = GetComponent<BombNoteController>();
@@ -34,6 +35,8 @@ namespace CustomNotes.Managers
         protected NoteMovement _noteMovement;
         protected NoteController _bombNoteController;
 
+        protected float _noteSize = 1f;
+
         protected Transform bombMesh;
 
         protected GameObject activeNote;
@@ -51,18 +54,13 @@ namespace CustomNotes.Managers
             SpawnThenParent(bombPool);
         }
 
-        protected virtual void SetNoteLayer(GameObject activeNote)
-        {
-            // Layer code here
-        }
-
         protected virtual void ParentNote(GameObject fakeMesh)
         {
             fakeMesh.SetActive(true);
             container.transform.SetParent(bombMesh);
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             container.transform.localRotation = Quaternion.identity;
-            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
+            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _noteSize;
             container.transform.localScale = Vector3.one;
         }
 
@@ -71,7 +69,6 @@ namespace CustomNotes.Managers
             container = bombModelPool.Spawn();
             activeNote = container.Prefab;
             bombPool = bombModelPool;
-            SetNoteLayer(activeNote);
             ParentNote(activeNote);
         }
 

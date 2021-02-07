@@ -1,6 +1,6 @@
-﻿using Zenject;
-using CustomNotes.Managers;
+﻿using CustomNotes.Managers;
 using CustomNotes.Providers;
+using Zenject;
 
 namespace CustomNotes.Installers
 {

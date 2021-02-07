@@ -1,10 +1,12 @@
-﻿using Zenject;
-using UnityEngine;
-using SiraUtil.Objects;
-using CustomNotes.Data;
+﻿using CustomNotes.Data;
 using CustomNotes.Overrides;
-using CustomNotes.Settings.Utilities;
+using CustomNotes.Packets;
 using CustomNotes.Providers;
+using CustomNotes.Settings.Utilities;
+using SiraUtil.Objects;
+using System;
+using UnityEngine;
+using Zenject;
 
 namespace CustomNotes.Managers
 {
@@ -15,16 +17,20 @@ namespace CustomNotes.Managers
         private CustomMultiplayerNoteEventManager _customMultiplayerNoteEventManager;
 
         [Inject]
-        internal void Init(DiContainer Container, 
+        internal void Init(DiContainer Container,
             PluginConfig pluginConfig,
             ConnectedPlayerNotePoolProvider connectedPlayerNotePoolProvider,
             CustomMultiplayerNoteEventManager customMultiplayerNoteEventManager,
             IConnectedPlayer connectedPlayer)
         {
-
-            Logger.log.Debug($"IConnectedPlayer injected: {connectedPlayer?.userName}");
+            _pluginConfig = pluginConfig;
 
             string id = connectedPlayerNotePoolProvider.GetPoolIDForPlayer(connectedPlayer);
+
+            if(id.Equals(CustomNotesPacket.DEFAULT_NOTES))
+            {
+                return;
+            }
 
             _leftArrowNotePool = Container.TryResolveId<SiraPrefabContainer.Pool>($"cn.multi.{id}.left.arrow");
             _rightArrowNotePool = Container.TryResolveId<SiraPrefabContainer.Pool>($"cn.multi.{id}.right.arrow");
@@ -33,11 +39,19 @@ namespace CustomNotes.Managers
 
             _customNote = Container.TryResolveId<CustomNote>($"cn.multi.{id}.note");
 
-            if(_leftArrowNotePool == null) {
+            if(_leftArrowNotePool == null)
+            {
                 return;
             }
 
-            _pluginConfig = pluginConfig;
+            try
+            {
+                _noteSize = Container.ResolveId<float>($"cn.multi.{connectedPlayer.userId}.scale");
+            }
+            catch (Exception ex)
+            {
+                Logger.log.Error($" ({nameof(CustomMultiplayerNoteController)}) This shouldn't happen: {ex.Message}");
+            }
 
             _customMultiplayerNoteEventManager = customMultiplayerNoteEventManager;
 
@@ -62,8 +76,11 @@ namespace CustomNotes.Managers
             switch (nc.noteData.colorType) {
                 case ColorType.ColorA:
                 case ColorType.ColorB:
-                    activePool?.Despawn(container);
-                    _customMultiplayerNoteEventManager?.GameNoteDespawnedCallback(_gameNoteController as MultiplayerConnectedPlayerGameNoteController);
+                    if (container != null) {
+                        activePool?.Despawn(container);
+                        _customMultiplayerNoteEventManager?.GameNoteDespawnedCallback(_gameNoteController as MultiplayerConnectedPlayerGameNoteController);
+                        container = null;
+                    }
                     break;
                 default:
                     break;
@@ -88,7 +105,7 @@ namespace CustomNotes.Managers
             fakeMesh.transform.rotation = container.transform.rotation = fakeMesh.transform.localRotation = Quaternion.Euler(0f, 0f, 0f);
             container.transform.localRotation = noteCube.parent.localRotation;
             container.transform.Rotate(new Vector3(0, -90, 0), Space.Self);
-            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
+            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _noteSize;
             container.transform.localScale = Vector3.one;
         }
 
@@ -96,7 +113,6 @@ namespace CustomNotes.Managers
             container = noteModelPool.Spawn();
             activeNote = container.Prefab;
             activePool = noteModelPool;
-            SetNoteLayer(activeNote);
             ParentNote(activeNote);
             _customMultiplayerNoteEventManager?.GameNoteSpawnedCallback(_gameNoteController as MultiplayerConnectedPlayerGameNoteController);
         }

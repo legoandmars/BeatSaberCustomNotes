@@ -1,7 +1,9 @@
 ﻿using CustomNotes.Data;
+using CustomNotes.Packets;
 using CustomNotes.Providers;
 using CustomNotes.Settings.Utilities;
 using SiraUtil.Objects;
+using System;
 using UnityEngine;
 using Zenject;
 
@@ -17,16 +19,29 @@ namespace CustomNotes.Managers
         {
             _pluginConfig = pluginConfig;
 
-            Logger.log.Debug($"IConnectedPlayer injected: {connectedPlayer?.userName}");
-
             string id = connectedPlayerNotePoolProvider.GetPoolIDForPlayer(connectedPlayer);
+
+            if (id.Equals(CustomNotesPacket.DEFAULT_NOTES))
+            {
+                return;
+            }
 
             bombPool = Container.TryResolveId<SiraPrefabContainer.Pool>($"cn.multi.{id}.bomb");
 
             _customNote = Container.TryResolveId<CustomNote>($"cn.multi.{id}.note");
 
-            if (bombPool == null) {
+            if (bombPool == null)
+            {
                 return;
+            }
+
+            try
+            {
+                _noteSize = Container.ResolveId<float>($"cn.multi.{connectedPlayer.userId}.scale");
+            }
+            catch (Exception ex)
+            {
+                Logger.log.Error($" ({nameof(CustomMultiplayerBombController)}) This shouldn't happen: {ex.Message}");
             }
 
             _bombNoteController = GetComponent<MultiplayerConnectedPlayerBombNoteController>();
@@ -37,17 +52,6 @@ namespace CustomNotes.Managers
 
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
             bm.enabled = false;
-        }
-
-        protected override void DidFinish() {
-            container.transform.SetParent(null);
-            bombPool.Despawn(container);
-            Logger.log.Debug("Bomb despawned!");
-        }
-
-        protected override void Controller_Init(NoteController noteController) {
-            SpawnThenParent(bombPool);
-            Logger.log.Debug("Bomb initialized!");
         }
     }
 }
