@@ -27,22 +27,14 @@ namespace CustomNotes.Managers
         }
         public void Initialize()
         {
-            if (_noteAssetLoader.SelectedNote != 0 && !Utils.IsNoodleMap(_level))
+            if (_noteAssetLoader.SelectedNote != 0)
             {
-                LayerUtils.CameraSet = false;
                 CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
 
-                // Some code to regulate bombs and the bomb patch
                 if (activeNote.NoteBomb != null)
                 {
                     MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
-                    LayerUtils.BombPatchRequired = false;
                 }
-                else if (activeNote.NoteBomb == null && (_pluginConfig.HMDOnly == true || LayerUtils.HMDOverride == true))
-                {
-                    LayerUtils.BombPatchRequired = true;
-                }
-                else LayerUtils.BombPatchRequired = false;
 
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes)
                 {
