@@ -2,6 +2,10 @@
 using CustomNotes.Data;
 using SiraUtil.Services;
 using CustomNotes.Utilities;
+using System;
+using CustomNotes.Settings.Utilities;
+using IPA.Loader;
+using System.Linq;
 
 namespace CustomNotes.Managers
 {
@@ -10,25 +14,28 @@ namespace CustomNotes.Managers
         private readonly Submission _submission;
         private readonly NoteAssetLoader _noteAssetLoader;
         private readonly GameplayCoreSceneSetupData _gameplayCoreSceneSetupData;
+        private readonly PluginConfig _pluginConfig;
+        private readonly IDifficultyBeatmap _level;
 
-        internal CustomNoteManager([InjectOptional] Submission submission, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData)
+        internal CustomNoteManager([InjectOptional] Submission submission, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData, PluginConfig pluginConfig, IDifficultyBeatmap level)
         {
             _submission = submission;
             _noteAssetLoader = noteAssetLoader;
             _gameplayCoreSceneSetupData = gameplayCoreSceneSetupData;
+            _pluginConfig = pluginConfig;
+            _level = level;
         }
-
         public void Initialize()
         {
             if (_noteAssetLoader.SelectedNote != 0)
             {
                 CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
 
-                
                 if (activeNote.NoteBomb != null)
                 {
                     MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
                 }
+
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes)
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Ghost Notes");
@@ -36,6 +43,10 @@ namespace CustomNotes.Managers
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows)
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Disappearing Arrows");
+                }
+                if (Utils.IsNoodleMap(_level))
+                {
+                    _submission?.DisableScoreSubmission("Custom Notes", "Noodle Extensions");
                 }
             }
         }

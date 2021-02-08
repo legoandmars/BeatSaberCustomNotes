@@ -3,7 +3,9 @@ using System.Linq;
 using UnityEngine;
 using System.Reflection;
 using System.Collections.Generic;
+using IPA.Loader;
 using IPA.Utilities;
+using System;
 
 namespace CustomNotes.Utilities
 {
@@ -255,6 +257,23 @@ namespace CustomNotes.Utilities
             }
 
             return unescapedString;
+        }
+
+        /// <summary>
+        /// Check if an IDifficultyBeatmap requires noodle extensions
+        /// </summary>
+        /// <param name="level"></param>
+        public static bool IsNoodleMap(IDifficultyBeatmap level)
+        {
+            // thanks kinsi
+            if (PluginManager.EnabledPlugins.Any(x => x.Name == "SongCore") && PluginManager.EnabledPlugins.Any(x => x.Name == "NoodleExtensions"))
+            {
+                bool isIsNoodleMap = SongCore.Collections.RetrieveDifficultyData(level)?
+                    .additionalDifficultyData?
+                    ._requirements?.Any(x => x == "Noodle Extensions") == true;
+                return isIsNoodleMap;
+            }
+            else return false;
         }
     }
 }
