@@ -24,7 +24,7 @@ namespace CustomNotes
             Logger.log = logger;
             zenjector.OnApp<CustomNotesCoreInstaller>().WithParameters(config.Generated<PluginConfig>());
             zenjector.OnMenu<CustomNotesMenuInstaller>();
-            zenjector.OnGame<CustomNotesGameInstaller>().ShortCircuitForTutorial();
+            zenjector.OnGame<CustomNotesGameInstaller>(false).ShortCircuitForTutorial();
         }
 
         [OnEnable]
