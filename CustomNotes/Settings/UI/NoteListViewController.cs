@@ -110,6 +110,7 @@ namespace CustomNotes.Settings.UI
                 preview = new GameObject();
                 preview.transform.Rotate(0.0f, 60.0f, 0.0f);
                 preview.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+                preview.name = "NotePreviewContainer";
             }
 
             int selectedNote = _noteAssetLoader.SelectedNote;
@@ -153,7 +154,7 @@ namespace CustomNotes.Settings.UI
         private void InitializePreviewNotes(CustomNote customNote, Transform transform)
         {
             // Position previewer based on the CustomNote having a NoteBomb
-            preview.transform.position = customNote.NoteBomb ? new Vector3(2.1f, 0.9f, 1.60f) : new Vector3(2.25f, 0.9f, 1.45f);
+            preview.transform.position = customNote.NoteBomb ? new Vector3(3.05f, 0.9f, 2.0f) : new Vector3(2.90f, 0.9f, 1.85f);
 
             noteLeft = CreatePreviewNote(customNote.NoteLeft, transform, leftArrowPos);
             noteDotLeft = CreatePreviewNote(customNote.NoteDotLeft, transform, leftDotPos);
