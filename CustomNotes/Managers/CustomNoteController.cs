@@ -9,7 +9,7 @@ using CustomNotes.Utilities;
 
 namespace CustomNotes.Managers
 {
-    public class CustomNoteController : MonoBehaviour, IColorable
+    public class CustomNoteController : MonoBehaviour, IColorable, INoteControllerNoteWasCutEvent, INoteControllerNoteWasMissedEvent, INoteControllerDidInitEvent
     {
         private PluginConfig _pluginConfig;
 
@@ -49,9 +49,9 @@ namespace CustomNotes.Managers
             _gameNoteController = GetComponent<GameNoteController>();
             _customNoteColorNoteVisuals = gameObject.AddComponent<CustomNoteColorNoteVisuals>();
 
-            _gameNoteController.noteWasCutEvent += WasCut;
-            _gameNoteController.noteWasMissedEvent += DidFinish;
-            _gameNoteController.didInitEvent += Controller_DidInit;
+            _gameNoteController.didInitEvent.Add(this);
+            _gameNoteController.noteWasMissedEvent.Add(this);
+            _gameNoteController.noteWasCutEvent.Add(this);
             _customNoteColorNoteVisuals.didInitEvent += Visuals_DidInit;
 
             noteCube = _gameNoteController.gameObject.transform.Find("NoteCube");
@@ -68,7 +68,7 @@ namespace CustomNotes.Managers
             }
         }
 
-        private void DidFinish(NoteController nc)
+        public void HandleNoteControllerNoteWasMissed(NoteController nc)
         {
             container.transform.SetParent(null);
             switch (nc.noteData.colorType)
@@ -86,12 +86,12 @@ namespace CustomNotes.Managers
             }
         }
 
-        private void WasCut(NoteController nc, NoteCutInfo _)
+        public void HandleNoteControllerNoteWasCut(NoteController nc, in NoteCutInfo _)
         {
-            DidFinish(nc);
+            HandleNoteControllerNoteWasMissed(nc);
         }
 
-        private void Controller_DidInit(NoteController noteController)
+        public void HandleNoteControllerDidInit(NoteControllerBase noteController)
         {
             var data = noteController.noteData;
             SpawnThenParent(data.colorType == ColorType.ColorA
@@ -104,7 +104,7 @@ namespace CustomNotes.Managers
             container.transform.SetParent(noteCube);
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             container.transform.localRotation = Quaternion.identity;
-            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
+            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * Utils.NoteSizeFromConfig(_pluginConfig);
             container.transform.localScale = Vector3.one;
         }
 
@@ -133,9 +133,9 @@ namespace CustomNotes.Managers
             }
         }
 
-        private void Visuals_DidInit(ColorNoteVisuals visuals, NoteController noteController)
+        private void Visuals_DidInit(ColorNoteVisuals visuals, NoteControllerBase noteController)
         {
-            SetActiveThenColor(activeNote, visuals.noteColor);
+            SetActiveThenColor(activeNote, (visuals as CustomNoteColorNoteVisuals).noteColor);
             // Hide certain parts of the default note which is not required
             if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
@@ -144,9 +144,9 @@ namespace CustomNotes.Managers
                 {
                     _customNoteColorNoteVisuals.TurnOffVisuals();
                 }
-                else if (_pluginConfig.NoteSize != 1)
+                else if (Utils.NoteSizeFromConfig(_pluginConfig) != 1)
                 {
-                    _customNoteColorNoteVisuals.ScaleVisuals(_pluginConfig.NoteSize);
+                    _customNoteColorNoteVisuals.ScaleVisuals(Utils.NoteSizeFromConfig(_pluginConfig));
                 }
             }
             else
@@ -155,10 +155,10 @@ namespace CustomNotes.Managers
                 _customNoteColorNoteVisuals.SetBaseGameVisualsLayer((int) LayerUtils.NoteLayer.ThirdPerson);
                 if (!_customNote.Descriptor.DisableBaseNoteArrows)
                 {
-                    if (_pluginConfig.NoteSize != 1)
+                    if (Utils.NoteSizeFromConfig(_pluginConfig) != 1)
                     {
                         // arrows should be enabled in both views, with fake arrows rescaled
-                        _customNoteColorNoteVisuals.CreateAndScaleFakeVisuals((int)LayerUtils.NoteLayer.FirstPerson, _pluginConfig.NoteSize);
+                        _customNoteColorNoteVisuals.CreateAndScaleFakeVisuals((int)LayerUtils.NoteLayer.FirstPerson, Utils.NoteSizeFromConfig(_pluginConfig));
                     }
                     else
                     {
@@ -173,9 +173,9 @@ namespace CustomNotes.Managers
         {
             if (_gameNoteController != null)
             {
-                _gameNoteController.noteWasCutEvent -= WasCut;
-                _gameNoteController.noteWasMissedEvent -= DidFinish;
-                _gameNoteController.didInitEvent -= Controller_DidInit;
+                _gameNoteController.didInitEvent.Remove(this);
+                _gameNoteController.noteWasMissedEvent.Remove(this);
+                _gameNoteController.noteWasCutEvent.Remove(this);
             }
             if (_customNoteColorNoteVisuals != null)
             {

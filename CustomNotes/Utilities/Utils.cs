@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using IPA.Loader;
 using IPA.Utilities;
 using System;
+using CustomNotes.Settings.Utilities;
 
 namespace CustomNotes.Utilities
 {
@@ -274,6 +275,23 @@ namespace CustomNotes.Utilities
                 return isIsNoodleMap;
             }
             else return false;
+        }
+
+        /// <summary>
+        /// Get the proper note size from the config
+        /// </summary>
+        /// <param name="level"></param>
+        public static float NoteSizeFromConfig(PluginConfig config)
+        {
+            // Not April Fools Day Code
+            System.DateTime time;
+            bool bunbundai = false;
+            if (IPA.Utilities.Utils.CanUseDateTimeNowSafely)
+                time = System.DateTime.Now;
+            else
+                time = System.DateTime.UtcNow;
+            if ((time.Month == 4 && time.Day == 1) || bunbundai) return UnityEngine.Random.Range(0.25f, 1.5f);
+            else return config.NoteSize;
         }
     }
 }

@@ -7,7 +7,7 @@ using SiraUtil.Objects;
 
 namespace CustomNotes.Managers
 {
-    internal class CustomBombController : MonoBehaviour
+    internal class CustomBombController : MonoBehaviour, INoteControllerDidInitEvent
     {
         private PluginConfig _pluginConfig;
 
@@ -35,7 +35,7 @@ namespace CustomNotes.Managers
 
             if(bombPool != null)
             {
-                _bombNoteController.didInitEvent += Controller_Init;
+                _bombNoteController.didInitEvent.Add(this);
                 _noteMovement.noteDidFinishJumpEvent += DidFinish;
             }
             
@@ -74,7 +74,7 @@ namespace CustomNotes.Managers
             bombPool.Despawn(container);
         }
 
-        private void Controller_Init(NoteController noteController)
+        public void HandleNoteControllerDidInit(NoteControllerBase noteController)
         {
             SpawnThenParent(bombPool);
         }
@@ -85,7 +85,7 @@ namespace CustomNotes.Managers
             container.transform.SetParent(bombMesh);
             fakeMesh.transform.localPosition = container.transform.localPosition = new Vector3(0.0f, 0.0f, 0.0f);
             container.transform.localRotation = Quaternion.identity;
-            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * _pluginConfig.NoteSize;
+            fakeMesh.transform.localScale = new Vector3(0.4f, 0.4f, 0.4f) * Utils.NoteSizeFromConfig(_pluginConfig);
             container.transform.localScale = Vector3.one;
         }
 
@@ -109,7 +109,7 @@ namespace CustomNotes.Managers
         {
             if (_bombNoteController != null)
             {
-                _bombNoteController.didInitEvent-= Controller_Init;
+                _bombNoteController.didInitEvent.Remove(this);
             }
             Destroy(fakeFirstPersonBombMesh);
         }
