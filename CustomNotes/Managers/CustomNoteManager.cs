@@ -44,6 +44,10 @@ namespace CustomNotes.Managers
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Disappearing Arrows");
                 }
+                if (_gameplayCoreSceneSetupData.gameplayModifiers.smallCubes)
+                {
+                    _submission?.DisableScoreSubmission("Custom Notes", "Small Notes");
+                }
                 if (Utils.IsNoodleMap(_level))
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Noodle Extensions");

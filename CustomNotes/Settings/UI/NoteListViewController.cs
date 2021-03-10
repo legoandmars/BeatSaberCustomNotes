@@ -91,7 +91,7 @@ namespace CustomNotes.Settings.UI
             customListTableData.tableView.ReloadData();
             int selectedNote = _noteAssetLoader.SelectedNote;
 
-            customListTableData.tableView.ScrollToCellWithIdx(selectedNote, TableViewScroller.ScrollPositionType.Beginning, false);
+            customListTableData.tableView.ScrollToCellWithIdx(selectedNote, TableView.ScrollPositionType.Beginning, false) ;
             customListTableData.tableView.SelectCellWithIdx(selectedNote);
         }
 
@@ -223,7 +223,7 @@ namespace CustomNotes.Settings.UI
             if (noteObject && vector != null)
             {
                 noteObject.transform.localPosition = vector;
-                noteObject.transform.localScale *= _pluginConfig.NoteSize;
+                noteObject.transform.localScale *= Utils.NoteSizeFromConfig(_pluginConfig);
             }
         }
 
