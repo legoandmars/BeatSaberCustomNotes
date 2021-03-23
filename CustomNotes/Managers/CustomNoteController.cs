@@ -12,11 +12,13 @@ namespace CustomNotes.Managers
     public class CustomNoteController : MonoBehaviour, IColorable, INoteControllerNoteWasCutEvent, INoteControllerNoteWasMissedEvent, INoteControllerDidInitEvent
     {
         private PluginConfig _pluginConfig;
+        private CustomNoteManager.Flags _customNoteFlags;
 
         protected Transform noteCube;
         private CustomNote _customNote;
         private GameNoteController _gameNoteController;
         private CustomNoteColorNoteVisuals _customNoteColorNoteVisuals;
+        private MeshRenderer _noteMesh;
 
         protected GameObject activeNote;
         protected SiraPrefabContainer container;
@@ -32,12 +34,24 @@ namespace CustomNotes.Managers
         [Inject]
         internal void Init(PluginConfig pluginConfig,
             NoteAssetLoader noteAssetLoader,
+            CustomNoteManager.Flags customNoteFlags,
             [Inject(Id = "cn.left.arrow")] SiraPrefabContainer.Pool leftArrowNotePool,
             [Inject(Id = "cn.right.arrow")] SiraPrefabContainer.Pool rightArrowNotePool,
             [InjectOptional(Id = "cn.left.dot")] SiraPrefabContainer.Pool leftDotNotePool,
             [InjectOptional(Id = "cn.right.dot")] SiraPrefabContainer.Pool rightDotNotePool)
         {
             _pluginConfig = pluginConfig;
+            _customNoteFlags = customNoteFlags;
+
+            if (_customNoteFlags.ForceDisable || (_customNoteFlags.GhostNotesEnabled && _customNoteFlags.FirstFrameCount != 0 && _customNoteFlags.FirstFrameCount != Time.frameCount))
+            {
+                // Don't set up if it's forcefully disabled or
+                // if Ghost Notes are enabled and this note is not part of the first set of notes
+                // (for late spawning notes when the pool has to bee expanded)
+                Destroy(this);
+                return;
+            }
+
             _leftArrowNotePool = leftArrowNotePool;
             _rightArrowNotePool = rightArrowNotePool;
 
@@ -56,15 +70,15 @@ namespace CustomNotes.Managers
 
             noteCube = _gameNoteController.gameObject.transform.Find("NoteCube");
 
-            MeshRenderer noteMesh = GetComponentInChildren<MeshRenderer>();
+            _noteMesh = GetComponentInChildren<MeshRenderer>();
             if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
                 // only disable if custom notes display on both hmd and display
-                noteMesh.forceRenderingOff = true;
+                _noteMesh.forceRenderingOff = true;
             }
             else
             {
-                noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.ThirdPerson;
+                _noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.ThirdPerson;
             }
         }
 
@@ -93,6 +107,31 @@ namespace CustomNotes.Managers
 
         public void HandleNoteControllerDidInit(NoteController noteController)
         {
+            if(_customNoteFlags.ForceDisable
+                || (_customNoteFlags.GhostNotesEnabled
+                    && (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)))
+            {
+                // revert any changes made and destroy the controller
+                _noteMesh.forceRenderingOff = false;
+                _noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.Note;
+                Destroy(this);
+                return;
+            }
+            if(_customNoteFlags.GhostNotesEnabled)
+            {
+                if (_customNoteFlags.FirstFrameCount == 0)
+                {
+                    _customNoteFlags.FirstFrameCount = Time.frameCount;
+                }
+                else if(_customNoteFlags.FirstFrameCount != Time.frameCount)
+                {
+                    // Disable all but the first set of spawned custom notes
+                    _noteMesh.forceRenderingOff = false;
+                    _noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.Note;
+                    Destroy(this);
+                    return;
+                }
+            }
             var data = noteController.noteData;
             SpawnThenParent(data.colorType == ColorType.ColorA
                 ? data.cutDirection == NoteCutDirection.Any ? _leftDotNotePool : _leftArrowNotePool
@@ -135,6 +174,12 @@ namespace CustomNotes.Managers
 
         private void Visuals_DidInit(ColorNoteVisuals visuals, NoteController noteController)
         {
+            if (_customNoteFlags.ForceDisable
+                || (_customNoteFlags.GhostNotesEnabled
+                    && _customNoteFlags.FirstFrameCount != 0
+                    && _customNoteFlags.FirstFrameCount != Time.frameCount)
+                || (_customNoteFlags.GhostNotesEnabled
+                    && (_pluginConfig.HMDOnly || LayerUtils.HMDOverride))) return;
             SetActiveThenColor(activeNote, visuals.noteColor);
             // Hide certain parts of the default note which is not required
             if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)

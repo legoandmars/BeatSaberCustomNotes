@@ -10,10 +10,12 @@ namespace CustomNotes.Managers
     internal class CustomBombController : MonoBehaviour, INoteControllerDidInitEvent
     {
         private PluginConfig _pluginConfig;
+        private CustomNoteManager.Flags _customNoteFlags;
 
         private CustomNote _customNote;
         private NoteMovement _noteMovement;
         private BombNoteController _bombNoteController;
+        private MeshRenderer _bombMeshRenderer;
 
         protected Transform bombMesh;
         protected GameObject fakeFirstPersonBombMesh;
@@ -23,9 +25,16 @@ namespace CustomNotes.Managers
         protected SiraPrefabContainer.Pool bombPool;
 
         [Inject]
-        internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [InjectOptional(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
+        internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, CustomNoteManager.Flags customNoteFlags, [InjectOptional(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
         {
             _pluginConfig = pluginConfig;
+            _customNoteFlags = customNoteFlags;
+
+            if(_customNoteFlags.ForceDisable)
+            {
+                Destroy(this);
+                return;
+            }
 
             _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
             bombPool = bombContainerPool;
@@ -42,7 +51,7 @@ namespace CustomNotes.Managers
             bombMesh = gameObject.transform.Find("Mesh");
             
 
-            MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
+            _bombMeshRenderer = GetComponentInChildren<MeshRenderer>();
 
             if ((_pluginConfig.HMDOnly || LayerUtils.HMDOverride))
             {
@@ -58,14 +67,11 @@ namespace CustomNotes.Managers
                     fakeFirstPersonBombMesh.transform.rotation = Quaternion.identity;
                     fakeFirstPersonBombMesh.layer = (int)LayerUtils.NoteLayer.FirstPerson;
                 }
-                
             }
             else if (bombPool != null)
             {
-                bm.enabled = false;
+                _bombMeshRenderer.enabled = false;
             }
-
-            
         }
 
         private void DidFinish()
@@ -76,6 +82,12 @@ namespace CustomNotes.Managers
 
         public void HandleNoteControllerDidInit(NoteController noteController)
         {
+            if(_customNoteFlags.ForceDisable)
+            {
+                _bombMeshRenderer.enabled = true;
+                Destroy(this);
+                return;
+            }
             SpawnThenParent(bombPool);
         }
 

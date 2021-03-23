@@ -18,6 +18,7 @@ namespace CustomNotes.Installers
             {
                 Container.BindInterfacesAndSelfTo<GameCameraManager>().AsSingle();
                 Container.Bind<IInitializable>().To<CustomNoteManager>().AsSingle();
+                Container.Bind<CustomNoteManager.Flags>().AsSingle();
             }
         }
     }

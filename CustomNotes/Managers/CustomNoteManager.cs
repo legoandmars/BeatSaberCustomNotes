@@ -17,10 +17,13 @@ namespace CustomNotes.Managers
         private readonly PluginConfig _pluginConfig;
         private readonly IDifficultyBeatmap _level;
 
-        internal CustomNoteManager([InjectOptional] Submission submission, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData, PluginConfig pluginConfig, IDifficultyBeatmap level)
+        public Flags _customNoteFlags { get; private set; }
+
+        internal CustomNoteManager([InjectOptional] Submission submission, NoteAssetLoader noteAssetLoader, Flags customNoteFlags, GameplayCoreSceneSetupData gameplayCoreSceneSetupData, PluginConfig pluginConfig, IDifficultyBeatmap level)
         {
             _submission = submission;
             _noteAssetLoader = noteAssetLoader;
+            _customNoteFlags = customNoteFlags;
             _gameplayCoreSceneSetupData = gameplayCoreSceneSetupData;
             _pluginConfig = pluginConfig;
             _level = level;
@@ -38,19 +41,64 @@ namespace CustomNotes.Managers
 
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes)
                 {
-                    _submission?.DisableScoreSubmission("Custom Notes", "Ghost Notes");
+                    if (_pluginConfig.DisableOnModifier) _customNoteFlags.GhostNotesEnabled = true;
+                    else _submission?.DisableScoreSubmission("Custom Notes", "Ghost Notes");
                 }
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows)
                 {
-                    _submission?.DisableScoreSubmission("Custom Notes", "Disappearing Arrows");
+                    if (_pluginConfig.DisableOnModifier) _customNoteFlags.ForceDisable = true;
+                    else _submission?.DisableScoreSubmission("Custom Notes", "Disappearing Arrows");
                 }
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.smallCubes)
                 {
-                    _submission?.DisableScoreSubmission("Custom Notes", "Small Notes");
+                    if (_pluginConfig.DisableOnModifier) _customNoteFlags.ForceDisable = true;
+                    else _submission?.DisableScoreSubmission("Custom Notes", "Small Notes");
                 }
                 if (Utils.IsNoodleMap(_level))
                 {
-                    _submission?.DisableScoreSubmission("Custom Notes", "Noodle Extensions");
+                    if (_pluginConfig.DisableOnNoodle)
+                    {
+                        _customNoteFlags.ForceDisable = true;
+                    }
+                    else
+                    {
+                        _submission?.DisableScoreSubmission("Custom Notes", "Noodle Extensions");
+                    }
+                }
+            }
+        }
+
+        public class Flags
+        {
+            public event Action onAnyFlagUpdate;
+
+            private bool _forceDisable = false;
+            public bool ForceDisable {
+                get => _forceDisable;
+                set
+                {
+                    _forceDisable = value;
+                    onAnyFlagUpdate?.Invoke();
+                }
+            }
+
+            private bool _ghostNotesEnabled = false;
+            public bool GhostNotesEnabled {
+                get => _ghostNotesEnabled;
+                set
+                {
+                    _ghostNotesEnabled = value;
+                    onAnyFlagUpdate?.Invoke();
+                }
+            }
+
+            private int _firstFrameCount = 0;
+            public int FirstFrameCount {
+                get => _firstFrameCount;
+                set
+                {
+                    _firstFrameCount = value;
+                    onAnyFlagUpdate?.Invoke();
                 }
             }
         }
