@@ -14,6 +14,8 @@ namespace CustomNotes.Managers
         private PluginConfig _pluginConfig;
         private CustomNoteManager.Flags _customNoteFlags;
 
+        private LayerUtils.CameraView _cameraView = LayerUtils.CameraView.FirstPerson;
+
         [Inject]
         internal GameCameraManager(PluginConfig pluginConfig, CustomNoteManager.Flags customNoteFlags)
         {
@@ -24,28 +26,55 @@ namespace CustomNotes.Managers
         public void Initialize()
         {
             Logger.log.Debug($"Initializing {nameof(GameCameraManager)}!");
-            _customNoteFlags.onAnyFlagUpdate += _customNoteFlags_onAnyFlagUpdate;
-            MainCamera = Camera.main;
+            _customNoteFlags.OnAnyFlagUpdate += _customNoteFlags_OnAnyFlagUpdate;
+
             if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
             {
                 LayerUtils.CreateWatermark();
-                LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.FirstPerson);
             }
+
+            // Wait a tiny amount of time for the multiplayer camera to do it's thing
+            SharedCoroutineStarter.instance.StartCoroutine(Utils.DoAfter(0.1f, () => {
+                MainCamera = Camera.main;
+                if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
+                {
+                    LayerUtils.SetCamera(MainCamera, _cameraView);
+                }
+            }));
         }
 
-        private void _customNoteFlags_onAnyFlagUpdate()
+        private void _customNoteFlags_OnAnyFlagUpdate()
         {
             if(_customNoteFlags.ForceDisable || _customNoteFlags.GhostNotesEnabled)
             {
-                _customNoteFlags.onAnyFlagUpdate -= _customNoteFlags_onAnyFlagUpdate;
-                Dispose();
+                SetActive(false);
+                return;
             }
+
+            SetActive(true);
+        }
+
+        private void SetActive(bool active)
+        {
+            LayerUtils.SetWatermarkActive(active);
+
+            if (active)
+            {
+                _cameraView = LayerUtils.CameraView.FirstPerson;
+            }
+            else
+            {
+                _cameraView = LayerUtils.CameraView.Default;
+            }
+
+            LayerUtils.SetCamera(MainCamera, _cameraView);
         }
 
         public void Dispose()
         {
             Logger.log.Debug($"Disposing {nameof(GameCameraManager)}!");
             LayerUtils.DestroyWatermark();
+            _customNoteFlags.OnAnyFlagUpdate -= _customNoteFlags_OnAnyFlagUpdate;
             if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
             {
                 LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.Default);

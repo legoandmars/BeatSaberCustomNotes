@@ -7,6 +7,7 @@ using IPA.Loader;
 using IPA.Utilities;
 using System;
 using CustomNotes.Settings.Utilities;
+using System.Collections;
 
 namespace CustomNotes.Utilities
 {
@@ -292,6 +293,20 @@ namespace CustomNotes.Utilities
                 time = System.DateTime.UtcNow;
             if ((time.Month == 4 && time.Day == 1) || bunbundai) return UnityEngine.Random.Range(0.25f, 1.5f);
             else return config.NoteSize;
+        }
+
+        /// <summary>
+        /// Invoke an action after x amount of time
+        /// </summary>
+        /// <param name="time">Time to wait</param>
+        /// <param name="action">Action to invoke</param>
+        public static IEnumerator DoAfter(float time, Action action)
+        {
+            float targetTime = Time.fixedTime + time;
+            while (targetTime > Time.fixedTime)
+                yield return null;
+            action?.Invoke();
+            yield break;
         }
     }
 }

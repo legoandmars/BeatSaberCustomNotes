@@ -6,6 +6,7 @@ using System;
 using CustomNotes.Settings.Utilities;
 using IPA.Loader;
 using System.Linq;
+using UnityEngine;
 
 namespace CustomNotes.Managers
 {
@@ -70,7 +71,29 @@ namespace CustomNotes.Managers
 
         public class Flags
         {
-            public event Action onAnyFlagUpdate;
+            public event Action OnAnyFlagUpdate;
+
+            public bool ShouldDisableCustomNote()
+            {
+                return ForceDisable 
+                    || (GhostNotesEnabled && !IsInFirstSet());
+            }
+
+            public bool IsInFirstSet()
+            {
+                if (FirstFrameCount == 0)
+                {
+                    FirstFrameCount = Time.frameCount;
+                    return true;
+                }
+                
+                if (FirstFrameCount != Time.frameCount)
+                {
+                    return false;
+                }
+
+                return true;
+            }
 
             private bool _forceDisable = false;
             public bool ForceDisable {
@@ -78,7 +101,7 @@ namespace CustomNotes.Managers
                 set
                 {
                     _forceDisable = value;
-                    onAnyFlagUpdate?.Invoke();
+                    OnAnyFlagUpdate?.Invoke();
                 }
             }
 
@@ -88,7 +111,7 @@ namespace CustomNotes.Managers
                 set
                 {
                     _ghostNotesEnabled = value;
-                    onAnyFlagUpdate?.Invoke();
+                    OnAnyFlagUpdate?.Invoke();
                 }
             }
 
@@ -98,7 +121,7 @@ namespace CustomNotes.Managers
                 set
                 {
                     _firstFrameCount = value;
-                    onAnyFlagUpdate?.Invoke();
+                    OnAnyFlagUpdate?.Invoke();
                 }
             }
         }
