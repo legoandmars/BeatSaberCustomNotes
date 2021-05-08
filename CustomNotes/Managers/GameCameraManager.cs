@@ -13,14 +13,14 @@ namespace CustomNotes.Managers
 
         private PluginConfig _pluginConfig;
         private CustomNoteManager.Flags _customNoteFlags;
-
-        private LayerUtils.CameraView _cameraView = LayerUtils.CameraView.FirstPerson;
+        private MainCamera _mainCamera;
 
         [Inject]
-        internal GameCameraManager(PluginConfig pluginConfig, CustomNoteManager.Flags customNoteFlags)
+        internal GameCameraManager(PluginConfig pluginConfig, CustomNoteManager.Flags customNoteFlags, MainCamera mainCamera)
         {
             _pluginConfig = pluginConfig;
             _customNoteFlags = customNoteFlags;
+            _mainCamera = mainCamera;
         }
 
         public void Initialize()
@@ -28,46 +28,38 @@ namespace CustomNotes.Managers
             Logger.log.Debug($"Initializing {nameof(GameCameraManager)}!");
             _customNoteFlags.OnAnyFlagUpdate += _customNoteFlags_OnAnyFlagUpdate;
 
+            // Awake() hasn't been called yet so _mainCamera.camera is still null
+            MainCamera = _mainCamera.GetComponent<Camera>();
+
             if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
             {
                 LayerUtils.CreateWatermark();
+                LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.FirstPerson);
             }
-
-            // Wait a tiny amount of time for the multiplayer camera to do it's thing
-            SharedCoroutineStarter.instance.StartCoroutine(Utils.DoAfter(0.1f, () => {
-                MainCamera = Camera.main;
-                if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
-                {
-                    LayerUtils.SetCamera(MainCamera, _cameraView);
-                }
-            }));
         }
 
         private void _customNoteFlags_OnAnyFlagUpdate()
         {
             if(_customNoteFlags.ForceDisable || _customNoteFlags.GhostNotesEnabled)
             {
-                SetActive(false);
+                SetWatermarkAndLayerActive(false);
                 return;
             }
 
-            SetActive(true);
+            SetWatermarkAndLayerActive(true);
         }
 
-        private void SetActive(bool active)
+        private void SetWatermarkAndLayerActive(bool active)
         {
             LayerUtils.SetWatermarkActive(active);
 
             if (active)
             {
-                _cameraView = LayerUtils.CameraView.FirstPerson;
-            }
-            else
-            {
-                _cameraView = LayerUtils.CameraView.Default;
+                LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.FirstPerson);
+                return;
             }
 
-            LayerUtils.SetCamera(MainCamera, _cameraView);
+            LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.Default);
         }
 
         public void Dispose()
