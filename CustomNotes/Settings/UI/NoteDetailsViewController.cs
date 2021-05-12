@@ -21,10 +21,16 @@ namespace CustomNotes.Settings
         public TextPageScrollView noteDescription = null;
 
         [UIComponent("size-slider")]
-        private SliderSetting sizeSlider;
+        private SliderSetting sizeSlider = null;
 
         [UIComponent("hmd-checkbox")]
-        private ToggleSetting hmdCheckbox;
+        private ToggleSetting hmdCheckbox = null;
+
+        [UIComponent("noodle-disable-checkbox")]
+        private ToggleSetting noodleDisableCheckbox = null;
+
+        [UIComponent("modifier-disable-checkbox")]
+        private ToggleSetting modifierDisableCheckbox = null;
 
         public void OnNoteWasChanged(CustomNote customNote)
         {
@@ -44,6 +50,14 @@ namespace CustomNotes.Settings
             if (hmdCheckbox != null)
             {
                 hmdCheckbox.ReceiveValue();
+            }
+            if (noodleDisableCheckbox != null)
+            {
+                noodleDisableCheckbox.ReceiveValue();
+            }
+            if (modifierDisableCheckbox != null)
+            {
+                modifierDisableCheckbox.ReceiveValue();
             }
         }
 
@@ -69,8 +83,21 @@ namespace CustomNotes.Settings
         public bool hmdOnly 
         {
             get { return _pluginConfig.HMDOnly; }
-            set 
-            { _pluginConfig.HMDOnly = value; }
+            set { _pluginConfig.HMDOnly = value; }
+        }
+
+        [UIValue("noodle-disable")]
+        public bool noodleDisable
+        {
+            get { return _pluginConfig.DisableOnNoodle; }
+            set { _pluginConfig.DisableOnNoodle = value; }
+        }
+
+        [UIValue("modifier-disable")]
+        public bool modifierDisable
+        {
+            get { return _pluginConfig.DisableOnModifier; }
+            set { _pluginConfig.DisableOnModifier = value; }
         }
     }
 }

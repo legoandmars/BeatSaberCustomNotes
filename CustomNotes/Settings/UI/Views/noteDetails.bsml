@@ -1,4 +1,4 @@
-﻿<bg child-control-height='false' xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
   <tab-selector tab-tag='new-tab'/>
   <tab tags='new-tab' tab-name='Note Description'>
     <horizontal horizontal-fit='Unconstrained'>
@@ -13,6 +13,8 @@
     
         <slider-setting id='size-slider' text='Note Scale' min='0.4' max='2' increment='0.05' value='note-size' apply-on-change='true' hover-hint='Changes the scale of custom notes. Requires a non-default note to be used.'/>
         <checkbox-setting id='hmd-checkbox' text='HMD Only' value='hmd-only' apply-on-change='true' hover-hint='Only displays custom notes in the headset. A non-default camera such as Smooth Camera, Camera+, or Camera2 is required.'/>
+        <checkbox-setting id='noodle-disable-checkbox' text='Default Notes on Noodle maps' value='noodle-disable' apply-on-change='true' hover-hint='Switches to the default notes on Noodle maps automatically instead of disabling score.'/>
+        <checkbox-setting id='modifier-disable-checkbox' text='Default Notes with incompatible Modifiers' value='modifier-disable' apply-on-change='true' hover-hint='Switches to the default notes if Ghost Notes, Disappearing Arrows or Small Notes modifier is active instead of disabling score.'/>
         
       </vertical>
     </horizontal>

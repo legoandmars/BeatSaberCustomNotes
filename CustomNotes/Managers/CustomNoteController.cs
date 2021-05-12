@@ -12,11 +12,13 @@ namespace CustomNotes.Managers
     public class CustomNoteController : MonoBehaviour, IColorable, INoteControllerNoteWasCutEvent, INoteControllerNoteWasMissedEvent, INoteControllerDidInitEvent
     {
         private PluginConfig _pluginConfig;
+        private CustomNoteManager.Flags _customNoteFlags;
 
         protected Transform noteCube;
         private CustomNote _customNote;
         private GameNoteController _gameNoteController;
         private CustomNoteColorNoteVisuals _customNoteColorNoteVisuals;
+        private MeshRenderer _noteMesh;
 
         protected GameObject activeNote;
         protected SiraPrefabContainer container;
@@ -27,17 +29,22 @@ namespace CustomNotes.Managers
         private SiraPrefabContainer.Pool _leftArrowNotePool;
         private SiraPrefabContainer.Pool _rightArrowNotePool;
 
+        private bool _eventsRegistered = false;
+
         public Color Color => _customNoteColorNoteVisuals != null ? _customNoteColorNoteVisuals.noteColor : Color.white;
 
         [Inject]
         internal void Init(PluginConfig pluginConfig,
             NoteAssetLoader noteAssetLoader,
+            CustomNoteManager.Flags customNoteFlags,
             [Inject(Id = "cn.left.arrow")] SiraPrefabContainer.Pool leftArrowNotePool,
             [Inject(Id = "cn.right.arrow")] SiraPrefabContainer.Pool rightArrowNotePool,
             [InjectOptional(Id = "cn.left.dot")] SiraPrefabContainer.Pool leftDotNotePool,
             [InjectOptional(Id = "cn.right.dot")] SiraPrefabContainer.Pool rightDotNotePool)
         {
             _pluginConfig = pluginConfig;
+            _customNoteFlags = customNoteFlags;
+
             _leftArrowNotePool = leftArrowNotePool;
             _rightArrowNotePool = rightArrowNotePool;
 
@@ -49,22 +56,68 @@ namespace CustomNotes.Managers
             _gameNoteController = GetComponent<GameNoteController>();
             _customNoteColorNoteVisuals = gameObject.AddComponent<CustomNoteColorNoteVisuals>();
 
-            _gameNoteController.didInitEvent.Add(this);
-            _gameNoteController.noteWasMissedEvent.Add(this);
-            _gameNoteController.noteWasCutEvent.Add(this);
-            _customNoteColorNoteVisuals.didInitEvent += Visuals_DidInit;
-
             noteCube = _gameNoteController.gameObject.transform.Find("NoteCube");
 
-            MeshRenderer noteMesh = GetComponentInChildren<MeshRenderer>();
+            _noteMesh = GetComponentInChildren<MeshRenderer>();
+
+            if (_customNoteFlags.ShouldDisableCustomNote())
+            {
+                // Don't set up if it's forcefully disabled or
+                // if Ghost Notes are enabled and this note is not part of the first set of notes
+                // (for late spawning notes when the pool has to be expanded)
+                return;
+            }
+
+            SetupCustomNote();
+        }
+
+        protected virtual void SetupCustomNote()
+        {
+            DeOrRegisterEvents(true);
+
             if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
                 // only disable if custom notes display on both hmd and display
-                noteMesh.forceRenderingOff = true;
+                _noteMesh.forceRenderingOff = true;
             }
             else
             {
-                noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.ThirdPerson;
+                _noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.ThirdPerson;
+            }
+        }
+
+        protected virtual void RevertToDefaultNote()
+        {
+            DeOrRegisterEvents(false);
+
+            _noteMesh.forceRenderingOff = false;
+            _noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.Note;
+        }
+
+        protected virtual void DeOrRegisterEvents(bool register)
+        {
+            if (_eventsRegistered == register) return;
+
+            _eventsRegistered = register;
+
+            if (register)
+            {
+                _gameNoteController.didInitEvent.Add(this);
+                _gameNoteController.noteWasMissedEvent.Add(this);
+                _gameNoteController.noteWasCutEvent.Add(this);
+                _customNoteColorNoteVisuals.didInitEvent += Visuals_DidInit;
+                return;
+            }
+
+            if (_gameNoteController != null)
+            {
+                _gameNoteController.didInitEvent.Remove(this);
+                _gameNoteController.noteWasMissedEvent.Remove(this);
+                _gameNoteController.noteWasCutEvent.Remove(this);
+            }
+            if (_customNoteColorNoteVisuals != null)
+            {
+                _customNoteColorNoteVisuals.didInitEvent -= Visuals_DidInit;
             }
         }
 
@@ -93,6 +146,11 @@ namespace CustomNotes.Managers
 
         public void HandleNoteControllerDidInit(NoteController noteController)
         {
+            if(_customNoteFlags.ShouldDisableCustomNote())
+            {
+                RevertToDefaultNote();
+                return;
+            }
             var data = noteController.noteData;
             SpawnThenParent(data.colorType == ColorType.ColorA
                 ? data.cutDirection == NoteCutDirection.Any ? _leftDotNotePool : _leftArrowNotePool
@@ -135,6 +193,10 @@ namespace CustomNotes.Managers
 
         private void Visuals_DidInit(ColorNoteVisuals visuals, NoteController noteController)
         {
+            if (_customNoteFlags.ShouldDisableCustomNote())
+            {
+                return;
+            }
             SetActiveThenColor(activeNote, visuals.noteColor);
             // Hide certain parts of the default note which is not required
             if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
@@ -171,16 +233,7 @@ namespace CustomNotes.Managers
 
         protected void OnDestroy()
         {
-            if (_gameNoteController != null)
-            {
-                _gameNoteController.didInitEvent.Remove(this);
-                _gameNoteController.noteWasMissedEvent.Remove(this);
-                _gameNoteController.noteWasCutEvent.Remove(this);
-            }
-            if (_customNoteColorNoteVisuals != null)
-            {
-                _customNoteColorNoteVisuals.didInitEvent -= Visuals_DidInit;
-            }
+            DeOrRegisterEvents(false);
         }
 
         public void SetColor(Color color)

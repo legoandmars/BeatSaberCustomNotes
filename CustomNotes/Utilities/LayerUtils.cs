@@ -122,13 +122,19 @@ namespace CustomNotes.Utilities
             SetLayer(_watermarkObject, NoteLayer.ThirdPerson);
         }
 
+        public static void SetWatermarkActive(bool active = true)
+        {
+            if (_watermarkObject == null) return;
+            _watermarkObject.SetActive(active);
+        }
+
         public static void DestroyWatermark()
         {
             if (_watermarkObject == null) return;
             _watermarkObject.SetActive(false);
             UnityEngine.Object.Destroy(_watermarkObject);
             _watermarkObject = null;
-        } 
+        }
 
         /// <summary>
         /// Force custom notes to only be visible in-headset, regardless of the player's settings.

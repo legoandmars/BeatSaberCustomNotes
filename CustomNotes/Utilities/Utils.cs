@@ -7,6 +7,7 @@ using IPA.Loader;
 using IPA.Utilities;
 using System;
 using CustomNotes.Settings.Utilities;
+using System.Collections;
 
 namespace CustomNotes.Utilities
 {

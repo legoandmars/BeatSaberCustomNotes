@@ -25,18 +25,18 @@ namespace CustomNotes.Settings.UI
         private List<object> notesList = new List<object>();
 
         [UIComponent("notes-dropdown")]
-        private DropDownListSetting notesDropdown;
+        private DropDownListSetting notesDropdown = null;
 
         [UIComponent("notes-dropdown")]
-        private RectTransform notesDropdownTransform;
+        private RectTransform notesDropdownTransform = null;
 
-        private RectTransform dropdownListTransform;
+        private RectTransform dropdownListTransform = null;
 
         [UIComponent("size-slider")]
-        private SliderSetting sizeSlider;
+        private SliderSetting sizeSlider = null;
 
         [UIComponent("hmd-checkbox")]
-        private ToggleSetting hmdCheckbox;
+        private ToggleSetting hmdCheckbox = null;
 
 
         public NoteModifierViewController(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader)
