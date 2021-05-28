@@ -16,7 +16,7 @@ namespace CustomNotes.Installers
             Container.Bind<NoteDetailsViewController>().FromNewComponentAsViewController().AsSingle();
             Container.Bind<NoteListViewController>().FromNewComponentAsViewController().AsSingle();
             Container.BindInterfacesAndSelfTo<NoteModifierViewController>().AsSingle();
-            Container.BindFlowCoordinator<NotesFlowCoordinator>();
+            Container.Bind<NotesFlowCoordinator>().FromNewComponentOnNewGameObject().AsSingle();
 
             Container.BindInterfacesTo<MenuButtonManager>().AsSingle();
             Container.BindInterfacesTo<CustomNotesViewManager>().AsSingle();

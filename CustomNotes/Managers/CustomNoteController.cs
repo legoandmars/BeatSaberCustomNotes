@@ -91,7 +91,7 @@ namespace CustomNotes.Managers
             HandleNoteControllerNoteWasMissed(nc);
         }
 
-        public void HandleNoteControllerDidInit(NoteController noteController)
+        public void HandleNoteControllerDidInit(NoteControllerBase noteController)
         {
             var data = noteController.noteData;
             SpawnThenParent(data.colorType == ColorType.ColorA
@@ -133,9 +133,9 @@ namespace CustomNotes.Managers
             }
         }
 
-        private void Visuals_DidInit(ColorNoteVisuals visuals, NoteController noteController)
+        private void Visuals_DidInit(ColorNoteVisuals visuals, NoteControllerBase noteController)
         {
-            SetActiveThenColor(activeNote, visuals.noteColor);
+            SetActiveThenColor(activeNote, (visuals as CustomNoteColorNoteVisuals).noteColor);
             // Hide certain parts of the default note which is not required
             if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {

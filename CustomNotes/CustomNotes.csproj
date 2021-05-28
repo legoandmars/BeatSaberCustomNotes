@@ -176,6 +176,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Settings\UI\Views\noteModifier.bsml" />
   </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Settings\UI\Resources\patreon.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>copy "$(TargetPath)" "$(BeatSaberDir)\Plugins"</PostBuildEvent>
