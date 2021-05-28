@@ -21,10 +21,10 @@ namespace CustomNotes.Settings
         public TextPageScrollView noteDescription = null;
 
         [UIComponent("size-slider")]
-        private SliderSetting sizeSlider;
+        private SliderSetting sizeSlider = null;
 
         [UIComponent("hmd-checkbox")]
-        private ToggleSetting hmdCheckbox;
+        private ToggleSetting hmdCheckbox = null;
 
         public void OnNoteWasChanged(CustomNote customNote)
         {

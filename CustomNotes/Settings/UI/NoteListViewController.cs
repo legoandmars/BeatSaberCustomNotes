@@ -58,7 +58,7 @@ namespace CustomNotes.Settings.UI
             _gameplaySetupViewController = gameplaySetupViewController;
         }
         [UIParams]
-        internal BeatSaberMarkupLanguage.Parser.BSMLParserParams parserParams;
+        internal BeatSaberMarkupLanguage.Parser.BSMLParserParams parserParams = null;
 
         [UIComponent("noteList")]
         public CustomListTableData customListTableData = null;
