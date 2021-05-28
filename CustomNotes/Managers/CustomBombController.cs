@@ -74,7 +74,7 @@ namespace CustomNotes.Managers
             bombPool.Despawn(container);
         }
 
-        public void HandleNoteControllerDidInit(NoteController noteController)
+        public void HandleNoteControllerDidInit(NoteControllerBase noteController)
         {
             SpawnThenParent(bombPool);
         }

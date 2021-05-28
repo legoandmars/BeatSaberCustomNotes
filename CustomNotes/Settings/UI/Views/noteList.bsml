@@ -1,10 +1,36 @@
 ﻿<horizontal xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+  <vertical child-control-height='false' ignore-layout='true' anchor-pos-x='60' anchor-pos-y='-7'>
+    <horizontal horizontal-fit='PreferredSize'>
+      <button id='donateButton' text='Donate' on-click='donateClicked' pref-width='17.5'/>
+      <primary-button text='?' on-click='donateHelpClicked' pref-width='10'/>
+    </horizontal>
+  </vertical>
+  <vertical child-control-height='false' ignore-layout='true' anchor-pos-x='60' anchor-pos-y='-15'>
+    <text id='openedText' text='Opened in browser!'></text>
+  </vertical>
   <vertical pad-left='50'>
     <page-button event-click='noteList#PageUp' direction='Up' />
     <list id='noteList' expand-cell='true' select-cell='noteSelect' />
     <page-button event-click='noteList#PageDown' direction='Down' />
   </vertical>
-  <vertical child-control-height='false'>
-    <button text='Reload all notes' on-click='reloadNotes' />
+  <vertical child-control-height='false' horizontal-fit='PreferredSize'>
+    <button text='Reload all notes' on-click='reloadNotes' pref-width='27.5'/>
   </vertical>
+  <modal id='patreonModal' show-event='open-patreonModal' hide-event='close-patreonModal,closeAllModals' move-to-center='true' size-delta-y='45' size-delta-x='80'>
+    <vertical>
+      <horizontal bg='panel-top' pad-left='10' pad-right='10' horizontal-fit='PreferredSize'>
+        <image src='CustomNotes.Settings.UI.Resources.patreon.png' preserve-aspect='true' pref-width='6' pref-height='6' anchor-pos-x='-3' anchor-pos-y='-10'/>
+        <text text='Patreon' align='Center' font-size='7' />
+      </horizontal>
+      <vertical horizontal-fit='PreferredSize' vertical-fit='Unconstrained'>
+        <vertical pref-width='75' horizontal-fit='PreferredSize' vertical-fit='PreferredSize'>
+          <text id='warning-text' text='If you enjoy this mod, please consider supporting me on patreon. I spend an extremely large portion of my time creating mods, and having people support me allows me to continue to put out high quality mods for free.' align='Center' word-wrapping='true' />
+        </vertical>
+      </vertical>
+      <horizontal pref-width='50' horizontal-fit='PreferredSize' vertical-fit='PreferredSize' spacing='2' anchor-pos-y='50' >
+        <button id='closeButton' on-click='closePressed' text='Close' pad='0' pref-height='8' pref-width='20' anchor-pos-y='25'></button>
+        <button id='modalDonateButton' on-click='donateClicked' text='Donate' pad='0' pref-height='8' pref-width='30' anchor-pos-y='25'></button>
+      </horizontal>
+    </vertical>
+  </modal>
 </horizontal>
