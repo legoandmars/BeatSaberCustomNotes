@@ -90,7 +90,8 @@ namespace CustomNotes.Utilities
             List<Renderer> rendererList = new List<Renderer>();
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
             {
-                if (renderer.material.shader.name.ToLower() == "custom/notehd") // only get the replaced note shader
+                DisableNoteColorOnGameobject colorDisabled = renderer.GetComponent<DisableNoteColorOnGameobject>();
+                if (!colorDisabled && renderer.material.shader.name.ToLower() == "custom/notehd") // only get the replaced note shader
                 {
                     rendererList.Add(renderer);
                 }
