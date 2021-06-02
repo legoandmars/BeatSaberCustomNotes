@@ -9,7 +9,7 @@ using CustomNotes.Utilities;
 
 namespace CustomNotes.Managers
 {
-    public class CustomNoteController : MonoBehaviour, IColorable, INoteControllerNoteWasCutEvent, INoteControllerNoteWasMissedEvent, INoteControllerDidInitEvent
+    public class CustomNoteController : MonoBehaviour, IColorable, INoteControllerNoteWasCutEvent, INoteControllerNoteWasMissedEvent, INoteControllerDidInitEvent, INoteControllerNoteDidDissolveEvent
     {
         private PluginConfig _pluginConfig;
 
@@ -50,8 +50,9 @@ namespace CustomNotes.Managers
             _customNoteColorNoteVisuals = gameObject.AddComponent<CustomNoteColorNoteVisuals>();
 
             _gameNoteController.didInitEvent.Add(this);
-            _gameNoteController.noteWasMissedEvent.Add(this);
             _gameNoteController.noteWasCutEvent.Add(this);
+            _gameNoteController.noteWasMissedEvent.Add(this);
+            _gameNoteController.noteDidDissolveEvent.Add(this);
             _customNoteColorNoteVisuals.didInitEvent += Visuals_DidInit;
 
             noteCube = _gameNoteController.gameObject.transform.Find("NoteCube");
@@ -70,12 +71,13 @@ namespace CustomNotes.Managers
 
         public void HandleNoteControllerNoteWasMissed(NoteController nc)
         {
-            container.transform.SetParent(null);
+            if (container != null)
+                container.transform.SetParent(null);
             switch (nc.noteData.colorType)
             {
                 case ColorType.ColorA:
                 case ColorType.ColorB:
-                    if(container != null)
+                    if (container != null)
                     {
                         activePool?.Despawn(container);
                         container = null;
@@ -84,11 +86,6 @@ namespace CustomNotes.Managers
                 default:
                     break;
             }
-        }
-
-        public void HandleNoteControllerNoteWasCut(NoteController nc, in NoteCutInfo _)
-        {
-            HandleNoteControllerNoteWasMissed(nc);
         }
 
         public void HandleNoteControllerDidInit(NoteControllerBase noteController)
@@ -139,7 +136,7 @@ namespace CustomNotes.Managers
             // Hide certain parts of the default note which is not required
             if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
-                _customNoteColorNoteVisuals.SetBaseGameVisualsLayer((int) LayerUtils.NoteLayer.Note);
+                _customNoteColorNoteVisuals.SetBaseGameVisualsLayer((int)LayerUtils.NoteLayer.Note);
                 if (_customNote.Descriptor.DisableBaseNoteArrows)
                 {
                     _customNoteColorNoteVisuals.TurnOffVisuals();
@@ -152,7 +149,7 @@ namespace CustomNotes.Managers
             else
             {
                 // HMDOnly code
-                _customNoteColorNoteVisuals.SetBaseGameVisualsLayer((int) LayerUtils.NoteLayer.ThirdPerson);
+                _customNoteColorNoteVisuals.SetBaseGameVisualsLayer((int)LayerUtils.NoteLayer.ThirdPerson);
                 if (!_customNote.Descriptor.DisableBaseNoteArrows)
                 {
                     if (Utils.NoteSizeFromConfig(_pluginConfig) != 1)
@@ -174,8 +171,9 @@ namespace CustomNotes.Managers
             if (_gameNoteController != null)
             {
                 _gameNoteController.didInitEvent.Remove(this);
-                _gameNoteController.noteWasMissedEvent.Remove(this);
                 _gameNoteController.noteWasCutEvent.Remove(this);
+                _gameNoteController.noteWasMissedEvent.Remove(this);
+                _gameNoteController.noteDidDissolveEvent.Remove(this);
             }
             if (_customNoteColorNoteVisuals != null)
             {
@@ -195,6 +193,16 @@ namespace CustomNotes.Managers
                 _customNoteColorNoteVisuals.SetColor(color, updateMatBlocks);
                 Utils.ColorizeCustomNote(color, _customNote.Descriptor.NoteColorStrength, activeNote);
             }
+        }
+
+        public void HandleNoteControllerNoteWasCut(NoteController nc, in NoteCutInfo _)
+        {
+            HandleNoteControllerNoteWasMissed(nc);
+        }
+
+        public void HandleNoteControllerNoteDidDissolve(NoteController noteController)
+        {
+            HandleNoteControllerNoteWasMissed(noteController);
         }
     }
 }
