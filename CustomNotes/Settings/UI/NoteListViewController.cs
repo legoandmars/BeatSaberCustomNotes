@@ -1,7 +1,9 @@
 ﻿using HMUI;
 using System;
+using System.Collections;
 using Zenject;
 using UnityEngine;
+using UnityEngine.UI;
 using CustomNotes.Data;
 using CustomNotes.Managers;
 using CustomNotes.Utilities;
@@ -9,6 +11,7 @@ using CustomNotes.Settings.Utilities;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.Components;
 using BeatSaberMarkupLanguage.ViewControllers;
+using TMPro;
 
 namespace CustomNotes.Settings.UI
 {
@@ -45,6 +48,7 @@ namespace CustomNotes.Settings.UI
         private Vector3 bombPos = new Vector3(3.0f, 0.75f, 0.0f);
 
         public Action<CustomNote> customNoteChanged;
+        public Action customNotesReloaded;
 
         [Inject]
         public void Construct(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, GameplaySetupViewController gameplaySetupViewController)
@@ -53,9 +57,17 @@ namespace CustomNotes.Settings.UI
             _noteAssetLoader = noteAssetLoader;
             _gameplaySetupViewController = gameplaySetupViewController;
         }
+        [UIParams]
+        internal BeatSaberMarkupLanguage.Parser.BSMLParserParams parserParams = null;
 
         [UIComponent("noteList")]
         public CustomListTableData customListTableData = null;
+
+        [UIComponent("openedText")]
+        public TextMeshProUGUI openedText = null;
+
+        [UIComponent("donateButton")]
+        public Button donateButton = null;
 
         [UIAction("noteSelect")]
         public void Select(TableView _, int row)
@@ -72,6 +84,43 @@ namespace CustomNotes.Settings.UI
             _noteAssetLoader.Reload();
             SetupList();
             Select(customListTableData.tableView, _noteAssetLoader.SelectedNote);
+            customNotesReloaded?.Invoke();
+        }
+
+        [UIAction("donateClicked")]
+        public void DonateClicked()
+        {
+            //button.interactable = false;
+            //linkOpened.gameObject.SetActive(true);
+            //StartCoroutine(SecondRemove(button));
+            parserParams.EmitEvent("close-patreonModal");
+            openedText.gameObject.SetActive(true);
+            donateButton.interactable = false;
+            Application.OpenURL("https://www.patreon.com/bobbievr");
+            StartCoroutine(DonateActiveAgain());
+        }
+
+        [UIAction("closePressed")]
+        public void ClosePressed()
+        {
+            parserParams.EmitEvent("close-patreonModal");
+        }
+
+        [UIAction("donateHelpClicked")]
+        public void DonateHelpClicked()
+        {
+            //button.interactable = false;
+            //linkOpened.gameObject.SetActive(true);
+            //StartCoroutine(SecondRemove(button));
+            parserParams.EmitEvent("open-patreonModal");
+            //Application.OpenURL("https://www.patreon.com/bobbievr");
+        }
+
+        private IEnumerator DonateActiveAgain()
+        {
+            yield return new WaitForSeconds(3);
+            donateButton.interactable = true;
+            openedText.gameObject.SetActive(false);
         }
 
         [UIAction("#post-parse")]
@@ -89,13 +138,15 @@ namespace CustomNotes.Settings.UI
             customListTableData.tableView.ReloadData();
             int selectedNote = _noteAssetLoader.SelectedNote;
 
-            customListTableData.tableView.ScrollToCellWithIdx(selectedNote, TableViewScroller.ScrollPositionType.Beginning, false);
+            customListTableData.tableView.ScrollToCellWithIdx(selectedNote, TableView.ScrollPositionType.Beginning, false) ;
             customListTableData.tableView.SelectCellWithIdx(selectedNote);
         }
 
         protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
+
+            openedText.gameObject.SetActive(false);
 
             if (fakeNoteArrows == null)
             {
@@ -108,9 +159,12 @@ namespace CustomNotes.Settings.UI
                 preview = new GameObject();
                 preview.transform.Rotate(0.0f, 60.0f, 0.0f);
                 preview.transform.localScale = new Vector3(0.3f, 0.3f, 0.3f);
+                preview.name = "NotePreviewContainer";
             }
 
-            Select(customListTableData.tableView, _noteAssetLoader.SelectedNote);
+            int selectedNote = _noteAssetLoader.SelectedNote;
+            customListTableData.tableView.SelectCellWithIdx(selectedNote);
+            Select(customListTableData.tableView, selectedNote);
         }
 
         protected override void DidDeactivate(bool removedFromHierarchy, bool screenSystemDisabling)
@@ -149,7 +203,7 @@ namespace CustomNotes.Settings.UI
         private void InitializePreviewNotes(CustomNote customNote, Transform transform)
         {
             // Position previewer based on the CustomNote having a NoteBomb
-            preview.transform.position = customNote.NoteBomb ? new Vector3(2.1f, 0.9f, 1.60f) : new Vector3(2.25f, 0.9f, 1.45f);
+            preview.transform.position = customNote.NoteBomb ? new Vector3(3.05f, 0.9f, 2.0f) : new Vector3(2.90f, 0.9f, 1.85f);
 
             noteLeft = CreatePreviewNote(customNote.NoteLeft, transform, leftArrowPos);
             noteDotLeft = CreatePreviewNote(customNote.NoteDotLeft, transform, leftDotPos);
@@ -218,7 +272,7 @@ namespace CustomNotes.Settings.UI
             if (noteObject && vector != null)
             {
                 noteObject.transform.localPosition = vector;
-                noteObject.transform.localScale *= _pluginConfig.NoteSize;
+                noteObject.transform.localScale *= Utils.NoteSizeFromConfig(_pluginConfig);
             }
         }
 

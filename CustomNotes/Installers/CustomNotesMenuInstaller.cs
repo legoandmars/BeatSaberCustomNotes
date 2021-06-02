@@ -12,12 +12,14 @@ namespace CustomNotes.Installers
         {
 
 
-            Container.BindViewController<NotePreviewViewController>();
-            Container.BindViewController<NoteDetailsViewController>();
-            Container.BindViewController<NoteListViewController>();
-            Container.BindFlowCoordinator<NotesFlowCoordinator>();
+            Container.Bind<NotePreviewViewController>().FromNewComponentAsViewController().AsSingle();
+            Container.Bind<NoteDetailsViewController>().FromNewComponentAsViewController().AsSingle();
+            Container.Bind<NoteListViewController>().FromNewComponentAsViewController().AsSingle();
+            Container.BindInterfacesAndSelfTo<NoteModifierViewController>().AsSingle();
+            Container.Bind<NotesFlowCoordinator>().FromNewComponentOnNewGameObject().AsSingle();
 
             Container.BindInterfacesTo<MenuButtonManager>().AsSingle();
+            Container.BindInterfacesTo<CustomNotesViewManager>().AsSingle();
         }
     }
 }

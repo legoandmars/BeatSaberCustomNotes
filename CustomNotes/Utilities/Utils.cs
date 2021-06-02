@@ -3,7 +3,10 @@ using System.Linq;
 using UnityEngine;
 using System.Reflection;
 using System.Collections.Generic;
+using IPA.Loader;
 using IPA.Utilities;
+using System;
+using CustomNotes.Settings.Utilities;
 
 namespace CustomNotes.Utilities
 {
@@ -87,7 +90,8 @@ namespace CustomNotes.Utilities
             List<Renderer> rendererList = new List<Renderer>();
             foreach (Renderer renderer in gameObject.GetComponentsInChildren<Renderer>())
             {
-                if (renderer.material.shader.name.ToLower() == "custom/notehd") // only get the replaced note shader
+                DisableNoteColorOnGameobject colorDisabled = renderer.GetComponent<DisableNoteColorOnGameobject>();
+                if (!colorDisabled && renderer.material.shader.name.ToLower() == "custom/notehd") // only get the replaced note shader
                 {
                     rendererList.Add(renderer);
                 }
@@ -255,6 +259,40 @@ namespace CustomNotes.Utilities
             }
 
             return unescapedString;
+        }
+
+        /// <summary>
+        /// Check if an IDifficultyBeatmap requires noodle extensions
+        /// </summary>
+        /// <param name="level"></param>
+        public static bool IsNoodleMap(IDifficultyBeatmap level)
+        {
+            // thanks kinsi
+            if (PluginManager.EnabledPlugins.Any(x => x.Name == "SongCore") && PluginManager.EnabledPlugins.Any(x => x.Name == "NoodleExtensions"))
+            {
+                bool isIsNoodleMap = SongCore.Collections.RetrieveDifficultyData(level)?
+                    .additionalDifficultyData?
+                    ._requirements?.Any(x => x == "Noodle Extensions") == true;
+                return isIsNoodleMap;
+            }
+            else return false;
+        }
+
+        /// <summary>
+        /// Get the proper note size from the config
+        /// </summary>
+        /// <param name="level"></param>
+        public static float NoteSizeFromConfig(PluginConfig config)
+        {
+            // Not April Fools Day Code
+            System.DateTime time;
+            bool bunbundai = false;
+            if (IPA.Utilities.Utils.CanUseDateTimeNowSafely)
+                time = System.DateTime.Now;
+            else
+                time = System.DateTime.UtcNow;
+            if ((time.Month == 4 && time.Day == 1) || bunbundai) return UnityEngine.Random.Range(0.25f, 1.5f);
+            else return config.NoteSize;
         }
     }
 }

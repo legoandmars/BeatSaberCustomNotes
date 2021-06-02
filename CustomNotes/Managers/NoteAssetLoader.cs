@@ -30,7 +30,7 @@ namespace CustomNotes.Managers
                 else
                 {
                     _customGameNoteProvider.Priority = 300;
-                    _customBombNoteProvider.Priority = CustomNoteObjects[_selectedNote].NoteBomb != null ? 300 : -1;
+                    _customBombNoteProvider.Priority = 300;
                 }
             }
         }

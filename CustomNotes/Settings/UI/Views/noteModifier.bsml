@@ -1,0 +1,7 @@
+﻿<bg xmlns:xsi='http://www.w3.org/2001/XMLSchema-instance' xsi:schemaLocation='https://monkeymanboy.github.io/BSML-Docs/ https://raw.githubusercontent.com/monkeymanboy/BSML-Docs/gh-pages/BSMLSchema.xsd'>
+	<modifier-container child-expand-width='true' horizontal-fit='PreferredSize'>
+    <dropdown-list-setting id='notes-dropdown' text='Custom Note' value='selected-note' choices='notes-list' on-change='note-selected' hover-hint='Select a Custom Note' />
+		<slider-setting id='size-slider' text='Note Scale' min='0.4' max='2' increment='0.05' value='note-size' apply-on-change='true' hover-hint='Changes the scale of custom notes. Requires a non-default note to be used.' />
+		<checkbox-setting id='hmd-checkbox' text='HMD Only' value='hmd-only' apply-on-change='true' hover-hint='Only displays custom notes in the headset. A non-default camera such as Smooth Camera, Camera+, or Camera2 is required.' />
+	</modifier-container>
+</bg>

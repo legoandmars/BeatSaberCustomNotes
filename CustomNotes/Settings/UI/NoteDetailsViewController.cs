@@ -1,13 +1,12 @@
 ﻿using HMUI;
 using CustomNotes.Data;
 using CustomNotes.Utilities;
-using CustomNotes.Managers;
 using CustomNotes.Settings.Utilities;
 using BeatSaberMarkupLanguage.Attributes;
 using BeatSaberMarkupLanguage.ViewControllers;
 using Zenject;
-using System;
 using CustomNotes.Settings.UI;
+using BeatSaberMarkupLanguage.Components.Settings;
 
 namespace CustomNotes.Settings
 {
@@ -21,6 +20,12 @@ namespace CustomNotes.Settings
         [UIComponent("note-description")]
         public TextPageScrollView noteDescription = null;
 
+        [UIComponent("size-slider")]
+        private SliderSetting sizeSlider = null;
+
+        [UIComponent("hmd-checkbox")]
+        private ToggleSetting hmdCheckbox = null;
+
         public void OnNoteWasChanged(CustomNote customNote)
         {
             if (string.IsNullOrWhiteSpace(customNote.ErrorMessage))
@@ -31,6 +36,15 @@ namespace CustomNotes.Settings
             {
                 noteDescription.SetText(string.Empty);
             }
+
+            if (sizeSlider != null)
+            {
+                sizeSlider.ReceiveValue();
+            }
+            if (hmdCheckbox != null)
+            {
+                hmdCheckbox.ReceiveValue();
+            }
         }
 
         [Inject]
@@ -39,7 +53,6 @@ namespace CustomNotes.Settings
             _pluginConfig = pluginConfig;
             _listViewController = listViewController;
         }
-
 
         [UIValue("note-size")]
         public float noteSize
@@ -50,6 +63,14 @@ namespace CustomNotes.Settings
                 _pluginConfig.NoteSize = value;
                 _listViewController.ScalePreviewNotes(value);
             }
+        }
+
+        [UIValue("hmd-only")]
+        public bool hmdOnly 
+        {
+            get { return _pluginConfig.HMDOnly; }
+            set 
+            { _pluginConfig.HMDOnly = value; }
         }
     }
 }

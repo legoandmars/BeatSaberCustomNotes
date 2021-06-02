@@ -4,9 +4,11 @@ using IPA.Config;
 using IPA.Utilities;
 using SiraUtil.Zenject;
 using IPA.Config.Stores;
+using CustomNotes.HarmonyPatches;
 using CustomNotes.Installers;
 using CustomNotes.Settings.Utilities;
 using IPALogger = IPA.Logging.Logger;
+using System;
 
 namespace CustomNotes
 {
@@ -22,13 +24,26 @@ namespace CustomNotes
             Logger.log = logger;
             zenjector.OnApp<CustomNotesCoreInstaller>().WithParameters(config.Generated<PluginConfig>());
             zenjector.OnMenu<CustomNotesMenuInstaller>();
-            zenjector.OnGame<CustomNotesGameInstaller>().ShortCircuitForTutorial();
+            zenjector.OnGame<CustomNotesGameInstaller>(false).ShortCircuitForTutorial();
         }
 
-        [OnEnable, OnDisable]
-        public void OnState()
+        [OnEnable]
+        public void OnEnable()
         {
-            
+            try
+            {
+                CustomNotesPatches.ApplyHarmonyPatches();
+            }
+            catch
+            {
+                Logger.log.Warn("Camera Plus not detected, disabling CameraPlus harmony patch.");
+            }
+        }
+
+        [OnDisable]
+        public void OnDisable()
+        {
+            CustomNotesPatches.RemoveHarmonyPatches();
         }
     }
 }
