@@ -7,7 +7,7 @@ using SiraUtil.Objects;
 
 namespace CustomNotes.Managers
 {
-    internal class CustomBombController : MonoBehaviour, INoteControllerDidInitEvent
+    internal class CustomBombController : MonoBehaviour, INoteControllerDidInitEvent, INoteControllerNoteWasCutEvent, INoteControllerNoteWasMissedEvent, INoteControllerNoteDidDissolveEvent
     {
         private PluginConfig _pluginConfig;
 
@@ -33,23 +33,23 @@ namespace CustomNotes.Managers
             _bombNoteController = GetComponent<BombNoteController>();
             _noteMovement = GetComponent<NoteMovement>();
 
-            if(bombPool != null)
+            if (bombPool != null)
             {
                 _bombNoteController.didInitEvent.Add(this);
-                _noteMovement.noteDidFinishJumpEvent += DidFinish;
+                _bombNoteController.noteWasCutEvent.Add(this);
+                _bombNoteController.noteWasMissedEvent.Add(this);
+                _bombNoteController.noteDidDissolveEvent.Add(this);
             }
             
             bombMesh = gameObject.transform.Find("Mesh");
-            
-
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
 
-            if ((_pluginConfig.HMDOnly || LayerUtils.HMDOverride))
+            if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
             {
                 if(bombPool == null)
                 {
                     // create fake bombs for Custom Notes without Custom Bombs
-                    fakeFirstPersonBombMesh = UnityEngine.Object.Instantiate(bombMesh.gameObject);
+                    fakeFirstPersonBombMesh = Instantiate(bombMesh.gameObject);
                     fakeFirstPersonBombMesh.name = "FakeFirstPersonBomb";
                     fakeFirstPersonBombMesh.transform.parent = bombMesh;
 
@@ -64,8 +64,6 @@ namespace CustomNotes.Managers
             {
                 bm.enabled = false;
             }
-
-            
         }
 
         private void DidFinish()
@@ -110,8 +108,26 @@ namespace CustomNotes.Managers
             if (_bombNoteController != null)
             {
                 _bombNoteController.didInitEvent.Remove(this);
+                _bombNoteController.noteWasCutEvent.Remove(this);
+                _bombNoteController.noteWasMissedEvent.Remove(this);
+                _bombNoteController.noteDidDissolveEvent.Remove(this);
             }
             Destroy(fakeFirstPersonBombMesh);
+        }
+
+        public void HandleNoteControllerNoteDidDissolve(NoteController _)
+        {
+            DidFinish();
+        }
+
+        public void HandleNoteControllerNoteWasCut(NoteController _, in NoteCutInfo __)
+        {
+            DidFinish();
+        }
+
+        public void HandleNoteControllerNoteWasMissed(NoteController _)
+        {
+            DidFinish();
         }
     }
 }
