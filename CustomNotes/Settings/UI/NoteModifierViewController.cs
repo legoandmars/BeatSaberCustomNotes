@@ -8,7 +8,7 @@ using CustomNotes.Data;
 using System.Collections.Generic;
 using BeatSaberMarkupLanguage.Components.Settings;
 using System.Linq;
-using UnityEngine;
+using System.ComponentModel;
 
 namespace CustomNotes.Settings.UI
 {
@@ -16,7 +16,7 @@ namespace CustomNotes.Settings.UI
      * View Controller for the Custom Notes selection found under the Mods tab in the Modifiers View
      * Allows for hotswapping notes without going to main menu or leaving TA lobby
      */
-    class NoteModifierViewController : IInitializable, IDisposable
+    internal class NoteModifierViewController : IInitializable, IDisposable, INotifyPropertyChanged
     {
         private PluginConfig _pluginConfig;
         private NoteAssetLoader _noteAssetLoader;
@@ -27,17 +27,7 @@ namespace CustomNotes.Settings.UI
         [UIComponent("notes-dropdown")]
         private DropDownListSetting notesDropdown = null;
 
-        [UIComponent("notes-dropdown")]
-        private RectTransform notesDropdownTransform = null;
-
-        private RectTransform dropdownListTransform = null;
-
-        [UIComponent("size-slider")]
-        private SliderSetting sizeSlider = null;
-
-        [UIComponent("hmd-checkbox")]
-        private ToggleSetting hmdCheckbox = null;
-
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public NoteModifierViewController(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader)
         {
@@ -47,33 +37,20 @@ namespace CustomNotes.Settings.UI
 
         public void Initialize()
         {
-            GameplaySetup.instance.AddTab("Custom Notes", "CustomNotes.Settings.UI.Views.noteModifier.bsml", this);
             SetupList();
+            GameplaySetup.instance.AddTab("Custom Notes", "CustomNotes.Settings.UI.Views.noteModifier.bsml", this);
         }
 
         public void Dispose()
         {
-            GameplaySetup.instance.RemoveTab("Custom Notes");
+            GameplaySetup.instance?.RemoveTab("Custom Notes");
         }
 
         internal void ParentControllerActivated()
         {
-            if (dropdownListTransform == null)
-            {
-                dropdownListTransform = notesDropdownTransform.Find("DropdownTableView").GetComponent<RectTransform>();
-            }
             notesDropdown.ReceiveValue();
-            sizeSlider.ReceiveValue();
-            hmdCheckbox.ReceiveValue();
-        }
-
-        internal void ParentControllerDeactivated() // This is for fixing a weird bug with the dropdownlist
-        {
-            if (dropdownListTransform != null && notesDropdown != null)
-            {
-                dropdownListTransform.SetParent(notesDropdownTransform);
-                dropdownListTransform.gameObject.SetActive(false);
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(noteSize)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(hmdOnly)));
         }
 
         public void SetupList()
@@ -82,6 +59,12 @@ namespace CustomNotes.Settings.UI
             foreach (CustomNote note in _noteAssetLoader.CustomNoteObjects)
             {
                 notesList.Add(note.Descriptor.NoteName);
+            }
+
+            if (notesDropdown != null)
+            {
+                notesDropdown.values = notesList;
+                notesDropdown.UpdateChoices();
             }
         }
 
@@ -110,20 +93,22 @@ namespace CustomNotes.Settings.UI
         [UIValue("note-size")]
         public float noteSize
         {
-            get { return _pluginConfig.NoteSize; }
+            get => _pluginConfig.NoteSize;
             set
             {
                 _pluginConfig.NoteSize = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(noteSize)));
             }
         }
 
         [UIValue("hmd-only")]
         public bool hmdOnly
         {
-            get { return _pluginConfig.HMDOnly; }
+            get => _pluginConfig.HMDOnly;
             set
             {
                 _pluginConfig.HMDOnly = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(hmdOnly)));
             }
         }
     }
