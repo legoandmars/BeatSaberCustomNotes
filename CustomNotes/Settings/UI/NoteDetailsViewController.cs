@@ -33,6 +33,7 @@ namespace CustomNotes.Settings
 
             NotifyPropertyChanged(nameof(noteSize));
             NotifyPropertyChanged(nameof(hmdOnly));
+            NotifyPropertyChanged(nameof(autoDisable));
         }
 
         [Inject]
@@ -62,6 +63,17 @@ namespace CustomNotes.Settings
             { 
                 _pluginConfig.HMDOnly = value;
                 NotifyPropertyChanged(nameof(hmdOnly));
+            }
+        }
+
+        [UIValue("auto-disable")]
+        public bool autoDisable
+        {
+            get => _pluginConfig.AutoDisable;
+            set
+            {
+                _pluginConfig.AutoDisable = value;
+                NotifyPropertyChanged(nameof(autoDisable));
             }
         }
     }

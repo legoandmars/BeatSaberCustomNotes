@@ -51,6 +51,7 @@ namespace CustomNotes.Settings.UI
             notesDropdown.ReceiveValue();
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(noteSize)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(hmdOnly)));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(autoDisable)));
         }
 
         public void SetupList()
@@ -109,6 +110,17 @@ namespace CustomNotes.Settings.UI
             {
                 _pluginConfig.HMDOnly = value;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(hmdOnly)));
+            }
+        }
+
+        [UIValue("auto-disable")]
+        public bool autoDisable
+        {
+            get => _pluginConfig.AutoDisable;
+            set
+            {
+                _pluginConfig.AutoDisable = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(autoDisable)));
             }
         }
     }

@@ -29,6 +29,12 @@ namespace CustomNotes.Managers
         {
             if (_noteAssetLoader.SelectedNote != 0)
             {
+                if (_pluginConfig.AutoDisable && (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes || _gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows ||
+                    _gameplayCoreSceneSetupData.gameplayModifiers.smallCubes || Utils.IsNoodleMap(_level)))
+                {
+                    return;
+                }
+
                 CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
 
                 if (activeNote.NoteBomb != null)

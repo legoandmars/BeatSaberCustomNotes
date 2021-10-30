@@ -5,6 +5,7 @@ using SiraUtil.Objects;
 using SiraUtil.Interfaces;
 using CustomNotes.Managers;
 using CustomNotes.Utilities;
+using CustomNotes.Settings.Utilities;
 
 namespace CustomNotes.Providers
 {
@@ -19,9 +20,10 @@ namespace CustomNotes.Providers
             public bool CanSetup { get; private set; }
 
             [Inject]
-            public void Construct(NoteAssetLoader _noteAssetLoader, DiContainer Container, GameplayCoreSceneSetupData sceneSetupData)
+            public void Construct(PluginConfig pluginConfig, NoteAssetLoader _noteAssetLoader, DiContainer Container, GameplayCoreSceneSetupData sceneSetupData)
             {
-                CanSetup = !(sceneSetupData.gameplayModifiers.ghostNotes || sceneSetupData.gameplayModifiers.disappearingArrows) || !Container.HasBinding<MultiplayerLevelSceneSetupData>();
+                bool autoDisable = pluginConfig.AutoDisable && (sceneSetupData.gameplayModifiers.ghostNotes || sceneSetupData.gameplayModifiers.disappearingArrows || sceneSetupData.gameplayModifiers.smallCubes || Utils.IsNoodleMap(sceneSetupData.difficultyBeatmap));
+                CanSetup = !autoDisable && (!(sceneSetupData.gameplayModifiers.ghostNotes || sceneSetupData.gameplayModifiers.disappearingArrows) || !Container.HasBinding<MultiplayerLevelSceneSetupData>());
                 if (_noteAssetLoader.SelectedNote != 0)
                 {
                     var note = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
