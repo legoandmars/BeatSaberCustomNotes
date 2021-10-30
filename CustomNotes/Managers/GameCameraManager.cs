@@ -7,16 +7,19 @@ using Zenject;
 
 namespace CustomNotes.Managers
 {
-    public class GameCameraManager : IInitializable, IDisposable
+    public class GameCameraManager : IDisposable
     {
         public Camera MainCamera { get; private set; } = null;
 
         private PluginConfig _pluginConfig;
 
+        private bool _initialized;
+
         [Inject]
         internal GameCameraManager(PluginConfig pluginConfig)
         {
             _pluginConfig = pluginConfig;
+            _initialized = false;
         }
 
         public void Initialize()
@@ -28,15 +31,19 @@ namespace CustomNotes.Managers
                 LayerUtils.CreateWatermark();
                 LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.FirstPerson);
             }
+            _initialized = true;
         }
 
         public void Dispose()
         {
-            Logger.log.Debug($"Disposing {nameof(GameCameraManager)}!");
-            LayerUtils.DestroyWatermark();
-            if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
+            if (_initialized)
             {
-                LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.Default);
+                Logger.log.Debug($"Disposing {nameof(GameCameraManager)}!");
+                LayerUtils.DestroyWatermark();
+                if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
+                {
+                    LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.Default);
+                }
             }
         }
     }
