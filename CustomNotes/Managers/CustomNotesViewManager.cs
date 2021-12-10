@@ -4,7 +4,7 @@ using Zenject;
 
 namespace CustomNotes.Managers
 {
-    class CustomNotesViewManager : IInitializable, IDisposable
+    internal class CustomNotesViewManager : IInitializable, IDisposable
     {
         private NoteListViewController _noteListViewController;
         private NoteModifierViewController _noteModifierViewController;
@@ -21,14 +21,12 @@ namespace CustomNotes.Managers
         {
             _noteListViewController.customNotesReloaded += NoteListViewController_CustomNotesReloaded;
             _gameplaySetupViewController.didActivateEvent += GameplaySetupViewController_DidActivateEvent;
-            _gameplaySetupViewController.didDeactivateEvent += GameplaySetupViewController_DidDeactivateEvent; 
         }
 
         public void Dispose()
         {
             _noteListViewController.customNotesReloaded -= NoteListViewController_CustomNotesReloaded;
             _gameplaySetupViewController.didActivateEvent -= GameplaySetupViewController_DidActivateEvent;
-            _gameplaySetupViewController.didDeactivateEvent -= GameplaySetupViewController_DidDeactivateEvent;
         }
 
         private void NoteListViewController_CustomNotesReloaded()
@@ -39,11 +37,6 @@ namespace CustomNotes.Managers
         private void GameplaySetupViewController_DidActivateEvent(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
         {
             _noteModifierViewController.ParentControllerActivated();
-        }
-
-        private void GameplaySetupViewController_DidDeactivateEvent(bool removedFromHierarchy, bool screenSystemDisabling)
-        {
-            _noteModifierViewController.ParentControllerDeactivated();
         }
     }
 }

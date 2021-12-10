@@ -20,12 +20,6 @@ namespace CustomNotes.Settings
         [UIComponent("note-description")]
         public TextPageScrollView noteDescription = null;
 
-        [UIComponent("size-slider")]
-        private SliderSetting sizeSlider = null;
-
-        [UIComponent("hmd-checkbox")]
-        private ToggleSetting hmdCheckbox = null;
-
         public void OnNoteWasChanged(CustomNote customNote)
         {
             if (string.IsNullOrWhiteSpace(customNote.ErrorMessage))
@@ -37,14 +31,9 @@ namespace CustomNotes.Settings
                 noteDescription.SetText(string.Empty);
             }
 
-            if (sizeSlider != null)
-            {
-                sizeSlider.ReceiveValue();
-            }
-            if (hmdCheckbox != null)
-            {
-                hmdCheckbox.ReceiveValue();
-            }
+            NotifyPropertyChanged(nameof(noteSize));
+            NotifyPropertyChanged(nameof(hmdOnly));
+            NotifyPropertyChanged(nameof(autoDisable));
         }
 
         [Inject]
@@ -57,20 +46,35 @@ namespace CustomNotes.Settings
         [UIValue("note-size")]
         public float noteSize
         {
-            get { return _pluginConfig.NoteSize; }
+            get => _pluginConfig.NoteSize;
             set 
             { 
                 _pluginConfig.NoteSize = value;
                 _listViewController.ScalePreviewNotes(value);
+                NotifyPropertyChanged(nameof(noteSize));
             }
         }
 
         [UIValue("hmd-only")]
         public bool hmdOnly 
         {
-            get { return _pluginConfig.HMDOnly; }
+            get => _pluginConfig.HMDOnly;
             set 
-            { _pluginConfig.HMDOnly = value; }
+            { 
+                _pluginConfig.HMDOnly = value;
+                NotifyPropertyChanged(nameof(hmdOnly));
+            }
+        }
+
+        [UIValue("auto-disable")]
+        public bool autoDisable
+        {
+            get => _pluginConfig.AutoDisable;
+            set
+            {
+                _pluginConfig.AutoDisable = value;
+                NotifyPropertyChanged(nameof(autoDisable));
+            }
         }
     }
 }

@@ -12,14 +12,16 @@ namespace CustomNotes.Managers
     internal class CustomNoteManager : IInitializable
     {
         private readonly Submission _submission;
+        private readonly GameCameraManager _gameCameraManager;
         private readonly NoteAssetLoader _noteAssetLoader;
         private readonly GameplayCoreSceneSetupData _gameplayCoreSceneSetupData;
         private readonly PluginConfig _pluginConfig;
         private readonly IDifficultyBeatmap _level;
 
-        internal CustomNoteManager([InjectOptional] Submission submission, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData, PluginConfig pluginConfig, IDifficultyBeatmap level)
+        internal CustomNoteManager([InjectOptional] Submission submission, GameCameraManager gameCameraManager, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData, PluginConfig pluginConfig, IDifficultyBeatmap level)
         {
             _submission = submission;
+            _gameCameraManager = gameCameraManager;
             _noteAssetLoader = noteAssetLoader;
             _gameplayCoreSceneSetupData = gameplayCoreSceneSetupData;
             _pluginConfig = pluginConfig;
@@ -29,6 +31,12 @@ namespace CustomNotes.Managers
         {
             if (_noteAssetLoader.SelectedNote != 0)
             {
+                if (_pluginConfig.AutoDisable && (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes || _gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows ||
+                    _gameplayCoreSceneSetupData.gameplayModifiers.smallCubes || Utils.IsNoodleMap(_level)))
+                {
+                    return;
+                }
+
                 CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
 
                 if (activeNote.NoteBomb != null)
@@ -52,6 +60,8 @@ namespace CustomNotes.Managers
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Noodle Extensions");
                 }
+
+                _gameCameraManager.Initialize();
             }
         }
     }
