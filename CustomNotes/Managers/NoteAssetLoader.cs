@@ -1,12 +1,11 @@
-﻿using System;
-using Zenject;
+﻿using CustomNotes.Data;
+using CustomNotes.Settings.Utilities;
+using CustomNotes.Utilities;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using CustomNotes.Data;
-using CustomNotes.Providers;
-using CustomNotes.Utilities;
-using System.Collections.Generic;
-using CustomNotes.Settings.Utilities;
+using Zenject;
 
 namespace CustomNotes.Managers
 {
@@ -19,34 +18,17 @@ namespace CustomNotes.Managers
         public int SelectedNote
         {
             get => _selectedNote;
-            set
-            {
-                _selectedNote = value;
-                if (_selectedNote == 0)
-                {
-                    _customGameNoteProvider.Priority = -1;
-                    _customBombNoteProvider.Priority = -1;
-                }
-                else
-                {
-                    _customGameNoteProvider.Priority = 300;
-                    _customBombNoteProvider.Priority = 300;
-                }
-            }
+            set => _selectedNote = value;
         }
 
         public IList<CustomNote> CustomNoteObjects { get; private set; }
         public IEnumerable<string> CustomNoteFiles { get; private set; } = Enumerable.Empty<string>();
 
         private int _selectedNote = 0;
-        private readonly CustomGameNoteProvider _customGameNoteProvider;
-        private readonly CustomBombNoteProvider _customBombNoteProvider;
 
-        internal NoteAssetLoader(PluginConfig pluginConfig, CustomGameNoteProvider customGameNoteProvider, CustomBombNoteProvider customBombNoteProvider)
+        internal NoteAssetLoader(PluginConfig pluginConfig)
         {
             _pluginConfig = pluginConfig;
-            _customGameNoteProvider = customGameNoteProvider;
-            _customBombNoteProvider = customBombNoteProvider;
         }
 
         /// <summary>

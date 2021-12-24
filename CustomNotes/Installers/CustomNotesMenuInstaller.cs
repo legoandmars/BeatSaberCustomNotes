@@ -1,8 +1,7 @@
-﻿using Zenject;
-using SiraUtil;
-using CustomNotes.Managers;
+﻿using CustomNotes.Managers;
 using CustomNotes.Settings;
 using CustomNotes.Settings.UI;
+using Zenject;
 
 namespace CustomNotes.Installers
 {
@@ -10,16 +9,13 @@ namespace CustomNotes.Installers
     {
         public override void InstallBindings()
         {
-
-
             Container.Bind<NotePreviewViewController>().FromNewComponentAsViewController().AsSingle();
             Container.Bind<NoteDetailsViewController>().FromNewComponentAsViewController().AsSingle();
             Container.Bind<NoteListViewController>().FromNewComponentAsViewController().AsSingle();
-            Container.BindInterfacesAndSelfTo<NoteModifierViewController>().AsSingle();
             Container.Bind<NotesFlowCoordinator>().FromNewComponentOnNewGameObject().AsSingle();
-
-            Container.BindInterfacesTo<MenuButtonManager>().AsSingle();
+            Container.BindInterfacesAndSelfTo<NoteModifierViewController>().AsSingle();
             Container.BindInterfacesTo<CustomNotesViewManager>().AsSingle();
+            Container.BindInterfacesTo<MenuButtonManager>().AsSingle();
         }
     }
 }

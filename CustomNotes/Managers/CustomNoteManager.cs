@@ -1,38 +1,35 @@
-﻿using Zenject;
-using CustomNotes.Data;
-using SiraUtil.Services;
-using CustomNotes.Utilities;
-using System;
+﻿using CustomNotes.Data;
 using CustomNotes.Settings.Utilities;
-using IPA.Loader;
-using System.Linq;
+using CustomNotes.Utilities;
+using SiraUtil.Submissions;
+using Zenject;
 
 namespace CustomNotes.Managers
 {
     internal class CustomNoteManager : IInitializable
     {
         private readonly Submission _submission;
-        private readonly GameCameraManager _gameCameraManager;
-        private readonly NoteAssetLoader _noteAssetLoader;
-        private readonly GameplayCoreSceneSetupData _gameplayCoreSceneSetupData;
         private readonly PluginConfig _pluginConfig;
-        private readonly IDifficultyBeatmap _level;
+        private readonly NoteAssetLoader _noteAssetLoader;
+        private readonly GameCameraManager _gameCameraManager;
+        private readonly IDifficultyBeatmap _difficultyBeatmap;
+        private readonly GameplayCoreSceneSetupData _gameplayCoreSceneSetupData;
 
-        internal CustomNoteManager([InjectOptional] Submission submission, GameCameraManager gameCameraManager, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData, PluginConfig pluginConfig, IDifficultyBeatmap level)
+        internal CustomNoteManager([InjectOptional] Submission submission, PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, GameCameraManager gameCameraManager, IDifficultyBeatmap difficultyBeatmap, GameplayCoreSceneSetupData gameplayCoreSceneSetupData)
         {
             _submission = submission;
-            _gameCameraManager = gameCameraManager;
-            _noteAssetLoader = noteAssetLoader;
-            _gameplayCoreSceneSetupData = gameplayCoreSceneSetupData;
             _pluginConfig = pluginConfig;
-            _level = level;
+            _noteAssetLoader = noteAssetLoader;
+            _gameCameraManager = gameCameraManager;
+            _difficultyBeatmap = difficultyBeatmap;
+            _gameplayCoreSceneSetupData = gameplayCoreSceneSetupData;
         }
         public void Initialize()
         {
             if (_noteAssetLoader.SelectedNote != 0)
             {
                 if (_pluginConfig.AutoDisable && (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes || _gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows ||
-                    _gameplayCoreSceneSetupData.gameplayModifiers.smallCubes || Utils.IsNoodleMap(_level)))
+                    _gameplayCoreSceneSetupData.gameplayModifiers.smallCubes || Utils.IsNoodleMap(_difficultyBeatmap)))
                 {
                     return;
                 }
@@ -56,7 +53,7 @@ namespace CustomNotes.Managers
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Small Notes");
                 }
-                if (Utils.IsNoodleMap(_level))
+                if (Utils.IsNoodleMap(_difficultyBeatmap))
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Noodle Extensions");
                 }

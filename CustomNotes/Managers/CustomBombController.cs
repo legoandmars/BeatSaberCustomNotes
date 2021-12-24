@@ -40,13 +40,13 @@ namespace CustomNotes.Managers
                 _bombNoteController.noteWasMissedEvent.Add(this);
                 _bombNoteController.noteDidDissolveEvent.Add(this);
             }
-            
+
             bombMesh = gameObject.transform.Find("Mesh");
             MeshRenderer bm = GetComponentInChildren<MeshRenderer>();
 
             if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
             {
-                if(bombPool == null)
+                if (bombPool == null)
                 {
                     // create fake bombs for Custom Notes without Custom Bombs
                     fakeFirstPersonBombMesh = Instantiate(bombMesh.gameObject);
@@ -58,7 +58,7 @@ namespace CustomNotes.Managers
                     fakeFirstPersonBombMesh.transform.rotation = Quaternion.identity;
                     fakeFirstPersonBombMesh.layer = (int)LayerUtils.NoteLayer.FirstPerson;
                 }
-                
+
             }
             else if (bombPool != null)
             {
@@ -68,6 +68,7 @@ namespace CustomNotes.Managers
 
         private void DidFinish()
         {
+            container.Prefab.SetActive(false);
             container.transform.SetParent(null);
             bombPool.Despawn(container);
         }
@@ -90,6 +91,7 @@ namespace CustomNotes.Managers
         private void SpawnThenParent(SiraPrefabContainer.Pool bombModelPool)
         {
             container = bombModelPool.Spawn();
+            container.Prefab.SetActive(true);
             activeNote = container.Prefab;
             bombPool = bombModelPool;
             if (_pluginConfig.HMDOnly == true || LayerUtils.HMDOverride == true)
