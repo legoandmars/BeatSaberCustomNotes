@@ -51,12 +51,12 @@ namespace CustomNotes.Installers
                 Utils.AddMaterialPropertyBlockController(note.NoteDotLeft);
                 Utils.AddMaterialPropertyBlockController(note.NoteDotRight);
 
-                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.left.arrow").WithInitialSize(25).FromComponentInNewPrefab(NotePrefabContainer(note.NoteLeft));
-                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.right.arrow").WithInitialSize(25).FromComponentInNewPrefab(NotePrefabContainer(note.NoteRight));
+                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.LeftArrowPool).WithInitialSize(25).FromComponentInNewPrefab(NotePrefabContainer(note.NoteLeft));
+                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.RightArrowPool).WithInitialSize(25).FromComponentInNewPrefab(NotePrefabContainer(note.NoteRight));
                 if (note.NoteDotLeft != null)
-                    Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.left.dot").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteDotLeft));
+                    Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.LeftDotPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteDotLeft));
                 if (note.NoteDotRight != null)
-                    Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.right.dot").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteDotRight));
+                    Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.RightDotPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteDotRight));
 
                 #endregion
 
@@ -66,7 +66,7 @@ namespace CustomNotes.Installers
                 {
                     MaterialSwapper.GetMaterials();
                     MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteBomb);
-                    Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId("cn.bomb").WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteBomb));
+                    Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.BombPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteBomb));
                 }
 
                 #endregion

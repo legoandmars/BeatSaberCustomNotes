@@ -23,7 +23,7 @@ namespace CustomNotes.Managers
         protected SiraPrefabContainer.Pool bombPool;
 
         [Inject]
-        internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [InjectOptional(Id = "cn.bomb")] SiraPrefabContainer.Pool bombContainerPool)
+        internal void Init(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, [InjectOptional(Id = Protocol.BombPool)] SiraPrefabContainer.Pool bombContainerPool)
         {
             _pluginConfig = pluginConfig;
 
