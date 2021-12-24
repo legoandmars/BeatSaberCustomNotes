@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using BeatSaberMarkupLanguage.Components.Settings;
 using System.Linq;
 using System.ComponentModel;
+using BeatSaberMarkupLanguage;
 
 namespace CustomNotes.Settings.UI
 {
@@ -43,7 +44,8 @@ namespace CustomNotes.Settings.UI
 
         public void Dispose()
         {
-            GameplaySetup.instance?.RemoveTab("Custom Notes");
+            if (GameplaySetup.IsSingletonAvailable && BSMLParser.IsSingletonAvailable)
+                GameplaySetup.instance.RemoveTab("Custom Notes");
         }
 
         internal void ParentControllerActivated()
@@ -81,7 +83,7 @@ namespace CustomNotes.Settings.UI
         [UIValue("selected-note")]
         private string selectedNote
         {
-            get 
+            get
             {
                 if (_noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote].ErrorMessage != null) // Only select if valid bloq is loaded
                 {
