@@ -10,6 +10,7 @@ using UnityEngine;
 using CustomNotes.Data;
 using System.Reflection;
 using CustomNotes.Overrides;
+using CustomNotes.Redecorators;
 
 namespace CustomNotes.Installers
 {
@@ -20,6 +21,8 @@ namespace CustomNotes.Installers
         private readonly GameplayCoreSceneSetupData _gameplayCoreSceneSetupData;
 
         private bool _shouldSetup;
+
+        private const int DECORATION_PRIORITY = 300;
 
         public CustomNotesGameInstaller(PluginConfig pluginConfig, NoteAssetLoader noteAssetLoader, GameplayCoreSceneSetupData gameplayCoreSceneSetupData)
         {
@@ -40,7 +43,7 @@ namespace CustomNotes.Installers
 
                 #region Note Setup
 
-                Container.RegisterRedecorator(new BasicNoteRegistration(DecorateNote, 300));
+                Container.RegisterRedecorator(new BasicNoteRegistration(DecorateNote, DECORATION_PRIORITY));
                 MaterialSwapper.GetMaterials();
                 MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteLeft);
                 MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteRight);
@@ -67,6 +70,7 @@ namespace CustomNotes.Installers
                     MaterialSwapper.GetMaterials();
                     MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteBomb);
                     Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.BombPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteBomb));
+                    Container.RegisterRedecorator(new BombNoteRegistration(DecorateBombs, DECORATION_PRIORITY));
                 }
 
                 #endregion
