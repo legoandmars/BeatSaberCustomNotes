@@ -145,7 +145,6 @@
     <Compile Include="Managers\CustomNoteManager.cs" />
     <Compile Include="Overrides\CustomNoteColorNoteVisuals.cs" />
     <Compile Include="Protocol.cs" />
-    <Compile Include="Redecorators\BombNoteRegistration.cs" />
     <Compile Include="Settings\UI\NoteDetailsViewController.cs" />
     <Compile Include="Settings\UI\NoteModifierViewController.cs" />
     <Compile Include="Settings\UI\NotePreviewViewController.cs" />

@@ -1,16 +1,14 @@
-﻿using Zenject;
+﻿using CustomNotes.Data;
 using CustomNotes.Managers;
-using SiraUtil.Extras;
-using SiraUtil.Objects.Beatmap;
-using System;
+using CustomNotes.Overrides;
 using CustomNotes.Settings.Utilities;
 using CustomNotes.Utilities;
+using SiraUtil.Extras;
 using SiraUtil.Objects;
-using UnityEngine;
-using CustomNotes.Data;
+using SiraUtil.Objects.Beatmap;
 using System.Reflection;
-using CustomNotes.Overrides;
-using CustomNotes.Redecorators;
+using UnityEngine;
+using Zenject;
 
 namespace CustomNotes.Installers
 {
