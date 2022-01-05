@@ -28,17 +28,17 @@ namespace CustomNotes.Managers
         {
             if (_noteAssetLoader.SelectedNote != 0)
             {
-                if (_pluginConfig.AutoDisable && (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes || _gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows ||
-                    _gameplayCoreSceneSetupData.gameplayModifiers.smallCubes || Utils.IsNoodleMap(_difficultyBeatmap)))
-                {
-                    return;
-                }
-
                 CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
 
                 if (activeNote.NoteBomb != null)
                 {
                     MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
+                }
+
+                if (_pluginConfig.AutoDisable && (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes || _gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows ||
+                    _gameplayCoreSceneSetupData.gameplayModifiers.smallCubes || Utils.IsNoodleMap(_difficultyBeatmap)))
+                {
+                    return;
                 }
 
                 if (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes)
@@ -57,8 +57,6 @@ namespace CustomNotes.Managers
                 {
                     _submission?.DisableScoreSubmission("Custom Notes", "Noodle Extensions");
                 }
-
-                _gameCameraManager.Initialize();
             }
         }
     }

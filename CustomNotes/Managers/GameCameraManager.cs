@@ -1,25 +1,21 @@
 ﻿using CustomNotes.Settings.Utilities;
 using CustomNotes.Utilities;
 using System;
-using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 
 namespace CustomNotes.Managers
 {
-    public class GameCameraManager : IDisposable
+    public class GameCameraManager : IInitializable, IDisposable
     {
         public Camera MainCamera { get; private set; } = null;
 
         private PluginConfig _pluginConfig;
 
-        private bool _initialized;
-
         [Inject]
         internal GameCameraManager(PluginConfig pluginConfig)
         {
             _pluginConfig = pluginConfig;
-            _initialized = false;
         }
 
         public void Initialize()
@@ -31,19 +27,15 @@ namespace CustomNotes.Managers
                 LayerUtils.CreateWatermark();
                 LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.FirstPerson);
             }
-            _initialized = true;
         }
 
         public void Dispose()
         {
-            if (_initialized)
+            Logger.log.Debug($"Disposing {nameof(GameCameraManager)}!");
+            LayerUtils.DestroyWatermark();
+            if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
             {
-                Logger.log.Debug($"Disposing {nameof(GameCameraManager)}!");
-                LayerUtils.DestroyWatermark();
-                if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
-                {
-                    LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.Default);
-                }
+                LayerUtils.SetCamera(MainCamera, LayerUtils.CameraView.Default);
             }
         }
     }
