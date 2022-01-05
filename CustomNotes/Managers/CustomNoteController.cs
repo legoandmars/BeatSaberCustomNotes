@@ -27,15 +27,19 @@ namespace CustomNotes.Managers
         private SiraPrefabContainer.Pool _leftArrowNotePool;
         private SiraPrefabContainer.Pool _rightArrowNotePool;
 
-        public Color Color => _customNoteColorNoteVisuals != null ? _customNoteColorNoteVisuals.noteColor : Color.white;
+        public Color Color
+        {
+            get => _customNoteColorNoteVisuals != null ? _customNoteColorNoteVisuals.noteColor : Color.white;
+            set => SetColor(value);
+        }
 
         [Inject]
         internal void Init(PluginConfig pluginConfig,
             NoteAssetLoader noteAssetLoader,
-            [Inject(Id = "cn.left.arrow")] SiraPrefabContainer.Pool leftArrowNotePool,
-            [Inject(Id = "cn.right.arrow")] SiraPrefabContainer.Pool rightArrowNotePool,
-            [InjectOptional(Id = "cn.left.dot")] SiraPrefabContainer.Pool leftDotNotePool,
-            [InjectOptional(Id = "cn.right.dot")] SiraPrefabContainer.Pool rightDotNotePool)
+            [Inject(Id = Protocol.LeftArrowPool)] SiraPrefabContainer.Pool leftArrowNotePool,
+            [Inject(Id = Protocol.RightArrowPool)] SiraPrefabContainer.Pool rightArrowNotePool,
+            [InjectOptional(Id = Protocol.LeftDotPool)] SiraPrefabContainer.Pool leftDotNotePool,
+            [InjectOptional(Id = Protocol.RightDotPool)] SiraPrefabContainer.Pool rightDotNotePool)
         {
             _pluginConfig = pluginConfig;
             _leftArrowNotePool = leftArrowNotePool;
@@ -47,7 +51,8 @@ namespace CustomNotes.Managers
             _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
 
             _gameNoteController = GetComponent<GameNoteController>();
-            _customNoteColorNoteVisuals = gameObject.AddComponent<CustomNoteColorNoteVisuals>();
+            _customNoteColorNoteVisuals = gameObject.GetComponent<CustomNoteColorNoteVisuals>();
+            _customNoteColorNoteVisuals.enabled = true;
 
             _gameNoteController.didInitEvent.Add(this);
             _gameNoteController.noteWasCutEvent.Add(this);
@@ -65,7 +70,7 @@ namespace CustomNotes.Managers
             }
             else
             {
-                noteMesh.gameObject.layer = (int) LayerUtils.NoteLayer.ThirdPerson;
+                noteMesh.gameObject.layer = (int)LayerUtils.NoteLayer.ThirdPerson;
             }
         }
 
@@ -79,6 +84,7 @@ namespace CustomNotes.Managers
                 case ColorType.ColorB:
                     if (container != null)
                     {
+                        container.Prefab.SetActive(false);
                         activePool?.Despawn(container);
                         container = null;
                     }
@@ -108,6 +114,7 @@ namespace CustomNotes.Managers
         private void SpawnThenParent(SiraPrefabContainer.Pool noteModelPool)
         {
             container = noteModelPool.Spawn();
+            container.Prefab.SetActive(true);
             activeNote = container.Prefab;
             activePool = noteModelPool;
             if (_pluginConfig.HMDOnly == true || LayerUtils.HMDOverride == true)
@@ -134,7 +141,7 @@ namespace CustomNotes.Managers
         {
             SetActiveThenColor(activeNote, (visuals as CustomNoteColorNoteVisuals).noteColor);
             // Hide certain parts of the default note which is not required
-            if(_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
+            if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {
                 _customNoteColorNoteVisuals.SetBaseGameVisualsLayer((int)LayerUtils.NoteLayer.Note);
                 if (_customNote.Descriptor.DisableBaseNoteArrows)

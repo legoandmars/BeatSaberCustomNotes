@@ -9,9 +9,7 @@
     <text id='openedText' text='Opened in browser!'></text>
   </vertical>
   <vertical pad-left='50'>
-    <page-button event-click='noteList#PageUp' direction='Up' />
-    <list id='noteList' expand-cell='true' select-cell='noteSelect' />
-    <page-button event-click='noteList#PageDown' direction='Down' />
+    <list id='noteList' expand-cell='true' select-cell='noteSelect' stick-scrolling='true' show-scrollbar='true' />
   </vertical>
   <vertical child-control-height='false' horizontal-fit='PreferredSize'>
     <button text='Reload all notes' on-click='reloadNotes' pref-width='27.5'/>

@@ -1,14 +1,14 @@
-﻿using IPA;
-using System.IO;
-using IPA.Config;
-using IPA.Utilities;
-using SiraUtil.Zenject;
-using IPA.Config.Stores;
-using CustomNotes.HarmonyPatches;
+﻿using CustomNotes.HarmonyPatches;
 using CustomNotes.Installers;
 using CustomNotes.Settings.Utilities;
+using CustomNotes.Utilities;
+using IPA;
+using IPA.Config;
+using IPA.Config.Stores;
+using IPA.Utilities;
+using SiraUtil.Zenject;
+using System.IO;
 using IPALogger = IPA.Logging.Logger;
-using System;
 
 namespace CustomNotes
 {
@@ -22,9 +22,13 @@ namespace CustomNotes
         public Plugin(IPALogger logger, Config config, Zenjector zenjector)
         {
             Logger.log = logger;
-            zenjector.OnApp<CustomNotesCoreInstaller>().WithParameters(config.Generated<PluginConfig>());
-            zenjector.OnMenu<CustomNotesMenuInstaller>();
-            zenjector.OnGame<CustomNotesGameInstaller>(false).ShortCircuitForTutorial();
+
+            PluginConfig pluginConfig = config.Generated<PluginConfig>();
+            LayerUtils.pluginConfig = pluginConfig;
+            zenjector.Install(Location.App, Container => Container.BindInstance(pluginConfig).AsSingle());
+            zenjector.Install<CustomNotesCoreInstaller>(Location.App);
+            zenjector.Install<CustomNotesMenuInstaller>(Location.Menu);
+            zenjector.Install<CustomNotesGameInstaller>(Location.Player);
         }
 
         [OnEnable]

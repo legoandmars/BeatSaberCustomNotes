@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using BeatSaberMarkupLanguage.Components.Settings;
 using System.Linq;
 using System.ComponentModel;
+using BeatSaberMarkupLanguage;
 
 namespace CustomNotes.Settings.UI
 {
@@ -43,12 +44,14 @@ namespace CustomNotes.Settings.UI
 
         public void Dispose()
         {
-            GameplaySetup.instance?.RemoveTab("Custom Notes");
+            if (GameplaySetup.IsSingletonAvailable && BSMLParser.IsSingletonAvailable)
+                GameplaySetup.instance.RemoveTab("Custom Notes");
         }
 
         internal void ParentControllerActivated()
         {
             notesDropdown.ReceiveValue();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(modEnabled)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(noteSize)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(hmdOnly)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(autoDisable)));
@@ -77,11 +80,21 @@ namespace CustomNotes.Settings.UI
             _pluginConfig.LastNote = _noteAssetLoader.CustomNoteObjects[selectedNote].FileName;
         }
 
+        [UIValue("mod-enabled")]
+        public bool modEnabled
+        {
+            get => _pluginConfig.Enabled;
+            set
+            {
+                _pluginConfig.Enabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(modEnabled)));
+            }
+        }
 
         [UIValue("selected-note")]
         private string selectedNote
         {
-            get 
+            get
             {
                 if (_noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote].ErrorMessage != null) // Only select if valid bloq is loaded
                 {

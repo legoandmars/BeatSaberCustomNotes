@@ -11,7 +11,7 @@ To change which note model is used, simply select a different note in the Custom
 ## Notice
 While a custom note is being used AND you are either playing with the "Ghost Notes" or "Disappearing Arrows" modifier turned on, score submission will be temporarily disabled.
 
-By switching to the default notes or turning off these modifiers, score submission will be re-enabled. No need for a game restart!
+By switching to the default notes, enabling "Auto Disable Custom Notes" or turning off these modifiers, score submission will be re-enabled. No need for a game restart!
 ## For modelers
 The Unity Project to create custom notes can be found [here](https://github.com/legoandmars/CustomNotesUnityProject)
 
