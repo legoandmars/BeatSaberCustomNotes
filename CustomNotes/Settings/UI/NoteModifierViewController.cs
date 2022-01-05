@@ -51,6 +51,7 @@ namespace CustomNotes.Settings.UI
         internal void ParentControllerActivated()
         {
             notesDropdown.ReceiveValue();
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(modEnabled)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(noteSize)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(hmdOnly)));
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(autoDisable)));
@@ -79,6 +80,16 @@ namespace CustomNotes.Settings.UI
             _pluginConfig.LastNote = _noteAssetLoader.CustomNoteObjects[selectedNote].FileName;
         }
 
+        [UIValue("mod-enabled")]
+        public bool modEnabled
+        {
+            get => _pluginConfig.Enabled;
+            set
+            {
+                _pluginConfig.Enabled = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(modEnabled)));
+            }
+        }
 
         [UIValue("selected-note")]
         private string selectedNote

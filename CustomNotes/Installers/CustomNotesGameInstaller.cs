@@ -33,7 +33,7 @@ namespace CustomNotes.Installers
         {
             bool autoDisable = _pluginConfig.AutoDisable && (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes || _gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows || _gameplayCoreSceneSetupData.gameplayModifiers.smallCubes || Utils.IsNoodleMap(_gameplayCoreSceneSetupData.difficultyBeatmap));
             _shouldSetup = !autoDisable && (!(_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes || _gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows) || !Container.HasBinding<MultiplayerLevelSceneSetupData>());
-            if (_noteAssetLoader.SelectedNote != 0 && _shouldSetup)
+            if (_pluginConfig.Enabled && _noteAssetLoader.SelectedNote != 0 && _shouldSetup)
             {
                 Container.BindInterfacesAndSelfTo<GameCameraManager>().AsSingle();
                 Container.Bind<IInitializable>().To<CustomNoteManager>().AsSingle();

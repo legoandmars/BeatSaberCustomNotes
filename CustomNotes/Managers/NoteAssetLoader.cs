@@ -15,6 +15,8 @@ namespace CustomNotes.Managers
 
         public bool IsLoaded { get; private set; }
 
+        public bool Enabled => _pluginConfig.Enabled;
+
         public int SelectedNote
         {
             get => _selectedNote;

@@ -31,6 +31,7 @@ namespace CustomNotes.Settings
                 noteDescription.SetText(string.Empty);
             }
 
+            NotifyPropertyChanged(nameof(modEnabled));
             NotifyPropertyChanged(nameof(noteSize));
             NotifyPropertyChanged(nameof(hmdOnly));
             NotifyPropertyChanged(nameof(autoDisable));
@@ -41,6 +42,17 @@ namespace CustomNotes.Settings
         {
             _pluginConfig = pluginConfig;
             _listViewController = listViewController;
+        }
+
+        [UIValue("mod-enabled")]
+        public bool modEnabled
+        {
+            get => _pluginConfig.Enabled;
+            set
+            {
+                _pluginConfig.Enabled = value;
+                NotifyPropertyChanged(nameof(modEnabled));
+            }
         }
 
         [UIValue("note-size")]
