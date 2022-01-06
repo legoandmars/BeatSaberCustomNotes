@@ -63,12 +63,13 @@ namespace CustomNotes.Installers
 
                 #region Bomb Setup
 
+                Container.RegisterRedecorator(new BombNoteRegistration(DecorateBombs, DECORATION_PRIORITY));
+
                 if (note.NoteBomb != null)
                 {
                     MaterialSwapper.GetMaterials();
                     MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteBomb);
                     Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.BombPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.NoteBomb));
-                    Container.RegisterRedecorator(new BombNoteRegistration(DecorateBombs, DECORATION_PRIORITY));
                 }
 
                 #endregion
