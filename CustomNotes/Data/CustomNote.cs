@@ -15,6 +15,13 @@ namespace CustomNotes.Data
         public GameObject NoteDotLeft { get; }
         public GameObject NoteDotRight { get; }
         public GameObject NoteBomb { get; }
+        public GameObject BurstSliderLeft { get; }
+        public GameObject BurstSliderRight { get; }
+        public GameObject BurstSliderHeadLeft { get; }
+        public GameObject BurstSliderHeadRight { get; }
+        public GameObject BurstSliderHeadDotLeft { get; }
+        public GameObject BurstSliderHeadDotRight { get; }
+
         public string ErrorMessage { get; } = string.Empty;
 
         public CustomNote(string fileName)
@@ -38,6 +45,47 @@ namespace CustomNotes.Data
                     NoteDotLeft = NoteDotLeftTransform != null ? NoteDotLeftTransform.gameObject : NoteLeft;
                     NoteDotRight = NoteDotRightTransform != null ? NoteDotRightTransform.gameObject : NoteRight;
                     NoteBomb = note.transform.Find("NoteBomb")?.gameObject;
+
+                    // burst slider stuff
+                    Transform BurstSliderLeftTransform = note.transform.Find("BurstSliderLeft");
+                    if (BurstSliderLeftTransform == null)
+                    {
+                        BurstSliderLeft = new GameObject();
+                        GameObject innerBurstSliderLeft = UnityEngine.Object.Instantiate(NoteDotLeft);
+                        innerBurstSliderLeft.transform.SetParent(BurstSliderLeft.transform);
+                        innerBurstSliderLeft.transform.localPosition = Vector3.zero;
+                        innerBurstSliderLeft.transform.localScale = new Vector3(
+                            innerBurstSliderLeft.transform.localScale.x,
+                            innerBurstSliderLeft.transform.localScale.y / 4,
+                            innerBurstSliderLeft.transform.localScale.z);
+                        BurstSliderLeft.SetActive(false);
+                    }
+                    else BurstSliderLeft = BurstSliderLeftTransform.gameObject;
+
+                    Transform BurstSliderRightTransform = note.transform.Find("BurstSliderRight");
+                    if (BurstSliderRightTransform == null)
+                    {
+                        BurstSliderRight = new GameObject();
+                        GameObject innerBurstSliderRight = UnityEngine.Object.Instantiate(NoteDotRight);
+                        innerBurstSliderRight.transform.SetParent(BurstSliderRight.transform);
+                        innerBurstSliderRight.transform.localPosition = Vector3.zero;
+                        innerBurstSliderRight.transform.localScale = new Vector3(
+                            innerBurstSliderRight.transform.localScale.x,
+                            innerBurstSliderRight.transform.localScale.y / 4,
+                            innerBurstSliderRight.transform.localScale.z);
+                        BurstSliderRight.SetActive(false);
+                    }
+                    else BurstSliderRight = BurstSliderRightTransform.gameObject;
+
+                    // burst slider head stuff
+                    Transform BurstSliderHeadLeftTransform = note.transform.Find("BurstSliderHeadLeft");
+                    Transform BurstSliderHeadRightTransform = note.transform.Find("BurstSliderHeadRight");
+                    Transform BurstSliderHeadDotLeftTransform = note.transform.Find("BurstSliderHeadDotLeft");
+                    Transform BurstSliderHeadDotRightTransform = note.transform.Find("BurstSliderHeadDotRight");
+                    BurstSliderHeadLeft = BurstSliderHeadLeftTransform != null ? BurstSliderHeadLeftTransform.gameObject : NoteLeft;
+                    BurstSliderHeadRight = BurstSliderHeadRightTransform != null ? BurstSliderHeadRightTransform.gameObject : NoteRight;
+                    BurstSliderHeadDotLeft = BurstSliderHeadDotLeftTransform != null ? BurstSliderHeadDotLeftTransform.gameObject : BurstSliderHeadLeftTransform != null ? BurstSliderHeadLeftTransform.gameObject : NoteDotLeft;
+                    BurstSliderHeadDotRight = BurstSliderHeadDotRightTransform != null ? BurstSliderHeadDotRightTransform.gameObject : BurstSliderHeadRightTransform != null ? BurstSliderHeadRightTransform.gameObject : NoteDotRight;
                 }
                 catch (Exception ex)
                 {
@@ -90,6 +138,47 @@ namespace CustomNotes.Data
                     NoteDotLeft = note.transform.Find("NoteDotLeft")?.gameObject;
                     NoteDotRight = note.transform.Find("NoteDotRight")?.gameObject;
                     NoteBomb = note.transform.Find("NoteBomb")?.gameObject;
+
+                    // burst slider stuff
+                    Transform BurstSliderLeftTransform = note.transform.Find("BurstSliderLeft");
+                    if (BurstSliderLeftTransform == null)
+                    {
+                        BurstSliderLeft = new GameObject();
+                        GameObject innerBurstSliderLeft = UnityEngine.Object.Instantiate(NoteDotLeft);
+                        innerBurstSliderLeft.transform.SetParent(BurstSliderLeft.transform);
+                        innerBurstSliderLeft.transform.localPosition = Vector3.zero;
+                        innerBurstSliderLeft.transform.localScale = new Vector3(
+                            innerBurstSliderLeft.transform.localScale.x,
+                            innerBurstSliderLeft.transform.localScale.y / 4,
+                            innerBurstSliderLeft.transform.localScale.z);
+                        BurstSliderLeft.SetActive(false);
+                    }
+                    else BurstSliderLeft = BurstSliderLeftTransform.gameObject;
+
+                    Transform BurstSliderRightTransform = note.transform.Find("BurstSliderRight");
+                    if (BurstSliderRightTransform == null)
+                    {
+                        BurstSliderRight = new GameObject();
+                        GameObject innerBurstSliderRight = UnityEngine.Object.Instantiate(NoteDotRight);
+                        innerBurstSliderRight.transform.SetParent(BurstSliderRight.transform);
+                        innerBurstSliderRight.transform.localPosition = Vector3.zero;
+                        innerBurstSliderRight.transform.localScale = new Vector3(
+                            innerBurstSliderRight.transform.localScale.x,
+                            innerBurstSliderRight.transform.localScale.y / 4,
+                            innerBurstSliderRight.transform.localScale.z);
+                        BurstSliderRight.SetActive(false);
+                    }
+                    else BurstSliderRight = BurstSliderRightTransform.gameObject;
+
+                    // burst slider head stuff
+                    Transform BurstSliderHeadLeftTransform = note.transform.Find("BurstSliderHeadLeft");
+                    Transform BurstSliderHeadRightTransform = note.transform.Find("BurstSliderHeadRight");
+                    Transform BurstSliderHeadDotLeftTransform = note.transform.Find("BurstSliderHeadDotLeft");
+                    Transform BurstSliderHeadDotRightTransform = note.transform.Find("BurstSliderHeadDotRight");
+                    BurstSliderHeadLeft = BurstSliderHeadLeftTransform != null ? BurstSliderHeadLeftTransform.gameObject : NoteLeft;
+                    BurstSliderHeadRight = BurstSliderHeadRightTransform != null ? BurstSliderHeadRightTransform.gameObject : NoteRight;
+                    BurstSliderHeadDotLeft = BurstSliderHeadDotLeftTransform != null ? BurstSliderHeadDotLeftTransform.gameObject : BurstSliderHeadLeftTransform != null ? BurstSliderHeadLeftTransform.gameObject : NoteDotLeft;
+                    BurstSliderHeadDotRight = BurstSliderHeadDotRightTransform != null ? BurstSliderHeadDotRightTransform.gameObject : BurstSliderHeadRightTransform != null ? BurstSliderHeadRightTransform.gameObject : NoteDotRight;
                 }
                 catch (Exception ex)
                 {

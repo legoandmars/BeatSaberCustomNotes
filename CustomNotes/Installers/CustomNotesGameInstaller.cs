@@ -5,6 +5,7 @@ using CustomNotes.Settings.Utilities;
 using CustomNotes.Utilities;
 using SiraUtil.Extras;
 using SiraUtil.Objects;
+using CustomNotes.Objects;
 using SiraUtil.Objects.Beatmap;
 using System.Reflection;
 using UnityEngine;
@@ -73,6 +74,40 @@ namespace CustomNotes.Installers
                 }
 
                 #endregion
+
+                #region Burst Slider Setup
+
+                Container.RegisterRedecorator(new BurstSliderFillNoteRegistration(DecorateBurstSliderFill, DECORATION_PRIORITY));
+
+                MaterialSwapper.ReplaceMaterialsForGameObject(note.BurstSliderLeft);
+                MaterialSwapper.ReplaceMaterialsForGameObject(note.BurstSliderRight);
+                Utils.AddMaterialPropertyBlockController(note.BurstSliderLeft);
+                Utils.AddMaterialPropertyBlockController(note.BurstSliderRight);
+
+                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.LeftBurstSliderPool).WithInitialSize(40).FromComponentInNewPrefab(NotePrefabContainer(note.BurstSliderLeft));
+                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.RightBurstSliderPool).WithInitialSize(40).FromComponentInNewPrefab(NotePrefabContainer(note.BurstSliderRight));
+
+                #endregion
+
+                #region Burst Slider Head Setup
+
+                Container.RegisterRedecorator(new BurstSliderHeadNoteRegistration(DecorateNote, DECORATION_PRIORITY));
+
+                MaterialSwapper.ReplaceMaterialsForGameObject(note.BurstSliderHeadLeft);
+                MaterialSwapper.ReplaceMaterialsForGameObject(note.BurstSliderHeadRight);
+                MaterialSwapper.ReplaceMaterialsForGameObject(note.BurstSliderHeadDotLeft);
+                MaterialSwapper.ReplaceMaterialsForGameObject(note.BurstSliderHeadDotRight);
+                Utils.AddMaterialPropertyBlockController(note.BurstSliderHeadLeft);
+                Utils.AddMaterialPropertyBlockController(note.BurstSliderHeadRight);
+                Utils.AddMaterialPropertyBlockController(note.BurstSliderHeadDotLeft);
+                Utils.AddMaterialPropertyBlockController(note.BurstSliderHeadDotRight);
+
+                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.LeftBurstSliderHeadPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.BurstSliderHeadLeft));
+                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.RightBurstSliderHeadPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.BurstSliderHeadRight));
+                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.LeftBurstSliderHeadDotPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.BurstSliderHeadDotLeft));
+                Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.RightBurstSliderHeadDotPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.BurstSliderHeadDotRight));
+
+                #endregion
             }
         }
 
@@ -100,6 +135,24 @@ namespace CustomNotes.Installers
                 return original;
 
             original.gameObject.AddComponent<CustomBombController>();
+            return original;
+        }
+
+        public BurstSliderGameNoteController DecorateBurstSliderFill(BurstSliderGameNoteController original)
+        {
+            if (!_shouldSetup)
+                return original;
+
+            original.gameObject.AddComponent<CustomBurstSliderController>();
+
+            ColorNoteVisuals originalVisuals = original.GetComponent<ColorNoteVisuals>();
+
+            CustomNoteColorNoteVisuals customVisuals = original.gameObject.AddComponent<CustomNoteColorNoteVisuals>();
+            customVisuals.enabled = false;
+            foreach (FieldInfo info in originalVisuals.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic))
+                info.SetValue(customVisuals, info.GetValue(originalVisuals));
+            UnityEngine.Object.Destroy(originalVisuals);
+
             return original;
         }
 

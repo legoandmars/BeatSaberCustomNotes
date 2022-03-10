@@ -9,27 +9,21 @@ using CustomNotes.Utilities;
 
 namespace CustomNotes.Managers
 {
-    public class CustomNoteController : MonoBehaviour, IColorable, INoteControllerNoteWasCutEvent, INoteControllerNoteWasMissedEvent, INoteControllerDidInitEvent, INoteControllerNoteDidDissolveEvent
+    public class CustomBurstSliderController : MonoBehaviour, IColorable, INoteControllerNoteWasCutEvent, INoteControllerNoteWasMissedEvent, INoteControllerDidInitEvent, INoteControllerNoteDidDissolveEvent
     {
         private PluginConfig _pluginConfig;
 
         protected Transform noteCube;
         private CustomNote _customNote;
-        private GameNoteController _gameNoteController;
+        private BurstSliderGameNoteController _burstSliderGameNoteController;
         private CustomNoteColorNoteVisuals _customNoteColorNoteVisuals;
 
         protected GameObject activeNote;
         protected SiraPrefabContainer container;
         protected SiraPrefabContainer.Pool activePool;
 
-        private SiraPrefabContainer.Pool _leftDotNotePool;
-        private SiraPrefabContainer.Pool _rightDotNotePool;
-        private SiraPrefabContainer.Pool _leftArrowNotePool;
-        private SiraPrefabContainer.Pool _rightArrowNotePool;
-        private SiraPrefabContainer.Pool _leftBurstSliderHeadPool;
-        private SiraPrefabContainer.Pool _rightBurstSliderHeadPool;
-        private SiraPrefabContainer.Pool _leftBurstSliderHeadDotPool;
-        private SiraPrefabContainer.Pool _rightBurstSliderHeadDotPool;
+        private SiraPrefabContainer.Pool _leftBurstSliderPool;
+        private SiraPrefabContainer.Pool _rightBurstSliderPool;
 
         public Color Color
         {
@@ -40,40 +34,26 @@ namespace CustomNotes.Managers
         [Inject]
         internal void Init(PluginConfig pluginConfig,
             NoteAssetLoader noteAssetLoader,
-            [Inject(Id = Protocol.LeftArrowPool)] SiraPrefabContainer.Pool leftArrowNotePool,
-            [Inject(Id = Protocol.RightArrowPool)] SiraPrefabContainer.Pool rightArrowNotePool,
-            [InjectOptional(Id = Protocol.LeftDotPool)] SiraPrefabContainer.Pool leftDotNotePool,
-            [InjectOptional(Id = Protocol.RightDotPool)] SiraPrefabContainer.Pool rightDotNotePool,
-            [Inject(Id = Protocol.LeftBurstSliderHeadPool)] SiraPrefabContainer.Pool leftBurstSliderHeadPool,
-            [Inject(Id = Protocol.RightBurstSliderHeadPool)] SiraPrefabContainer.Pool rightBurstSliderHeadPool,
-            [Inject(Id = Protocol.LeftBurstSliderHeadDotPool)] SiraPrefabContainer.Pool leftBurstSliderHeadDotPool,
-            [Inject(Id = Protocol.RightBurstSliderHeadDotPool)] SiraPrefabContainer.Pool rightBurstSliderHeadDotPool)
+            [Inject(Id = Protocol.LeftBurstSliderPool)] SiraPrefabContainer.Pool leftBurstSliderPool,
+            [Inject(Id = Protocol.RightBurstSliderPool)] SiraPrefabContainer.Pool rightBurstSliderPool)
         {
             _pluginConfig = pluginConfig;
-            _leftArrowNotePool = leftArrowNotePool;
-            _rightArrowNotePool = rightArrowNotePool;
-
-            _leftDotNotePool = leftDotNotePool ?? _leftArrowNotePool;
-            _rightDotNotePool = rightDotNotePool ?? _rightArrowNotePool;
-
-            _leftBurstSliderHeadPool = leftBurstSliderHeadPool;
-            _rightBurstSliderHeadPool = rightBurstSliderHeadPool;
-            _leftBurstSliderHeadDotPool = leftBurstSliderHeadDotPool;
-            _rightBurstSliderHeadDotPool = rightBurstSliderHeadDotPool;
+            _leftBurstSliderPool = leftBurstSliderPool;
+            _rightBurstSliderPool = rightBurstSliderPool;
 
             _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
 
-            _gameNoteController = GetComponent<GameNoteController>();
+            _burstSliderGameNoteController = GetComponent<BurstSliderGameNoteController>();
             _customNoteColorNoteVisuals = gameObject.GetComponent<CustomNoteColorNoteVisuals>();
             _customNoteColorNoteVisuals.enabled = true;
 
-            _gameNoteController.didInitEvent.Add(this);
-            _gameNoteController.noteWasCutEvent.Add(this);
-            _gameNoteController.noteWasMissedEvent.Add(this);
-            _gameNoteController.noteDidDissolveEvent.Add(this);
+            _burstSliderGameNoteController.didInitEvent.Add(this);
+            _burstSliderGameNoteController.noteWasCutEvent.Add(this);
+            _burstSliderGameNoteController.noteWasMissedEvent.Add(this);
+            _burstSliderGameNoteController.noteDidDissolveEvent.Add(this);
             _customNoteColorNoteVisuals.didInitEvent += Visuals_DidInit;
 
-            noteCube = _gameNoteController.gameObject.transform.Find("NoteCube");
+            noteCube = _burstSliderGameNoteController.gameObject.transform.Find("NoteCube");
 
             MeshRenderer noteMesh = GetComponentInChildren<MeshRenderer>();
             if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
@@ -110,18 +90,9 @@ namespace CustomNotes.Managers
         public void HandleNoteControllerDidInit(NoteControllerBase noteController)
         {
             var data = noteController.noteData;
-            if (data.gameplayType != NoteData.GameplayType.BurstSliderHead)
-            {
-                SpawnThenParent(data.colorType == ColorType.ColorA
-                    ? data.cutDirection == NoteCutDirection.Any ? _leftDotNotePool : _leftArrowNotePool
-                    : data.cutDirection == NoteCutDirection.Any ? _rightDotNotePool : _rightArrowNotePool);
-            }
-            else
-            {
-                SpawnThenParent(data.colorType == ColorType.ColorA
-                    ? data.cutDirection == NoteCutDirection.Any ? _leftBurstSliderHeadDotPool : _leftBurstSliderHeadPool
-                    : data.cutDirection == NoteCutDirection.Any ? _rightBurstSliderHeadDotPool : _rightBurstSliderHeadPool);
-            }
+            SpawnThenParent(data.colorType == ColorType.ColorA
+                ? _leftBurstSliderPool
+                : _rightBurstSliderPool);
         }
 
         private void ParentNote(GameObject fakeMesh)
@@ -197,12 +168,12 @@ namespace CustomNotes.Managers
 
         protected void OnDestroy()
         {
-            if (_gameNoteController != null)
+            if (_burstSliderGameNoteController != null)
             {
-                _gameNoteController.didInitEvent.Remove(this);
-                _gameNoteController.noteWasCutEvent.Remove(this);
-                _gameNoteController.noteWasMissedEvent.Remove(this);
-                _gameNoteController.noteDidDissolveEvent.Remove(this);
+                _burstSliderGameNoteController.didInitEvent.Remove(this);
+                _burstSliderGameNoteController.noteWasCutEvent.Remove(this);
+                _burstSliderGameNoteController.noteWasMissedEvent.Remove(this);
+                _burstSliderGameNoteController.noteDidDissolveEvent.Remove(this);
             }
             if (_customNoteColorNoteVisuals != null)
             {
