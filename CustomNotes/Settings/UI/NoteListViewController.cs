@@ -73,7 +73,9 @@ namespace CustomNotes.Settings.UI
         public void Select(TableView _, int row)
         {
             _noteAssetLoader.SelectedNote = row;
+            _noteAssetLoader.SelectedBomb = row;
             _pluginConfig.LastNote = _noteAssetLoader.CustomNoteObjects[row].FileName;
+            _pluginConfig.LastBomb = _noteAssetLoader.CustomNoteObjects[row].FileName;
 
             GenerateNotePreview(row);
         }

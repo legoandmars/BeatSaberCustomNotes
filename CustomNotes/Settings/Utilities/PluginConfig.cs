@@ -5,6 +5,8 @@
         public virtual bool Enabled { get; set; } = true;
 
         public virtual string LastNote { get; set; }
+        
+        public virtual string LastBomb { get; set; }
 
         public virtual float NoteSize { get; set; } = 1;
 

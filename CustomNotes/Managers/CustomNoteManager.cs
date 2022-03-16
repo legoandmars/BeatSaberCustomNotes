@@ -22,11 +22,11 @@ namespace CustomNotes.Managers
         }
         public void Initialize()
         {
-            CustomNote activeNote = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
+            CustomNote activeBomb = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedBomb];
 
-            if (activeNote.NoteBomb != null)
+            if (activeBomb.NoteBomb != null)
             {
-                MaterialSwapper.ReplaceMaterialsForGameObject(activeNote.NoteBomb);
+                MaterialSwapper.ReplaceMaterialsForGameObject(activeBomb.NoteBomb);
             }
 
             if (_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes)

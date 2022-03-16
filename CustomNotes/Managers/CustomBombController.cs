@@ -27,7 +27,7 @@ namespace CustomNotes.Managers
         {
             _pluginConfig = pluginConfig;
 
-            _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedNote];
+            _customNote = noteAssetLoader.CustomNoteObjects[noteAssetLoader.SelectedBomb];
             bombPool = bombContainerPool;
 
             _bombNoteController = GetComponent<BombNoteController>();

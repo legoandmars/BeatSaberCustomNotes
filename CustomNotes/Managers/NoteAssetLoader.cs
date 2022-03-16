@@ -23,10 +23,17 @@ namespace CustomNotes.Managers
             set => _selectedNote = value;
         }
 
+        public int SelectedBomb
+        {
+            get => _selectedBomb;
+            set => _selectedBomb = value;
+        }
+
         public IList<CustomNote> CustomNoteObjects { get; private set; }
         public IEnumerable<string> CustomNoteFiles { get; private set; } = Enumerable.Empty<string>();
 
         private int _selectedNote = 0;
+        private int _selectedBomb = 0;
 
         internal NoteAssetLoader(PluginConfig pluginConfig)
         {
@@ -62,6 +69,19 @@ namespace CustomNotes.Managers
                         }
                     }
                 }
+                SelectedBomb = 0;
+                if (_pluginConfig.LastBomb != null)
+                {
+                    int numberOfNotes = CustomNoteObjects.Count;
+                    for (int i = 0; i < numberOfNotes; i++)
+                    {
+                        if (CustomNoteObjects[i].FileName == _pluginConfig.LastBomb)
+                        {
+                            SelectedBomb = i;
+                            break;
+                        }
+                    }
+                }
                 IsLoaded = true;
             }
         }
@@ -90,6 +110,7 @@ namespace CustomNotes.Managers
             }
             IsLoaded = false;
             SelectedNote = 0;
+            SelectedBomb = 0;
             CustomNoteObjects = new List<CustomNote>();
             CustomNoteFiles = Enumerable.Empty<string>();
         }

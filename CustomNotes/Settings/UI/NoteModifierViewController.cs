@@ -77,7 +77,9 @@ namespace CustomNotes.Settings.UI
         {
             int selectedNote = _noteAssetLoader.CustomNoteObjects.ToList().FindIndex(note => note.Descriptor.NoteName == selectedCell);
             _noteAssetLoader.SelectedNote = selectedNote;
+            _noteAssetLoader.SelectedBomb = selectedNote;
             _pluginConfig.LastNote = _noteAssetLoader.CustomNoteObjects[selectedNote].FileName;
+            _pluginConfig.LastBomb = _noteAssetLoader.CustomNoteObjects[selectedNote].FileName;
         }
 
         [UIValue("mod-enabled")]
