@@ -5,7 +5,6 @@ using CustomNotes.Settings.Utilities;
 using CustomNotes.Utilities;
 using SiraUtil.Extras;
 using SiraUtil.Objects;
-using CustomNotes.Objects;
 using SiraUtil.Objects.Beatmap;
 using System.Reflection;
 using UnityEngine;
@@ -77,7 +76,7 @@ namespace CustomNotes.Installers
 
                 #region Burst Slider Setup
 
-                Container.RegisterRedecorator(new BurstSliderFillNoteRegistration(DecorateBurstSliderFill, DECORATION_PRIORITY));
+                Container.RegisterRedecorator(new BurstSliderNoteRegistration(DecorateBurstSliderFill, DECORATION_PRIORITY));
 
                 MaterialSwapper.ReplaceMaterialsForGameObject(note.BurstSliderLeft);
                 MaterialSwapper.ReplaceMaterialsForGameObject(note.BurstSliderRight);
