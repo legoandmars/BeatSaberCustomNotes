@@ -138,6 +138,7 @@
     <Compile Include="Installers\CustomNotesGameInstaller.cs" />
     <Compile Include="Installers\CustomNotesMenuInstaller.cs" />
     <Compile Include="Managers\CustomBombController.cs" />
+    <Compile Include="Managers\CustomBurstSliderController.cs" />
     <Compile Include="Managers\CustomNoteController.cs" />
     <Compile Include="Managers\CustomNotesViewManager.cs" />
     <Compile Include="Managers\GameCameraManager.cs" />
