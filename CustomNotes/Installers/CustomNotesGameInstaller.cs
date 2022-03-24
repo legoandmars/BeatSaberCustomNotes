@@ -107,6 +107,17 @@ namespace CustomNotes.Installers
                 Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.RightBurstSliderHeadDotPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.BurstSliderHeadDotRight));
 
                 #endregion
+
+                #region Slider Layer
+
+                if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
+                {
+                    Container.RegisterRedecorator(new ShortSliderNoteRegistration(DecorateSlider, DECORATION_PRIORITY));
+                    Container.RegisterRedecorator(new MediumSliderNoteRegistration(DecorateSlider, DECORATION_PRIORITY));
+                    Container.RegisterRedecorator(new LongSliderNoteRegistration(DecorateSlider, DECORATION_PRIORITY));
+                }
+
+                #endregion
             }
         }
 
@@ -152,6 +163,12 @@ namespace CustomNotes.Installers
                 info.SetValue(customVisuals, info.GetValue(originalVisuals));
             UnityEngine.Object.Destroy(originalVisuals);
 
+            return original;
+        }
+
+        public SliderController DecorateSlider(SliderController original)
+        {
+            original.transform.Find("MeshRenderer").gameObject.layer = 0;
             return original;
         }
 
