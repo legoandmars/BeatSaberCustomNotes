@@ -8,20 +8,20 @@ namespace CustomNotes.Managers
 {
     public class GameCameraManager : IInitializable, IDisposable
     {
-        public Camera MainCamera { get; private set; } = null;
+        public Camera MainCamera { get; }
 
         private PluginConfig _pluginConfig;
 
         [Inject]
-        internal GameCameraManager(PluginConfig pluginConfig)
+        internal GameCameraManager(PluginConfig pluginConfig, Camera mainCamera)
         {
             _pluginConfig = pluginConfig;
+            MainCamera = mainCamera;
         }
 
         public void Initialize()
         {
             Logger.log.Debug($"Initializing {nameof(GameCameraManager)}!");
-            MainCamera = Camera.main;
             if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
             {
                 LayerUtils.CreateWatermark();
