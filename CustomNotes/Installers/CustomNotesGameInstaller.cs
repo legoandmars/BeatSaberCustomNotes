@@ -41,7 +41,16 @@ namespace CustomNotes.Installers
 
                 #region Note Setup
 
-                Container.RegisterRedecorator(new BasicNoteRegistration(DecorateNote, DECORATION_PRIORITY));
+                if (_gameplayCoreSceneSetupData.gameplayModifiers.proMode)
+                {
+                    // Use the pro mode decorator
+                    Container.RegisterRedecorator(new ProModeNoteRegistration(DecorateNote, DECORATION_PRIORITY));
+                }
+                else
+                {
+                    Container.RegisterRedecorator(new BasicNoteRegistration(DecorateNote, DECORATION_PRIORITY));
+                }
+                
                 MaterialSwapper.GetMaterials();
                 MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteLeft);
                 MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteRight);
