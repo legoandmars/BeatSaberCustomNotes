@@ -132,8 +132,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HarmonyPatches\CustomNotesPatches.cs" />
-    <Compile Include="HarmonyPatches\Patches\CameraPlusPatch.cs" />
     <Compile Include="Installers\CustomNotesCoreInstaller.cs" />
     <Compile Include="Installers\CustomNotesGameInstaller.cs" />
     <Compile Include="Installers\CustomNotesMenuInstaller.cs" />
