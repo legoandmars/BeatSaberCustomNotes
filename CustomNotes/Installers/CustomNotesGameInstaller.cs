@@ -41,7 +41,16 @@ namespace CustomNotes.Installers
 
                 #region Note Setup
 
-                Container.RegisterRedecorator(new BasicNoteRegistration(DecorateNote, DECORATION_PRIORITY));
+                if (_gameplayCoreSceneSetupData.gameplayModifiers.proMode)
+                {
+                    // Use the pro mode decorator
+                    Container.RegisterRedecorator(new ProModeNoteRegistration(DecorateNote, DECORATION_PRIORITY));
+                }
+                else
+                {
+                    Container.RegisterRedecorator(new BasicNoteRegistration(DecorateNote, DECORATION_PRIORITY));
+                }
+                
                 MaterialSwapper.GetMaterials();
                 MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteLeft);
                 MaterialSwapper.ReplaceMaterialsForGameObject(note.NoteRight);
@@ -107,6 +116,17 @@ namespace CustomNotes.Installers
                 Container.BindMemoryPool<SiraPrefabContainer, SiraPrefabContainer.Pool>().WithId(Protocol.RightBurstSliderHeadDotPool).WithInitialSize(10).FromComponentInNewPrefab(NotePrefabContainer(note.BurstSliderHeadDotRight));
 
                 #endregion
+
+                #region Slider Layer
+
+                if (_pluginConfig.HMDOnly || LayerUtils.HMDOverride)
+                {
+                    Container.RegisterRedecorator(new ShortSliderNoteRegistration(DecorateSlider, DECORATION_PRIORITY));
+                    Container.RegisterRedecorator(new MediumSliderNoteRegistration(DecorateSlider, DECORATION_PRIORITY));
+                    Container.RegisterRedecorator(new LongSliderNoteRegistration(DecorateSlider, DECORATION_PRIORITY));
+                }
+
+                #endregion
             }
         }
 
@@ -152,6 +172,12 @@ namespace CustomNotes.Installers
                 info.SetValue(customVisuals, info.GetValue(originalVisuals));
             UnityEngine.Object.Destroy(originalVisuals);
 
+            return original;
+        }
+
+        public SliderController DecorateSlider(SliderController original)
+        {
+            original.transform.Find("MeshRenderer").gameObject.layer = 0;
             return original;
         }
 

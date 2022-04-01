@@ -1,5 +1,4 @@
-﻿using CustomNotes.HarmonyPatches;
-using CustomNotes.Installers;
+﻿using CustomNotes.Installers;
 using CustomNotes.Settings.Utilities;
 using CustomNotes.Utilities;
 using IPA;
@@ -12,10 +11,9 @@ using IPALogger = IPA.Logging.Logger;
 
 namespace CustomNotes
 {
-    [Plugin(RuntimeOptions.DynamicInit)]
+    [Plugin(RuntimeOptions.DynamicInit), NoEnableDisable]
     public class Plugin
     {
-        public const string InstanceId = "com.legoandmars.beatsaber.customnotes";
         public static string PluginAssetPath => Path.Combine(UnityGame.InstallPath, "CustomNotes");
 
         [Init]
@@ -29,25 +27,6 @@ namespace CustomNotes
             zenjector.Install<CustomNotesCoreInstaller>(Location.App);
             zenjector.Install<CustomNotesMenuInstaller>(Location.Menu);
             zenjector.Install<CustomNotesGameInstaller>(Location.Player);
-        }
-
-        [OnEnable]
-        public void OnEnable()
-        {
-            try
-            {
-                CustomNotesPatches.ApplyHarmonyPatches();
-            }
-            catch
-            {
-                Logger.log.Warn("Camera Plus not detected, disabling CameraPlus harmony patch.");
-            }
-        }
-
-        [OnDisable]
-        public void OnDisable()
-        {
-            CustomNotesPatches.RemoveHarmonyPatches();
         }
     }
 }
