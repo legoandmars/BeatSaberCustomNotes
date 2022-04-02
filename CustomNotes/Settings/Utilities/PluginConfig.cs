@@ -11,5 +11,7 @@
         public virtual bool HMDOnly { get; set; } = false;
 
         public virtual bool AutoDisable { get; set; } = false;
+
+        public virtual bool DisableAprilFools { get; set; } = false;
     }
 }

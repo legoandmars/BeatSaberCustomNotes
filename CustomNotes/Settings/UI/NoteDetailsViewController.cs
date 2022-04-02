@@ -20,6 +20,9 @@ namespace CustomNotes.Settings
         [UIComponent("note-description")]
         public TextPageScrollView noteDescription = null;
 
+        [UIComponent("disable-april-fools")]
+        public ToggleSetting disableAprilFoolsCheckbox = null;
+
         public void OnNoteWasChanged(CustomNote customNote)
         {
             if (string.IsNullOrWhiteSpace(customNote.ErrorMessage))
@@ -87,6 +90,32 @@ namespace CustomNotes.Settings
                 _pluginConfig.AutoDisable = value;
                 NotifyPropertyChanged(nameof(autoDisable));
             }
+        }
+
+        [UIValue("disable-april-fools")]
+        public bool disableAprilFools
+        {
+            get => _pluginConfig.DisableAprilFools;
+            set
+            {
+                _pluginConfig.DisableAprilFools = value;
+                NotifyPropertyChanged(nameof(disableAprilFools));
+            }
+        }
+
+        protected override void DidActivate(bool firstActivation, bool addedToHierarchy, bool screenSystemEnabling)
+        {
+            base.DidActivate(firstActivation, addedToHierarchy, screenSystemEnabling);
+
+            // Not April Fools Day Code
+            System.DateTime time;
+            bool bunbundai = false;
+            if (IPA.Utilities.Utils.CanUseDateTimeNowSafely)
+                time = System.DateTime.Now;
+            else
+                time = System.DateTime.UtcNow;
+
+            disableAprilFoolsCheckbox.gameObject.SetActive((time.Month == 4 && time.Day == 1) || bunbundai);
         }
     }
 }

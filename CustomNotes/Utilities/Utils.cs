@@ -284,6 +284,7 @@ namespace CustomNotes.Utilities
         /// <param name="level"></param>
         public static float NoteSizeFromConfig(PluginConfig config)
         {
+            if (config.DisableAprilFools) return config.NoteSize;
             // Not April Fools Day Code
             System.DateTime time;
             bool bunbundai = false;
