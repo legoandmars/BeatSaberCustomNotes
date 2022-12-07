@@ -14,7 +14,8 @@
     "BSIPA": "^4.2.1",
     "BeatSaberMarkupLanguage": "^1.6.0",
     "SiraUtil": "^3.0.6",
-    "SongCore": "^3.0.0"
+    "SongCore": "^3.0.0",
+    "CameraUtils": "^1.0.0"
   },
   "links": {
     "project-home": "https://github.com/legoandmars/BeatSaberCustomNotes",

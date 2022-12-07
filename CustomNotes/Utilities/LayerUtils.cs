@@ -1,16 +1,8 @@
-﻿using CustomNotes.Data;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using BeatSaberMarkupLanguage.ViewControllers;
-using BeatSaberMarkupLanguage.FloatingScreen;
+﻿using UnityEngine;
 using BeatSaberMarkupLanguage;
+using CameraUtils.Core;
 using TMPro;
 using HMUI;
-using UnityEngine.UI;
 using CustomNotes.Settings.Utilities;
 
 namespace CustomNotes.Utilities
@@ -33,53 +25,21 @@ namespace CustomNotes.Utilities
         /// <summary>
         /// Note layer type.
         /// </summary>
-        public enum NoteLayer : int
-        {
-            Note = 8,
-            FirstPerson = 24,
-            ThirdPerson = 8
+        public static class NoteLayer {
+            public const VisibilityLayer Note = VisibilityLayer.Note;
+            public const VisibilityLayer FirstPerson = VisibilityLayer.HmdOnlyAndReflected;
+            public const VisibilityLayer ThirdPerson = VisibilityLayer.DesktopOnlyAndReflected;
         }
-
-        /// <summary>
-        /// Camera type. Determines culling mask.
-        /// </summary>
-        public enum CameraView
-        {
-            Default,
-            FirstPerson,
-            ThirdPerson
-        }
-
-        /// <summary>
-        /// Sets the type of a camera to first/third person.
-        /// </summary>
-        /// <param name="cam">Camera</param>
-        /// <param name="view">Type to set the camera to.</param>
-        public static void SetCamera(Camera cam, CameraView view)
-        {
-            if (cam == null) return;
-            switch(view)
-            {
-                default:
-                case CameraView.Default:
-                case CameraView.ThirdPerson:
-                    cam.cullingMask &= ~(1 << (int) NoteLayer.FirstPerson);
-                    cam.cullingMask |= 1 << (int) NoteLayer.ThirdPerson;
-                    break;
-                case CameraView.FirstPerson:
-                    cam.cullingMask &= ~(1 << (int) NoteLayer.ThirdPerson);
-                    cam.cullingMask |= 1 << (int) NoteLayer.FirstPerson;
-                    break;
-            }
-        }
-
 
         /// <summary>
         /// Recursively sets the layer of a GameObject.
         /// </summary>
         /// <param name="gameObject">GameObject.</param>
         /// <param name="layer">The layer to recursively set.</param>
-        public static void SetLayer(GameObject gameObject, NoteLayer layer) => SetLayer(gameObject, (int)layer);
+        public static void SetLayer(GameObject gameObject, VisibilityLayer layer) 
+        {
+            gameObject.SetLayerRecursively(layer);
+        }
 
         /// <summary>
         /// Recursively sets the layer of a GameObject.
@@ -88,13 +48,7 @@ namespace CustomNotes.Utilities
         /// <param name="layer">The layer to recursively set.</param>
         public static void SetLayer(GameObject gameObject, int layer)
         {
-            if (gameObject == null) return;
-            if (gameObject.layer == layer) return;
-            gameObject.layer = layer;
-            foreach (Transform t in gameObject.GetComponentsInChildren<Transform>())
-            {
-                t.gameObject.layer = layer;
-            }
+            gameObject.SetLayerRecursively((VisibilityLayer)layer);
         }
 
         /// <summary>
