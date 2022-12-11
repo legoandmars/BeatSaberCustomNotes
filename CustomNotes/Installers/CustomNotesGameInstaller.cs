@@ -35,7 +35,7 @@ namespace CustomNotes.Installers
             _shouldSetup = !autoDisable && (!(_gameplayCoreSceneSetupData.gameplayModifiers.ghostNotes || _gameplayCoreSceneSetupData.gameplayModifiers.disappearingArrows) || !Container.HasBinding<MultiplayerLevelSceneSetupData>());
             if (_pluginConfig.Enabled && _noteAssetLoader.SelectedNote != 0 && _shouldSetup)
             {
-                Container.BindInterfacesAndSelfTo<GameCameraManager>().AsSingle();
+                Container.BindInterfacesAndSelfTo<WatermarkManager>().AsSingle();
                 Container.Bind<IInitializable>().To<CustomNoteManager>().AsSingle();
                 CustomNote note = _noteAssetLoader.CustomNoteObjects[_noteAssetLoader.SelectedNote];
 
