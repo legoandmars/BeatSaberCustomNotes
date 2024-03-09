@@ -32,8 +32,10 @@ namespace CustomNotes.Data
             {
                 try
                 {
-                    AssetBundle = AssetBundle.LoadFromFile(Path.Combine(Plugin.PluginAssetPath, fileName));
-                    GameObject note = AssetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
+                    string filePath = Path.Combine(Plugin.PluginAssetPath, fileName);
+
+                    AssetBundle = AssetBundle.LoadFromFile(filePath);
+                    GameObject note = CustomNoteAssetLoader.LoadNoteWithRepair(AssetBundle, fileName);
 
                     Descriptor = note.GetComponent<NoteDescriptor>();
                     Descriptor.Icon = Descriptor.Icon ?? Utils.GetDefaultCustomIcon();

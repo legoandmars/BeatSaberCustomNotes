@@ -27,7 +27,7 @@ namespace CustomNotes.Managers
 
         public Color Color
         {
-            get => _customNoteColorNoteVisuals != null ? _customNoteColorNoteVisuals.noteColor : Color.white;
+            get => _customNoteColorNoteVisuals != null ? _customNoteColorNoteVisuals.NoteColor : Color.white;
             set => SetColor(value);
         }
 
@@ -132,7 +132,7 @@ namespace CustomNotes.Managers
 
         private void Visuals_DidInit(ColorNoteVisuals visuals, NoteControllerBase noteController)
         {
-            SetActiveThenColor(activeNote, (visuals as CustomNoteColorNoteVisuals).noteColor);
+            SetActiveThenColor(activeNote, (visuals as CustomNoteColorNoteVisuals).NoteColor);
             // Hide certain parts of the default note which is not required
             if (_pluginConfig.HMDOnly == false && LayerUtils.HMDOverride == false)
             {

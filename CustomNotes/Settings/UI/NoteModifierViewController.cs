@@ -44,8 +44,7 @@ namespace CustomNotes.Settings.UI
 
         public void Dispose()
         {
-            if (GameplaySetup.IsSingletonAvailable && BSMLParser.IsSingletonAvailable)
-                GameplaySetup.instance.RemoveTab("Custom Notes");
+            GameplaySetup.instance.RemoveTab("Custom Notes");
         }
 
         internal void ParentControllerActivated()
