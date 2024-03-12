@@ -11,11 +11,11 @@
   "name": "CustomNotes",
   "version": "2.6.2",
   "dependsOn": {
-    "BSIPA": "^4.2.1",
-    "BeatSaberMarkupLanguage": "^1.6.0",
-    "SiraUtil": "^3.0.6",
-    "SongCore": "^3.0.0",
-    "CameraUtils": "^1.0.0"
+    "BSIPA": "^4.3.2",
+    "BeatSaberMarkupLanguage": "^1.8.1",
+    "SiraUtil": "^3.1.6",
+    "SongCore": "^3.12.2",
+    "CameraUtils": "^1.0.7"
   },
   "links": {
     "project-home": "https://github.com/legoandmars/BeatSaberCustomNotes",
