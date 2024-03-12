@@ -129,7 +129,7 @@ namespace CustomNotes.Data
                 try
                 {
                     AssetBundle = AssetBundle.LoadFromMemory(noteObject);
-                    GameObject note = AssetBundle.LoadAsset<GameObject>("assets/_customnote.prefab");
+                    GameObject note = CustomNoteAssetLoader.LoadNoteWithRepair(AssetBundle, name);
                     FileName = $@"internalResource\{name}";
 
                     Descriptor = note.GetComponent<NoteDescriptor>();

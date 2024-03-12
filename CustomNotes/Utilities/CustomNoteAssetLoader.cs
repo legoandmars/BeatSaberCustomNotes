@@ -1,9 +1,6 @@
 ﻿using AssetBundleLoadingTools.Utilities;
-using AssetBundleLoadingTools.Models.Shaders;
 using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
-using System.Reflection.Emit;
 using System;
 
 namespace CustomNotes.Utilities
